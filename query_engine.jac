@@ -4,11 +4,14 @@ import:py logging;
 
 glob engines = {};
 
+# Loads the query engine
 can load_engine(config: dict, reload: bool = False) -> None;
+# Saves the query engine
 can save_engine(feature_name: str, path: str) -> None;
+# Queries the query engine
 can query(feature_name: str, query_context: str, query:str);
 
-# Loads the query engine
+
 :can:load_engine(config: dict, reload: bool = False) -> None {
     logging.info(f"Loading query engine: {config['engine_name']} for feature {config['feature_name']}");
 
@@ -25,7 +28,6 @@ can query(feature_name: str, query_context: str, query:str);
     logging.info(f"Loaded query engine: {engine_name} for feature {feature_name}");
 }
 
-# Saves the query engine
 :can:save_engine(feature_name: str, path: str) -> None {
     logging.info(f"Saving query engine: {feature_name} to {path}");
 
@@ -37,7 +39,6 @@ can query(feature_name: str, query_context: str, query:str);
     logging.info(f"Saved query engine: {feature_name} to {path}");
 }
 
-# Queries the query engine
 :can:query(feature_name: str, query_context: str, query:str) {
     logging.info(f"Querying {feature_name} with query: {query}");
     if feature_name not in engines {
