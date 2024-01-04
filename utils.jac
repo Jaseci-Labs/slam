@@ -5,6 +5,8 @@ import:py shutil;
 import:py time;
 import:py from yaspin, yaspin;
 
+glob ACTION_SERVER_URL = "http://localhost:8000/";
+
 can wrap_test(text:str, max_length:int = 80) -> str {
     can wrap_line(line:str) {
         while len(line) > max_length {
@@ -19,13 +21,7 @@ can wrap_test(text:str, max_length:int = 80) -> str {
     }
     lines = text.split("\n");
     wrapped_lines = [wrapped_line for line in lines for wrapped_line in wrap_line(line)];
-    return "\n".join(wrapped_lines)
-}
-
-can call_action(action:str, **kwargs) -> dict {
-    url = f"{ACTION_SERVER_URL}{action}";
-    response = requests.post(url, json=kwargs);
-    return response.json();
+    return "\n".join(wrapped_lines);
 }
 
 can load_context(context_path:str) -> dict {
@@ -52,7 +48,7 @@ can save_conv(feature_name:str, feature_config:dict, conv:dict, new_config:bool)
         }
     }
 
-    with open(os.path.join(feature_dir, f'conv_{conv["timestamp"]}'), "w") as f {
+    with open(os.path.join(feature_dir, f"conv_{conv['timestamp']}"), 'w') as f {
         json.dump(conv, f, indent=2);
     }
 }
@@ -77,7 +73,7 @@ can run_experiment(query:str, feature_name:str, model_name:str, query_context:di
         "feature_name": feature_name,
         "full_prompt": ret["full_prompt"],
         "avg_time": avg_time,
-        "model_name": model_name,
+        "model_name": model_name
     };
 }
 
@@ -119,5 +115,12 @@ glob llms = [
     "ollama/openchat:7b-v3.5-q2_K",
     "ollama/vicuna:7b",
     "ollama/vicuna:7b-q3_K_L",
-    "ollama/vicuna:7b-q2_K",
+    "ollama/vicuna:7b-q2_K"
 ];
+
+::py::
+def call_action(action, **kwargs):
+    url = f"{ACTION_SERVER_URL}{action}"
+    response = requests.post(url, json=kwargs)
+    return response.json()
+::py::

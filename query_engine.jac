@@ -1,14 +1,17 @@
 import:py json;
 import:py from rag_engine, QueryEngine;
 import:py logging;
-
+import:py jaseci.utils.utils
 glob engines = {};
 
 # Loads the query engine
+@jaseci_action(act_group=["query_engine"], allow_remote=True)
 can load_engine(config: dict, reload: bool = False) -> None;
 # Saves the query engine
+@jaseci_action(act_group=["query_engine"], allow_remote=True)
 can save_engine(feature_name: str, path: str) -> None;
 # Queries the query engine
+@jaseci_action(act_group=["query_engine"], allow_remote=True)
 can query(feature_name: str, query_context: str, query:str);
 
 
