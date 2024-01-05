@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Jac compilation cache
+__jac_gen__/
+
 # C extensions
 *.so
 
