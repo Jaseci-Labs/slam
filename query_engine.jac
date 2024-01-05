@@ -1,7 +1,8 @@
 import:py json;
 import:py from rag_engine, QueryEngine;
-import:py logging;
-import:py jaseci.utils.utils
+import:py from jaseci.utils.utils, logger;
+import:py from jaseci.jsorc.live_actions, jaseci_actions;
+
 glob engines = {};
 
 # Loads the query engine
@@ -16,7 +17,7 @@ can query(feature_name: str, query_context: str, query:str);
 
 
 :can:load_engine(config: dict, reload: bool = False) -> None {
-    logging.info(f"Loading query engine: {config['engine_name']} for feature {config['feature_name']}");
+    logger.info(f"Loading query engine: {config['engine_name']} for feature {config['feature_name']}");
 
     engine_name = config['engine_name'];
     feature_name = config['feature_name'];
@@ -28,22 +29,22 @@ can query(feature_name: str, query_context: str, query:str);
         engines[feature_name].load(config);
     }
 
-    logging.info(f"Loaded query engine: {engine_name} for feature {feature_name}");
+    logger.info(f"Loaded query engine: {engine_name} for feature {feature_name}");
 }
 
 :can:save_engine(feature_name: str, path: str) -> None {
-    logging.info(f"Saving query engine: {feature_name} to {path}");
+    logger.info(f"Saving query engine: {feature_name} to {path}");
 
     config = engines[feature_name].save();
     config["feature_name"] = feature_name;
-    with open(path, "w") as f:
+    with open(path, "w") as f{
         json.dump(config, f, indent=2);
-
-    logging.info(f"Saved query engine: {feature_name} to {path}");
+    }
+    logger.info(f"Saved query engine: {feature_name} to {path}");
 }
 
 :can:query(feature_name: str, query_context: str, query:str) {
-    logging.info(f"Querying {feature_name} with query: {query}");
+    logger.info(f"Querying {feature_name} with query: {query}");
     if feature_name not in engines {
         raise ValueError(f"Invalid feature name: {feature_name}");
     }
