@@ -1,7 +1,7 @@
 import:py json;
 import:py from rag_engine, QueryEngine;
 import:py from jaseci.utils.utils, logger;
-import:py from jaseci.jsorc.live_actions, jaseci_actions;
+import:py from jaseci.jsorc.live_actions, jaseci_action;
 
 glob engines = {};
 
