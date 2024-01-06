@@ -13,7 +13,7 @@ can load_engine(config: dict, reload: bool = False) -> None;
 can save_engine(feature_name: str, path: str) -> None;
 # Queries the query engine
 @jaseci_action(act_group=["query_engine"], allow_remote=True)
-can query(feature_name: str, query_context: str, query:str);
+can query(feature_name: str, query_context: dict, query:str);
 
 
 :can:load_engine(config: dict, reload: bool = False) -> None {
@@ -43,7 +43,7 @@ can query(feature_name: str, query_context: str, query:str);
     logger.info(f"Saved query engine: {feature_name} to {path}");
 }
 
-:can:query(feature_name: str, query_context: str, query:str) {
+:can:query(feature_name: str, query_context: dict, query:str) {
     logger.info(f"Querying {feature_name} with query: {query}");
     if feature_name not in engines {
         raise ValueError(f"Invalid feature name: {feature_name}");

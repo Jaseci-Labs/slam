@@ -16,7 +16,7 @@ can main {
 
     # Context Input
     cols[0].subheader("Context Input");
-    context_files = [f for f in os.listdir("context_input") if f.endswith(".json")];
+    context_files = [f for f in os.listdir(os.path.join(os.path.dirname(__file__), "context_input")) if f.endswith(".json")];
     selected_context = cols[0].selectbox("Choose a context input:", context_files);
 
     #Features
@@ -26,7 +26,7 @@ can main {
 
     # Load in the latest config for this feature  
     if selected_feature {
-        feature_dir = os.path.join("features", selected_feature, "latest");
+        feature_dir = os.path.join(os.path.dirname(__file__), "features", selected_feature, "latest");
         feature_config_json = os.path.join(feature_dir, "config.json");
         with open(feature_config_json, "r") as f {
             feature_config = json.load(f);
@@ -64,7 +64,7 @@ can main {
         if st.button("Pull Ollama Models") {
             for model in llms[2:] {
                 (model_provider, model_name) = model.split("/");
-                if not model_provider == "ollama" {
+                if model_provider != "ollama" {
                     continue;
                 }
                 st.info(f"Pulling {model_name}...");
@@ -87,9 +87,9 @@ can main {
         }
 
         # Override LLM selection
-        if selected_llm and not selected_llm == "use config" {
+        if selected_llm and selected_llm != "use config" {
             new_config = True;
-            # (feature_config["provider_name"], feature_config["model_name"]) = selected_llm.split("/");
+            (feature_config["provider_name"], feature_config["model_name"]) = selected_llm.split("/");
         }
 
         with st.spinner("") {
@@ -102,13 +102,15 @@ can main {
             );
         }
 
+        print(st.session_state.context, ret);
+
         st.session_state.response = ret["response"];
         st.session_state.full_prompt = ret["full_prompt"];
 
         if experiment_mode {
             llms_to_run = llms.copy()[2:] if run_all else [selected_llm];
             for model in llms_to_run {
-                # (feature_config["provider_name"], feature_config["model_name"]) = model.split("/");
+                (feature_config["provider_name"], feature_config["model_name"]) = model.split("/");
                 call_action(action="load_engine", config=feature_config, reload=True);
                 with st.spinner(f"Running experiment for {feature_config['model_name']}") {
                     results = run_experiment(
@@ -152,8 +154,4 @@ can main {
             new_config=st.session_state.new_config
         );
     }
-}
-
-with entry {
-    main();
 }

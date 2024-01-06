@@ -57,7 +57,7 @@ class QueryEngine(ABC):
     def load_chat_model(self, provider_name, model_name):
         """Load a chat model"""
         if provider_name == "openai":
-            return ChatOpenAI(model_name=model_name, api_key="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")
+            return ChatOpenAI(model_name=model_name)
         elif provider_name == "ollama":
             return ChatOllama(model=model_name)
         elif provider_name == "llama.cpp":

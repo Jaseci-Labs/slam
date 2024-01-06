@@ -1,0 +1,13 @@
+{
+    "config_vars": [
+        "feature_name",
+        "graph2doc_method",
+        "provider_name",
+        "model_name"
+    ],
+    "feature_name": "myca_pep_talk",
+    "graph2doc_method": "custom_myca_peptalk",
+    "provider_name": "openai",
+    "model_name": "gpt-4",
+    "engine_name": "myca"
+}

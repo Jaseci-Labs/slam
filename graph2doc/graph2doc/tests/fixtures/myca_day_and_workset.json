@@ -1,0 +1,108 @@
+[
+    {
+        "name": "day",
+        "kind": "node",
+        "jid": "urn:uuid:d6863a05-25d3-4d51-97bf-541339b3bebc",
+        "j_timestamp": "2023-10-11T18:48:38.488495",
+        "j_type": "node",
+        "context": {
+            "day": "2023-10-11T00:00:00",
+            "note": null,
+            "order": [],
+            "focus_order": [
+                "urn:uuid:41519912-eea9-4fb3-8b70-55bad7865f28",
+                "urn:uuid:0c48fc28-acf7-41a1-8881-146399be67a1",
+                "urn:uuid:044cc6d3-c947-4a8c-935f-dc3a8e8d89ef"
+            ],
+            "ritual_order": [
+                "urn:uuid:3fdd4bc1-4afe-486f-8768-8e276d8494d0",
+                "urn:uuid:43dbe580-35b0-4e14-bf32-8c133160fec9",
+                "urn:uuid:fd9dd11f-c868-4fa6-8230-f5a3acb03fe4",
+                "urn:uuid:f0f3d131-e08d-4f73-b06e-895207ee792e",
+                "urn:uuid:ac45ac1d-8f9f-48fb-a786-378b5d98499d",
+                "urn:uuid:08cd10f1-b9e6-461d-9ad7-0a26c0eb52a4",
+                "urn:uuid:32545e9b-2cf2-4e2a-b2a3-f903b534cc88",
+                "urn:uuid:61fb3d8f-7dbe-443e-87d2-9c24978d08e5",
+                "urn:uuid:fd51320c-14fe-40b1-9488-e7a4f9cffc65",
+                "urn:uuid:65fd0a18-4196-4d89-b648-49e350fe6dc7"
+            ],
+            "expanded_children": [
+                "urn:uuid:cc12b41f-7d51-4caf-80d1-f8d358a0f40f",
+                "urn:uuid:e58a1b5d-0685-4d92-a8b0-e7a18d01a5b1",
+                "urn:uuid:0104a2e6-616f-4da1-b7ef-c0ea8220a1b9"
+            ],
+            "show_hidden_items": null,
+            "focusR": null,
+            "log": null,
+            "highlevel_groups": null,
+            "note_last_updated": null,
+            "recurring_order": [
+                "urn:uuid:c0018b64-a664-4e80-8475-c052cece602a",
+                "urn:uuid:c2ee5113-f3a5-46e9-bc8a-50ae95a493f5"
+            ],
+            "ll_version": "0.8.1",
+            "item_filters": null,
+            "ritual_tracking": []
+        }
+    },
+    {
+        "from_node_id": "urn:uuid:d6863a05-25d3-4d51-97bf-541339b3bebc",
+        "to_node_id": "urn:uuid:f3e00c63-6bd3-4af7-ad4d-d4e24ff7b276",
+        "context": {},
+        "name": "parent",
+        "kind": "edge",
+        "jid": "urn:uuid:869173b7-d029-4ed1-abc6-f0a5008f0735",
+        "j_timestamp": "2023-10-11T18:48:38.490454",
+        "j_type": "edge"
+    },
+    {
+        "name": "workette",
+        "kind": "node",
+        "jid": "urn:uuid:f3e00c63-6bd3-4af7-ad4d-d4e24ff7b276",
+        "j_timestamp": "2023-10-11T18:48:38.488562",
+        "j_type": "node",
+        "context": {
+            "name": "\ud83e\uddd1\u200d\ud83d\udcbb Jaseci Open Source\ud83e\uddd1\u200d\ud83d\udcbb",
+            "order": [],
+            "due_date": null,
+            "status": "open",
+            "snooze_till": null,
+            "color": "#50e3c2",
+            "links": "",
+            "expanded_children": [
+                "urn:uuid:017b470f-2395-4db1-b422-45c50182ebae"
+            ],
+            "note_last_updated": "2022-08-05T13:25:03.219Z",
+            "wtype": "workset",
+            "note": "",
+            "is_MIT": false,
+            "is_ritual": null,
+            "is_active": false,
+            "recurring_order": [
+                "urn:uuid:c2ee5113-f3a5-46e9-bc8a-50ae95a493f5"
+            ],
+            "run_start": "",
+            "run_time": "",
+            "highlight_type": [],
+            "focus_order": [
+                "urn:uuid:315e5f13-3279-410c-addf-d76f2199afe7",
+                "urn:uuid:64abd73c-143a-4afc-9863-d7c2aaa697b6",
+                "urn:uuid:d893718c-cdeb-426c-9688-7da150ad1de2"
+            ],
+            "ritual_order": [],
+            "ritual_streak": 0,
+            "ritual_tracking": [],
+            "ritual_history": [],
+            "at": [
+                "day",
+                "2023-10-11T00:00:00"
+            ],
+            "is_snoozed": false,
+            "is_active_ritual": false,
+            "is_scheduled_now": true,
+            "is_expired_ritual": false,
+            "is_goal_progress_manual": false,
+            "goal_progress_percentage": 0
+        }
+    }
+]

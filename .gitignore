@@ -5,6 +5,7 @@ __pycache__/
 
 # Jac compilation cache
 __jac_gen__/
+.jaseci_logs/
 
 # C extensions
 *.so

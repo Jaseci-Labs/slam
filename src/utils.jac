@@ -7,7 +7,7 @@ import:py from yaspin, yaspin;
 
 glob ACTION_SERVER_URL = "http://localhost:8000/";
 
-can wrap_test(text:str, max_length:int = 80) -> str {
+can wrap_text(text:str, max_length:int = 80) -> str {
     can wrap_line(line:str) {
         while len(line) > max_length {
             break_index = line.rfind(" ", 0, max_length);

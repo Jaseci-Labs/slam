@@ -1,0 +1,101 @@
+[
+    {
+        "name": "workette",
+        "kind": "node",
+        "jid": "urn:uuid:2ddbfdfb-bb3c-417c-89f6-2679210d5eb4",
+        "j_timestamp": "2023-10-11T18:54:35.170565",
+        "j_type": "node",
+        "context": {
+            "name": "\ud83d\udcb2Jaseci ProServ\ud83d\udcb2",
+            "order": [],
+            "due_date": null,
+            "status": "open",
+            "snooze_till": null,
+            "color": "#71f024",
+            "links": null,
+            "expanded_children": [
+                "urn:uuid:a7611ca8-9006-46ba-ae58-4e82c1911f30",
+                "urn:uuid:03ae2c59-af57-4ee6-a8d7-c71c8da1757d"
+            ],
+            "note_last_updated": null,
+            "wtype": "workset",
+            "note": "",
+            "is_MIT": false,
+            "is_ritual": null,
+            "is_active": null,
+            "recurring_order": [],
+            "run_start": null,
+            "run_time": null,
+            "highlight_type": [],
+            "focus_order": [
+                "urn:uuid:a3643f73-a9cb-4ee1-ab15-95150255babb"
+            ],
+            "ritual_order": [],
+            "ritual_streak": 0,
+            "ritual_tracking": [],
+            "ritual_history": [],
+            "at": [
+                "day",
+                "2023-10-11T00:00:00"
+            ],
+            "is_snoozed": false,
+            "is_active_ritual": false,
+            "is_scheduled_now": true,
+            "is_expired_ritual": false,
+            "is_goal_progress_manual": false,
+            "goal_progress_percentage": 0
+        }
+    },
+    {
+        "from_node_id": "urn:uuid:2ddbfdfb-bb3c-417c-89f6-2679210d5eb4",
+        "to_node_id": "urn:uuid:1315f46e-7ae8-4121-8433-d448cde71083",
+        "context": {},
+        "name": "parent",
+        "kind": "edge",
+        "jid": "urn:uuid:a5b9fd2f-230b-455d-93d0-0acca2d5e34b",
+        "j_timestamp": "2023-10-11T18:54:35.175930",
+        "j_type": "edge"
+    },
+    {
+        "name": "workette",
+        "kind": "node",
+        "jid": "urn:uuid:1315f46e-7ae8-4121-8433-d448cde71083",
+        "j_timestamp": "2023-10-11T18:54:35.171564",
+        "j_type": "node",
+        "context": {
+            "name": "\ud83d\udcb2 Tobu\ud83d\udcb2 ",
+            "order": [],
+            "due_date": null,
+            "status": "open",
+            "snooze_till": null,
+            "color": "#450658",
+            "links": null,
+            "expanded_children": null,
+            "note_last_updated": null,
+            "wtype": "workset",
+            "note": "",
+            "is_MIT": false,
+            "is_ritual": null,
+            "is_active": null,
+            "recurring_order": [],
+            "run_start": null,
+            "run_time": null,
+            "highlight_type": [],
+            "focus_order": [],
+            "ritual_order": [],
+            "ritual_streak": 0,
+            "ritual_tracking": [],
+            "ritual_history": [],
+            "at": [
+                "day",
+                "2023-10-11T00:00:00"
+            ],
+            "is_snoozed": false,
+            "is_active_ritual": false,
+            "is_scheduled_now": true,
+            "is_expired_ritual": false,
+            "is_goal_progress_manual": false,
+            "goal_progress_percentage": 0
+        }
+    }
+]
