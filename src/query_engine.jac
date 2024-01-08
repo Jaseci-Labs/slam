@@ -1,54 +1,23 @@
-import:py json;
-import:py from rag_engine, QueryEngine;
-import:py from jaseci.utils.utils, logger;
 import:py from jaseci.jsorc.live_actions, jaseci_action;
+import:py from langchain.globals, set_verbose, set_debug;
 
-glob engines = {};
+include:jac query_engine_impl;
 
-# Loads the query engine
-@jaseci_action(act_group=["query_engine"], allow_remote=True)
-can load_engine(config: dict, reload: bool = False) -> None;
-# Saves the query engine
-@jaseci_action(act_group=["query_engine"], allow_remote=True)
-can save_engine(feature_name: str, path: str) -> None;
-# Queries the query engine
-@jaseci_action(act_group=["query_engine"], allow_remote=True)
-can query(feature_name: str, query_context: dict, query:str);
-
-
-:can:load_engine(config: dict, reload: bool = False) -> None {
-    logger.info(f"Loading query engine: {config['engine_name']} for feature {config['feature_name']}");
-
-    engine_name = config['engine_name'];
-    feature_name = config['feature_name'];
-    if engine_name not in engines {
-        engines[feature_name] = QueryEngine.create(engine_name);
-        engines[feature_name].load(config);
-    }
-    elif reload {
-        engines[feature_name].load(config);
-    }
-
-    logger.info(f"Loaded query engine: {engine_name} for feature {feature_name}");
+with entry {
+    set_verbose(True);
+    set_debug(True);
 }
 
-:can:save_engine(feature_name: str, path: str) -> None {
-    logger.info(f"Saving query engine: {feature_name} to {path}");
-
-    config = engines[feature_name].save();
-    config["feature_name"] = feature_name;
-    with open(path, "w") as f{
-        json.dump(config, f, indent=2);
-    }
-    logger.info(f"Saved query engine: {feature_name} to {path}");
+obj QueryEngine {
+    can <init> (provider_name: str = "openai", model_name: str = "gpt-4") -> None;
+    can init_engine(prompt_template:str) -> None; # Initialize the engine
+    can load_chat_model() -> None; # Load a chat model
+    can query(payload: dict) -> dict; # Process a query, return a response
 }
 
-:can:query(feature_name: str, query_context: dict, query:str) {
-    logger.info(f"Querying {feature_name} with query: {query}");
-    if feature_name not in engines {
-        raise ValueError(f"Invalid feature name: {feature_name}");
-    }
-    return engines[feature_name].query(
-        payload={"query": query, "context": query_context}
-    );
-}
+glob engine = None;
+
+@jaseci_action(act_group=["query_engine"], allow_remote=True)
+can load_engine(config: dict) -> None; # Loads the query engine
+@jaseci_action(act_group=["query_engine"], allow_remote=True)
+can query(payload:dict) -> dict; # Queries the query engine

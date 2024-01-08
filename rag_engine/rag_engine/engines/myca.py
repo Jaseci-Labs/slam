@@ -65,7 +65,6 @@ class Myca(QueryEngine):
         self.chain = prompt | self.chat_model | StrOutputParser()
 
     def query(self, payload):
-        print(payload)
         # Convert currently returns  documents and doc ids
         context_str, _ = self.graph2doc.convert(payload["context"])
         context_str = "\n".join(context_str)

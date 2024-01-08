@@ -29,7 +29,7 @@ class QueryEngine(ABC):
     def query(self, payload):
         """Processing a query"""
         pass
-
+    
     def save(self, path=""):
         """Save the query engine configuration"""
         config = {}
