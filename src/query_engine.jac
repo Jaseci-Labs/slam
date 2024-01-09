@@ -13,9 +13,10 @@ obj QueryEngine {
     can init_engine(prompt_template:str) -> None; # Initialize the engine
     can load_chat_model() -> None; # Load a chat model
     can query(payload: dict) -> dict; # Process a query, return a response
+    can __repr__ -> str;
 }
 
-glob engine = None;
+glob engine = {"engine": None};
 
 @jaseci_action(act_group=["query_engine"], allow_remote=True)
 can load_engine(config: dict) -> None; # Loads the query engine

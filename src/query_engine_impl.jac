@@ -20,9 +20,10 @@ obj ChatPromptHandler:BaseCallbackHandler: {
     self.prompt = messages;
 }
 
-:obj:QueryEngine:can:<init>(provider_name: str = "openai", model_name: str = "gpt-4") {
+:obj:QueryEngine:can:<init>(provider_name: str = "openai", model_name: str = "gpt-4", temperature: float = 0.9) {
     self.provider_name = provider_name;
     self.model_name = model_name;
+    self.temperature = temperature;
     self.handler = ChatPromptHandler();
 }
 
@@ -34,9 +35,9 @@ obj ChatPromptHandler:BaseCallbackHandler: {
 
 :obj:QueryEngine:can:load_chat_model {
     if self.provider_name == "openai" {
-        return ChatOpenAI(model_name = self.model_name);
+        return ChatOpenAI(model_name = self.model_name, temperature = self.temperature);
     } elif self.provider_name == "ollama" {
-        return ChatOllama(model = self.model_name);
+        return ChatOllama(model = self.model_name, temperature = self.temperature);
     } elif self.provider_name == "llama.cpp" {
         return LlamaCpp(model = self.model_name);
     } else {
@@ -66,19 +67,24 @@ obj ChatPromptHandler:BaseCallbackHandler: {
     };
 }
 
+:obj:QueryEngine:can:__repr__ -> str {
+    return f"QueryEngine(provider_name={self.provider_name}, model_name={self.model_name})";
+}
+
 :can:load_engine(config: dict) -> None {
     provider_name = config["provider_name"];
     model_name = config["model_name"];
+    temperature = config["temperature"];
     logger.info(f"Loading query engine with {provider_name}'s {model_name} model");
 
-    engine = QueryEngine(provider_name, model_name);
-    engine.init_engine(config["prompt_template"]);
+    engine["engine"] = QueryEngine(provider_name, model_name, temperature);
+    engine["engine"].init_engine(config["prompt_template"]);
 }
 
 :can:query(payload:dict) -> dict {
     logger.info(f"Querying engine with payload: {payload}");
-    if engine is None{
+    if engine["engine"] is None{
         raise Exception("Query engine not loaded");
     }
-    return engine.query(payload);
+    return engine["engine"].query(payload);
 }
