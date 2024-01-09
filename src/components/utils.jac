@@ -7,6 +7,12 @@ import:py from yaspin, yaspin;
 
 glob ACTION_SERVER_URL = "http://localhost:8000/";
 
+can call_action(action:str, **kwargs: dict) -> dict {
+    url = f"{ACTION_SERVER_URL}{action}";
+    response = requests.post(url, json=kwargs);
+    return response.json();
+}
+
 can wrap_text(text:str, max_length:int = 80) -> str {
     can wrap_line(line:str) {
         while len(line) > max_length {
@@ -117,10 +123,3 @@ glob llms = [
     "ollama/vicuna:7b-q3_K_L",
     "ollama/vicuna:7b-q2_K"
 ];
-
-::py::
-def call_action(action, **kwargs):
-    url = f"{ACTION_SERVER_URL}{action}"
-    response = requests.post(url, json=kwargs)
-    return response.json()
-::py::
