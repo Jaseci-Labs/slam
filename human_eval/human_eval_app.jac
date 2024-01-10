@@ -6,7 +6,7 @@ import:py hashlib;
 import:py time;
 import:py os;
 
-can has_completed(worker_id: str, file_path: str = "selections.json") -> bool {
+can has_completed(worker_id: str, file_path: str) -> bool {
     try {
         with open(file_path, "r") as file {
             all_selections = json.load(file);
@@ -23,24 +23,24 @@ can has_completed(worker_id: str, file_path: str = "selections.json") -> bool {
 # }
 
 # Retrieve a unique code for the user
-can retrieve_unique_code(file_path: str = "unique_codes.json") -> str {
+can retrieve_unique_code(file_path: str = "/home/ubuntu/slam/human_eval/unique_codes.json") -> str {
     with open(file_path, "r") as file {
         unique_codes = json.load(file);
-
-    if not unique_codes:
+    }
+    if not unique_codes{
         raise Exception("No unique codes available.");
-
+    }
     # Pop the first code from the list to ensure uniqueness
     user_code = unique_codes.pop(0);
 
     # Store the updated list back to the file
-    with open(file_path, "w") as file:
+    with open(file_path, "w") as file{
         json.dump(unique_codes, file);
-
+    }
     return user_code;
 }
 
-can mark_task_completed(worker_id: str, file_path: str = "selections.json") -> None {
+can mark_task_completed(worker_id: str, completion_code:str, file_path: str ) -> None {
     try {
         with open(file_path, "r") as file {
             all_selections = json.load(file);
@@ -51,13 +51,14 @@ can mark_task_completed(worker_id: str, file_path: str = "selections.json") -> N
 
     if worker_id in all_selections {
         all_selections[worker_id][-1]["task_completed"] = True;
-        with open(file_path, "w") as file {
+        all_selections[worker_id][-1]["completion_code"] = completion_code;
+        with open(f"human_response_output/{worker_id}.json", "w") as file {
             json.dump(all_selections, file, indent=4);
         }
     }
 }
 
-can save_selection(worker_id: str, selection: dict, start_time: float, file_path: str = "selections.json") -> None {
+can save_selection(worker_id: str, selection: dict, start_time: float, file_path: str ) -> None {
     try {
         with open(file_path, "r") as file {
             all_selections = json.load(file);
@@ -106,7 +107,7 @@ can selection_made(selected_model: str, model1: str, model2: str, response1: str
         "time_spent": round(time.time() - st.session_state.start_time, 2),
         "task_completed": False
     };
-    save_selection(st.session_state.worker_id, selection_info, st.session_state.start_time);
+    save_selection(st.session_state.worker_id, selection_info, st.session_state.start_time,f"human_response_output/{st.session_state.worker_id}.json");
     st.session_state.start_time = time.time();
     next_pair();
     st.session_state.button_lock = False;  # Unlock the buttons
@@ -146,6 +147,7 @@ can read_responses(directory: str) -> dict {
 
 can main {
     # Initialize the session state variables
+    st.set_page_config(layout="wide");
     if "current_combination_index" not in st.session_state {
         st.session_state.current_combination_index = 0;
         st.session_state.task_completed = False;
@@ -169,14 +171,14 @@ can main {
 
     # Display the prompt
     prompt_container = st.container();
-    prompt_container.text_area("Prompt", value=prompt, height=150, max_chars=None, key=None, help=None, disabled=True);
+    prompt_container.text_area("Prompt", value=prompt, height=220, max_chars=None, key=None, help=None, disabled=True);
 
 
 
     # MTurk Worker ID input
     if not st.session_state.worker_id {
         worker_id = prompt_container.text_input("Please enter your MTurk Worker ID to start the task.", key="input_worker_id");
-        if worker_id and has_completed(worker_id) {
+        if worker_id and has_completed(worker_id,f"human_response_output/{worker_id}.json") {
             st.error("This Worker ID has already completed the task.");
         } elif worker_id {
             # Only proceed if the worker hasn't completed the task
@@ -187,7 +189,7 @@ can main {
         }
     }
 
-    # Logic for model comparison and evaluation
+    # Logic for model comparison and evaluation 
     if st.session_state.worker_id {
         if not st.session_state.task_completed {
             if not st.session_state.current_model_responses {
@@ -212,7 +214,7 @@ can main {
 
             with col1 {
                 st.subheader("Response 1");
-                st.text_area("First Model's Response", value=models[0]["response"], height=150, disabled=True);
+                st.text_area("First Model's Response", value=models[0]["response"], height=200, disabled=True);
                 if st.button("Response 1 is better", key="btn1") {
                     selection_made(models[0], models[0], models[1], models[0]["response"], models[1]["response"], prompt);
                 }
@@ -220,7 +222,7 @@ can main {
 
             with col2 {
                 st.subheader("Response 2");
-                st.text_area("Second Model's Response", value=models[1]["response"], height=150, disabled=True);
+                st.text_area("Second Model's Response", value=models[1]["response"], height=200, disabled=True);
                 if st.button("Response 2 is better", key="btn2") {
                     selection_made(models[1], models[0], models[1], models[0]["response"], models[1]["response"], prompt);
                 }
@@ -232,7 +234,7 @@ can main {
         } else {
             # Task completed: display completion code
             completion_code = retrieve_unique_code();
-            mark_task_completed(st.session_state.worker_id);
+            mark_task_completed(st.session_state.worker_id, completion_code,f"human_response_output/{st.session_state.worker_id}.json");
             prompt_container.empty();
             st.success("The task has been completed.");
             st.write("Your completion code is:", completion_code);
