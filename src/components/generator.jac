@@ -2,8 +2,11 @@ import:py streamlit as st;
 import:jac from components.utils, load_engine, run_inference, llms, check_query_engine, check_ollama_server;
 import:py uuid;
 import:py re;
+import:py os;
+import:py json;
 
 with entry {
+    os.makedirs('runs', exist_ok=True);
     if "run_id" not in st.session_state {
         st.session_state["run_id"] = uuid.uuid4();
     }
@@ -54,6 +57,7 @@ can generator {
     if len(selected_models) > 0 and prompt_template and all([x for x in arguments.values()]) {
         st.caption('Click the button below to generate the responses. This may take a while.');
         if st.button('Generate Responses') {
+            os.makedirs(os.path.join("runs", st.session_state["run_id"]), exist_ok=True);
             for model in selected_models {
                 (provider_name, model_name) = model.split('/');
                 engine_loaded = False;
@@ -64,6 +68,9 @@ can generator {
                     with st.spinner(f"Generating responses for model {model_name}...") {
                         response = run_inference(model_name, n_samples, arguments);
                         st.success(f"Average Time Taken: {response['avg_time']}s for model {model_name}");
+                        with open(os.path.join("runs", st.session_state["run_id"], f"{model_name}.json"), 'w') as f {
+                            json.dump(response, f, indent=2);
+                        }
                     }
                 } else {
                     st.error(f"Failed to load model {model_name}");

@@ -9,7 +9,7 @@ with entry {
 }
 
 obj QueryEngine {
-    can <init> (provider_name: str = "openai", model_name: str = "gpt-4") -> None;
+    can <init> (provider_name: str = "openai", model_name: str = "gpt-4", temperature: float = 0.9) -> None;
     can init_engine(prompt_template:str) -> None; # Initialize the engine
     can load_chat_model() -> None; # Load a chat model
     can query(payload: dict) -> dict; # Process a query, return a response
