@@ -3,17 +3,12 @@ include:jac components.theme;
 include:jac components.generator;
 include:jac components.setup;
 
-with entry {
+can main {
     if "admin_privileges" not in st.session_state {
         st.session_state.admin_privileges = False;
     } 
-}
-
-can main {
     (human_eval_tab, admin_tab) = st.tabs(["Human Evaluation", "Admin Panel"]);
-    with human_eval_tab {
-        st.header("Human Evaluation");
-    }
+    with human_eval_tab {st.header("Human Evaluation");}
     with admin_tab {
         if not st.session_state.admin_privileges {
             with st.form(key='my_form') {
