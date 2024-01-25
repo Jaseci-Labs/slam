@@ -3,6 +3,7 @@ import:py json;
 import:py os;
 import:py shutil;
 import:py time;
+import:py streamlit as st;
 import:py from yaspin, yaspin;
 
 glob ACTION_SERVER_URL = "http://localhost:8000/";
@@ -83,3 +84,15 @@ glob llms = [
     "ollama/openchat:7b-v3.5",
     "ollama/vicuna:7b"
 ];
+
+can login {
+    with st.form(key='my_form') {
+        username = st.text_input('Username');
+        password = st.text_input('Password');
+        if st.form_submit_button('Login') {
+            if username == os.environ.get("SLAM_ADMIN_USERNAME", "admin") and password == os.environ.get("SLAM_ADMIN_PASSWORD", "admin"){
+                st.session_state.admin_privileges = True;
+            }
+        }
+    }
+}

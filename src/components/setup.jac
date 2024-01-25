@@ -22,9 +22,11 @@ can setup {
     st.header("Human Evaluation Setup");
     st.caption("This is the setup page for the human eval. You can change the configuration and then click save to save the configuration.");
 
-    hv_method = hv_evaluation_method_selector();
-    (n_options, n_workers, ability_to_tie, data_source, n_questions_per_worker, k) = hv_configurator();
-    add_data_sources();
+    with st.container(border=True) {hv_method = hv_evaluation_method_selector();}
+    with st.container(border=True) {
+        (n_options, n_workers, ability_to_tie, data_source, n_questions_per_worker, k) = hv_configurator();
+        add_data_sources();
+    }
     if data_source {
         if st.button("Save"){
             config = {
@@ -80,10 +82,10 @@ can setup {
     (hv_method_col, hv_method_view_col) = st.columns(2);
     with hv_method_col {
         hv_method = st.selectbox("Select the human evaluation method", ["A/B Testing", "A/B Testing with Criterions"], index=["A/B Testing"].index(st.session_state.config["hv_method"]));
+        st.caption(eval_methods[hv_method]["desc"]);
     }
     with hv_method_view_col {
         st.caption("The following is a preview of the human evaluation method.");
-        st.caption(eval_methods[hv_method]["desc"]);
         st.image(eval_methods[hv_method]["image"], use_column_width=True);
     }
     return hv_method;
@@ -154,7 +156,9 @@ can setup {
 :can:get_distribution (question_pairs:list, n_workers: int, n_questions_per_worker: int) {
     selected_question_pairs = random.sample(question_pairs, n_workers*n_questions_per_worker);
     random.shuffle(selected_question_pairs);
-    with open(os.path.join(".human_eval_config", "distribution.json"), "w") as f {json.dump(selected_question_pairs, f, indent=2);}
+    worker_ids = [str(uuid.uuid4()) for _ in range(n_workers)];
+    distribution = {worker_id: selected_question_pairs[i*n_questions_per_worker : (i+1)*n_questions_per_worker] for (i, worker_id) in enumerate(worker_ids)};
+    with open(os.path.join(".human_eval_config", "distribution.json"), "w") as f {json.dump(distribution, f, indent=2);}
 }
 
 :can:create_neccessary_file (data_source: list) {

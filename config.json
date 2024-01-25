@@ -1,0 +1,1 @@
+{"hv_method": "A/B Testing", "config": {"n_questions_per_worker": 10, "n_options": 2, "ability_to_tie": "Allow", "data_source": "test_data.json"}, "time_created": "25/01/2024 12:25:43"}
