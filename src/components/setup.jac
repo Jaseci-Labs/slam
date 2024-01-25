@@ -51,9 +51,10 @@ can setup {
 }
 
 :can:init {
+    os.makedirs(".human_eval_config", exist_ok=True);
     if "config" not in st.session_state {
-        if os.path.exists("config.json") {
-            config = json.load(open("config.json"));
+        if os.path.exists(os.path.join(".human_eval_config", "config.json")) {
+            config = json.load(open(os.path.join(".human_eval_config", "config.json")));
         } else {
             config = {
                 "hv_method": "A/B Testing",
@@ -153,7 +154,7 @@ can setup {
 :can:get_distribution (question_pairs:list, n_workers: int, n_questions_per_worker: int) {
     selected_question_pairs = random.sample(question_pairs, n_workers*n_questions_per_worker);
     random.shuffle(selected_question_pairs);
-    with open("distribution.json", "w") as f {json.dump(selected_question_pairs, f, indent=2);}
+    with open(os.path.join(".human_eval_config", "distribution.json"), "w") as f {json.dump(selected_question_pairs, f, indent=2);}
 }
 
 :can:create_neccessary_file (data_source: list) {
@@ -175,9 +176,9 @@ can setup {
                 models_responses[model_name] = model_responses;
             }
         }
-        with open("responses.json", "w") as f {json.dump(uid_responses, f, indent=2);}
-        with open("models_responses.json", "w") as f {json.dump(models_responses, f, indent=2);}
-        with open("prompt_info.json", "w") as f {json.dump(prompt_info, f, indent=2);}
+        json.dump(uid_responses, open(os.path.join(".human_eval_config", "responses.json"), "w"), indent=2);
+        json.dump(models_responses, open(os.path.join(".human_eval_config", "models_responses.json"), "w"), indent=2);
+        json.dump(prompt_info, open(os.path.join(".human_eval_config", "prompt_info.json"), "w"), indent=2);
     }
 
     return models_responses;
