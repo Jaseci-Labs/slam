@@ -96,7 +96,7 @@ can human_eval {
         if result {
             st.session_state.evals.append({"result": result, "time": time.time()});
             st.session_state.question_index += 1;
-            with open(f"{st.session_state.worker_id}_{st.session_state.question_set_id}.json", "w") as f {json.dump(st.session_state.evals, f, indent=2);}
+            with open(os.path.join("results", f"{st.session_state.worker_id}_{st.session_state.question_set_id}.json"), "w") as f {json.dump(st.session_state.evals, f, indent=2);}
             st.rerun();
         } else {
             st.error("Please provide answers to all questions.");
