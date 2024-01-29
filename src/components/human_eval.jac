@@ -2,9 +2,14 @@ import:py streamlit as st;
 import:py os;
 import:py json;
 import:py time;
+import:py from captcha.image, ImageCaptcha;
+import:py random;
+import:py string;
 
 can init;
 can evaluation;
+can captcha;
+can worker_id;
 
 can human_eval {
     if "config" not in st.session_state {init();}
@@ -17,10 +22,10 @@ can human_eval {
             with open(os.path.join(".human_eval_config", "prompt_info.json"), "r") as f {st.session_state.prompt_info = json.load(f);}
         }
 
-        if not st.session_state.worker_id {
-            st.caption("Please enter your worker ID to start the survey. Make sure to use the correct worker ID, otherwise you will not be paid.");
-            st.session_state.worker_id = st.text_input("Worker ID");
-            if st.session_state.worker_id {st.rerun();}
+        if not st.session_state.worker_id or not st.session_state.is_human {
+            (captcha_col, worker_id_col) = st.columns(2);
+            with captcha_col {captcha();}
+            with worker_id_col {worker_id();}
         }else {
             if st.session_state.question_index < st.session_state.config["config"]["n_questions_per_worker"] {
                 evaluation();
@@ -89,12 +94,46 @@ can human_eval {
     
     if st.button("Next Question") {
         if result {
-            st.session_state.evals.append((result, time.time()));
+            st.session_state.evals.append({"result": result, "time": time.time()});
             st.session_state.question_index += 1;
+            with open(f"{st.session_state.worker_id}_{st.session_state.question_set_id}.json", "w") as f {json.dump(st.session_state.evals, f, indent=2);}
             st.rerun();
         } else {
             st.error("Please provide answers to all questions.");
         }
+    }
+}
+
+:can:captcha {
+    with st.container(border=True) {
+        if not st.session_state.is_human {
+            st.session_state.captcha = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5)) if not st.session_state.captcha else st.session_state.captcha;
+            captcha_img = ImageCaptcha().generate(st.session_state.captcha);
+            st.image(captcha_img, caption="Please enter the captcha above to prove that you are a human.");
+            captcha_input = st.text_input("Captcha");
+            if captcha_input {
+                if captcha_input.upper() == st.session_state.captcha.upper() {
+                    st.session_state.is_human = True;
+                    st.rerun();
+                } else {
+                    st.error("Captcha is incorrect. Please try again.");
+                    if st.button("Refresh Captcha") {
+                        st.session_state.captcha = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5));
+                        st.rerun();
+                    }
+                }
+            }
+        } else {
+            st.info("You have passed the captcha test. Please enter your worker ID to start the survey.");
+        }
+    }
+}
+
+:can:worker_id {
+    with st.container(border=True) {
+        st.session_state.worker_id = st.text_input("Worker ID");
+        if st.session_state.worker_id {st.rerun();}
+        st.caption("Please enter your worker ID to start the survey. Make sure to use the correct worker ID, otherwise you will not be paid.");
     }
 }
 
@@ -107,11 +146,14 @@ can human_eval {
             st.session_state.start_time = time.time();
             st.session_state.evals = [];
             st.session_state.worker_id = None;
+            st.session_state.captcha = None;
+            st.session_state.is_human = False;
             st.session_state.question_set_id = None;
             st.session_state.question_set = None;
             st.session_state.responses = None;
             st.session_state.prompt_info = None;
         }
+        os.makedirs("results", exist_ok=True);
         human_eval_config = json.load(open(os.path.join(".human_eval_config", "config.json"), "r"));
         if os.path.exists(os.path.join(".human_eval_config", "worker_count.txt")) {
             with open(os.path.join(".human_eval_config", "worker_count.txt"), "r") as f {current_count = int(f.read());}

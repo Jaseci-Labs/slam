@@ -6,6 +6,7 @@ import:jac from components.setup, setup;
 import:jac from components.human_eval, human_eval;
 import:jac from components.dashboard, dashboard;
 import:jac from components.llm_eval, evaluator;
+import:jac from components.about, about;
 
 with entry {
     st.set_page_config(page_title="SLaM Tool", page_icon=":robot_face:", layout="wide");
@@ -13,7 +14,7 @@ with entry {
 
 can main {
     if "admin_privileges" not in st.session_state {st.session_state.admin_privileges = False;} 
-    (human_eval_tab, admin_tab) = st.tabs(["Human Evaluation", "Admin Panel"]);
+    (human_eval_tab, admin_tab, about_tab) = st.tabs(["Human Evaluation", "Admin Panel", "About"]);
     with human_eval_tab {human_eval();}
     with admin_tab {
         if not st.session_state.admin_privileges {login();}
@@ -26,4 +27,5 @@ can main {
             with setup_tab {setup();}
         }
     }
+    with about_tab {about();}
 }

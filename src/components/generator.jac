@@ -1,5 +1,5 @@
 import:py streamlit as st;
-import:jac from components.utils, load_engine, run_inference, llms, check_query_engine, check_ollama_server;
+import:jac from utils, load_engine, run_inference, llms, check_query_engine, check_ollama_server;
 import:py uuid;
 import:py re;
 import:py os;

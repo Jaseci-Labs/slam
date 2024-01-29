@@ -81,7 +81,7 @@ can setup {
     st.subheader("Human Evaluation Method");
     (hv_method_col, hv_method_view_col) = st.columns(2);
     with hv_method_col {
-        hv_method = st.selectbox("Select the human evaluation method", ["A/B Testing", "A/B Testing with Criterions"], index=["A/B Testing"].index(st.session_state.config["hv_method"]));
+        hv_method = st.selectbox("Select the human evaluation method", list(eval_methods.keys()), index=list(eval_methods.keys()).index(st.session_state.config["hv_method"]));
         st.caption(eval_methods[hv_method]["desc"]);
     }
     with hv_method_view_col {

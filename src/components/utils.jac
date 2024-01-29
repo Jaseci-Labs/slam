@@ -86,12 +86,16 @@ glob llms = [
 ];
 
 can login {
-    with st.form(key='my_form') {
-        username = st.text_input('Username');
-        password = st.text_input('Password');
-        if st.form_submit_button('Login') {
-            if username == os.environ.get("SLAM_ADMIN_USERNAME", "admin") and password == os.environ.get("SLAM_ADMIN_PASSWORD", "admin"){
-                st.session_state.admin_privileges = True;
+    (logo_col, login_col) = st.columns(2);
+    with logo_col {st.image("https://i.imgur.com/2zY7Z4A.png", width=200);}
+    with login_col {
+        with st.form(key='my_form') {
+            username = st.text_input('Username');
+            password = st.text_input('Password');
+            if st.form_submit_button('Login') {
+                if username == os.environ.get("SLAM_ADMIN_USERNAME", "admin") and password == os.environ.get("SLAM_ADMIN_PASSWORD", "admin"){
+                    st.session_state.admin_privileges = True;
+                }
             }
         }
     }
