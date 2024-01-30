@@ -7,15 +7,15 @@ import:py math;
 import:py itertools;
 import:py random;
 
-can sanity_check (n_models: int, n_workers: int, n_questions_per_worker: int);
-can get_question_pairs (models_responses: dict, k:int);
+can sanity_check (n_models: int, n_usecases: int, n_workers: int, n_questions_per_worker: int);
+can get_question_pairs (models_responses_all: dict);
 can get_distribution (question_pairs:list, n_workers: int, n_questions_per_worker: int);
 
 can init;
 can hv_evaluation_method_selector;
 can hv_configurator;
 can add_data_sources;
-can create_neccessary_file (data_source: list);
+can create_neccessary_file (data_sources: list, k:int);
 
 can setup {
     init();
@@ -24,27 +24,29 @@ can setup {
 
     with st.container(border=True) {hv_method = hv_evaluation_method_selector();}
     with st.container(border=True) {
-        (n_options, n_workers, ability_to_tie, data_source, n_questions_per_worker, k) = hv_configurator();
+        (n_options, n_workers, ability_to_tie, data_sources, n_questions_per_worker, k) = hv_configurator();
         add_data_sources();
     }
-    if data_source {
+    if data_sources {
         if st.button("Save"){
             config = {
                 "hv_method": hv_method,
                 "config": {
+                    "n_workers": n_workers,
                     "n_questions_per_worker": n_questions_per_worker,
                     "n_options": n_options,
                     "ability_to_tie": ability_to_tie,
-                    "data_source": data_source
+                    "data_sources": data_sources
                 },
                 "time_created": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             };
-            models_responses = create_neccessary_file(data_source);
-            question_pairs = get_question_pairs(models_responses, k);
+            st.session_state.config = config;
+            models_responses_all = create_neccessary_file(data_sources, k);
+            question_pairs = get_question_pairs(models_responses_all);
             get_distribution(question_pairs, n_workers, n_questions_per_worker);
             st.toast("Created necessary files!");
             st.session_state.config = config;
-            json.dump(config, open("config.json", "w"));
+            json.dump(config, open(os.path.join(".human_eval_config", "config.json"), "w"));
             st.toast("Saved!");
         }
     } else {
@@ -61,10 +63,11 @@ can setup {
             config = {
                 "hv_method": "A/B Testing",
                 "config": {
-                    "n_queries": 10,
+                    "n_workers": 100,
+                    "n_questions_per_worker": 10,
                     "n_options": 2,
                     "ability_to_tie": "Allow",
-                    "data_source": None
+                    "data_sources": None
                 }
             };
         }
@@ -91,30 +94,33 @@ can setup {
     return hv_method;
 }
 
-:can:sanity_check (n_models: int, n_workers: int, n_questions_per_worker: int) {
+:can:sanity_check (n_models: int, n_usecases: int, n_workers: int, n_questions_per_worker: int) {
     n_model_pairs = n_models * (n_models - 1) / 2;
-    min_n_responses_needed_per_model = int(math.ceil(math.sqrt(n_workers * n_questions_per_worker / float(n_model_pairs))));
+    min_n_responses_needed_per_model = int(math.ceil(math.sqrt(n_workers * n_questions_per_worker / n_usecases / float(n_model_pairs))));
     return (min_n_responses_needed_per_model, n_model_pairs);
 }
 
 :can:hv_configurator {
     st.subheader("Human Evaluation Configuration");
-    (hv_config_col, hv_config2_col) = st.columns(2);
-    with hv_config_col {
+    (hv_config_1_col, hv_config_2_col, hv_config_3_col) = st.columns(3);
+    with hv_config_1_col {
         n_options = st.number_input("Number of options", min_value=2, max_value=5, value=st.session_state.config["config"]["n_options"], step=1);
-        n_workers = st.number_input("Number of workers", min_value=10, max_value=2000, step=1);
-
+        n_workers = st.number_input("Number of workers", min_value=10, step=1, value=st.session_state.config["config"]["n_workers"]);
+        n_questions_per_worker = st.number_input("Number of questions per worker", min_value=2, max_value=100, step=1, value=st.session_state.config["config"]["n_questions_per_worker"]);
+    }
+    with hv_config_2_col {
         json_files = [f for f in os.listdir("data") if f.endswith(".json")] if os.path.exists("data") else [];
-        data_source = st.selectbox("Data source", json_files) if json_files else None;
+        data_sources =  st.multiselect("Data sources (Usecases)", json_files, default=st.session_state.config["config"]["data_sources"]);
         ability_to_tie = st.selectbox("Ability to tie", ["Allow", "Not Allowed"], index=["Allow", "Not Allowed"].index(st.session_state.config["config"]["ability_to_tie"])) if n_options == 2 else "Not Allowed";
     }
-    with hv_config2_col {
+    with hv_config_3_col {
         if n_options == 2 {
             n_models = st.number_input("Number of models", min_value=2, max_value=100, step=1);
-            n_questions_per_worker = st.number_input("Number of questions per worker", min_value=2, max_value=100, step=1, value=st.session_state.config["config"]["n_questions_per_worker"]);
+            n_usecases = st.number_input("Number of usecases", min_value=1, step=1);
+
             try {
-                (min_n_responses_needed_per_model, n_model_pairs) = sanity_check(n_models, n_workers, n_questions_per_worker);
-                st.write("Minimum number of responses needed per model for even distribution: ", min_n_responses_needed_per_model);
+                (min_n_responses_needed_per_model, n_model_pairs) = sanity_check(n_models, n_usecases, n_workers, n_questions_per_worker);
+                st.write("Minimum number of responses needed per model per usecase for even distribution: ", min_n_responses_needed_per_model);
                 st.write("Number of model pairs: ", n_model_pairs);
             } except ZeroDivisionError {
                 st.caption("Try Changing the number of models or the number of questions per worker.");
@@ -123,7 +129,7 @@ can setup {
             st.caption("The calculator is not available for more than 2 options.");
         }
     }
-    return (n_options, n_workers, ability_to_tie, data_source, n_questions_per_worker, min_n_responses_needed_per_model);
+    return (n_options, n_workers, ability_to_tie, data_sources, n_questions_per_worker, min_n_responses_needed_per_model);
 }
 
 :can:add_data_sources {
@@ -134,22 +140,36 @@ can setup {
             json_file = json.load(uploaded_json_file);
             json.dump(json_file, open(os.path.join("data", uploaded_json_file.name), "w"));
         }
+        st.rerun();
     }
 }
 
-:can:get_question_pairs (models_responses: dict, k:int) {
-    unique_model_pairs = list(itertools.combinations(models_responses.keys(), 2));
+:can:get_question_pairs (models_responses_all: dict) {
+    n_usecases = len(models_responses_all);
+    models = list(models_responses_all[0].keys());
+    random.shuffle(models);
+    n_workers = st.session_state.config["config"]["n_workers"];
+    n_questions_per_worker = st.session_state.config["config"]["n_questions_per_worker"];
+    unique_model_pairs = list(itertools.combinations(models, 2));
+
+    print((n_workers, n_questions_per_worker, n_usecases, len(unique_model_pairs)));
+
+    k = int(math.ceil(n_workers * n_questions_per_worker / n_usecases / float(len(unique_model_pairs))));
+    print(k);
 
     question_pairs = [];
-    for model_pair in unique_model_pairs {
-        model_a_responses = models_responses[model_pair[0]];
-        model_b_responses = models_responses[model_pair[1]];
-        unique_question_pairs = list(itertools.product(model_a_responses, model_b_responses));
-        unique_question_pairs = random.sample(unique_question_pairs, min(k**2, len(unique_question_pairs)));
-        for question_pair in unique_question_pairs {
-            question_pairs.append((model_pair, question_pair));
+    for (i, models_responses) in enumerate(models_responses_all) {
+        for model_pair in unique_model_pairs {
+            model_a_responses = models_responses[model_pair[0]];
+            model_b_responses = models_responses[model_pair[1]];
+            unique_question_pairs = list(itertools.product(model_a_responses, model_b_responses));
+            unique_question_pairs = random.sample(unique_question_pairs, k);
+            for question_pair in unique_question_pairs {
+                question_pairs.append((i, model_pair, question_pair));
+            }
         }
     }
+    print(len(question_pairs));
     return question_pairs;
 }
 
@@ -161,29 +181,36 @@ can setup {
     with open(os.path.join(".human_eval_config", "distribution.json"), "w") as f {json.dump(distribution, f, indent=2);}
 }
 
-:can:create_neccessary_file (data_source: list) {
+:can:create_neccessary_file (data_sources: list, k:int) {
     with st.spinner("Creating Necessary Files...") {
         uid_responses = {};
-        models_responses = {};
-        prompt_info = {};
-        with open(os.path.join("data", data_source)) as f {
-            data = json.load(f);
-            prompt_info["prompt"] = data["prompt"];
-            prompt_info["prompt_disc"] = data["prompt_disc"];
-            for (model_name, responses) in data["outputs"].items() {
-                model_responses = [];
-                for response in responses {
-                    uid = str(uuid.uuid4());
-                    uid_responses[uid] = response;
-                    model_responses.append(uid);
+        models_responses_all = [];
+        prompt_infos = [];
+        for data_source in data_sources {
+            prompt_info = {};
+            models_responses = {};
+            with open(os.path.join("data", data_source)) as f {
+                data = json.load(f);
+                prompt_info["prompt"] = data["prompt"];
+                prompt_info["prompt_disc"] = data["prompt_disc"];
+                for (model_name, responses) in data["outputs"].items() {
+                    assert len(responses) > k, f"Number of responses for {model_name} in {data_source} is less than {k}.";
+                    model_responses = [];
+                    for response in responses {
+                        uid = str(uuid.uuid4());
+                        uid_responses[uid] = response;
+                        model_responses.append(uid);
+                    }
+                    models_responses[model_name] = model_responses;
                 }
-                models_responses[model_name] = model_responses;
             }
+            prompt_infos.append(prompt_info);
+            models_responses_all.append(models_responses);
         }
         json.dump(uid_responses, open(os.path.join(".human_eval_config", "responses.json"), "w"), indent=2);
-        json.dump(models_responses, open(os.path.join(".human_eval_config", "models_responses.json"), "w"), indent=2);
-        json.dump(prompt_info, open(os.path.join(".human_eval_config", "prompt_info.json"), "w"), indent=2);
+        json.dump(models_responses_all, open(os.path.join(".human_eval_config", "models_responses.json"), "w"), indent=2);
+        json.dump(prompt_infos, open(os.path.join(".human_eval_config", "prompt_info.json"), "w"), indent=2);
     }
 
-    return models_responses;
+    return models_responses_all;
 }

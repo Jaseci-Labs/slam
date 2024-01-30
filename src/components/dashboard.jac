@@ -18,11 +18,13 @@ can plotly_figure;
 
 can dashboard {
     init();
-    status_indicator();
-    area_chart();
-    bar_chart();
-    line_chart();
-    altair_chart();
+    if st.session_state.get("current_hv_config", None) {
+        status_indicator();
+        area_chart();
+        bar_chart();
+        line_chart();
+        altair_chart();
+    }
 }
 
 :can:init {
