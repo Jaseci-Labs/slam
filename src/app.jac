@@ -9,10 +9,6 @@ import:jac from components.llm_eval, evaluator;
 import:jac from components.about, about;
 import:jac from components.theme, footer;
 
-with entry {
-    st.set_page_config(page_title="SLaM Tool", page_icon=":robot_face:", layout="wide");
-}
-
 can main {
     if "admin_privileges" not in st.session_state {st.session_state.admin_privileges = False;} 
     (human_eval_tab, admin_tab, about_tab) = st.tabs(["Human Evaluation", "Admin Panel", "About"]);
