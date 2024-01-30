@@ -90,7 +90,7 @@ can human_eval {
         with col_likability {with st.container(border=True) {likability = st.radio("Which is more likable?", ["Response A", "Response B", "Both"], index=None,captions=["A is more likable", "B is more likable", "Both are equally likable"]);}}
         with col_trustworthiness {with st.container(border=True) {trustworthiness = st.radio("Which is more trustworthy?", ["Response A", "Response B", "Both"], index=None,captions=["A is more trustworthy", "B is more trustworthy", "Both are equally trustworthy"]);}}
         with col_overall {with st.container(border=True) {overall = st.radio("Which is better overall?", ["Response A", "Response B", "Both"], index=None,captions=["A is better overall", "B is better overall", "Both are equally good overall"]);}}
-        if clarity and intelligence and likability and trustworthines and overall {result = (clarity, intelligence, likability, trustworthiness, overall);}
+        if clarity and intelligence and likability and trustworthiness and overall {result = (clarity, intelligence, likability, trustworthiness, overall);}
         else {result = None;}
     }
     
@@ -168,13 +168,14 @@ can human_eval {
         human_eval_config = json.load(open(os.path.join(".human_eval_config", "config.json"), "r"));
         if os.path.exists(os.path.join(".human_eval_config", "worker_count.txt")) {
             with open(os.path.join(".human_eval_config", "worker_count.txt"), "r") as f {current_count = int(f.read());}
-            with open(os.path.join(".human_eval_config", "worker_count.txt"), "w") as f {f.write(str(current_count + 1));}
+            
         } else {
             with open(os.path.join(".human_eval_config", "worker_count.txt"), "w") as f {f.write("-1");}
             current_count = -1;
         }
         st.session_state.hv_config = human_eval_config;
         st.session_state.worker_count = current_count + 1;
+        with open(os.path.join(".human_eval_config", "worker_count.txt"), "w") as f {f.write(st.session_state.worker_count);}
     }
 }
 

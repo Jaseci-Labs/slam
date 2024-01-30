@@ -41,12 +41,12 @@ can setup {
                 "time_created": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             };
             st.session_state.config = config;
+            json.dump(config, open(os.path.join(".human_eval_config", "config.json"), "w"));
+
             models_responses_all = create_neccessary_file(data_sources, k);
             question_pairs = get_question_pairs(models_responses_all);
             get_distribution(question_pairs, n_workers, n_questions_per_worker);
             st.toast("Created necessary files!");
-            st.session_state.config = config;
-            json.dump(config, open(os.path.join(".human_eval_config", "config.json"), "w"));
             st.toast("Saved!");
         }
     } else {
