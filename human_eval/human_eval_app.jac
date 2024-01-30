@@ -5,7 +5,6 @@ import:py from itertools, combinations;
 import:py hashlib;
 import:py time;
 import:py os;
-
 can has_completed(worker_id: str, file_path: str) -> bool {
     try {
         with open(file_path, "r") as file {
@@ -371,7 +370,7 @@ can main(evaluation_mode: str="All_vs_All") {
         if evaluation_mode == "GPT_4_vs_Others" {
             st.session_state.current_model_responses = evaluation_data["other_models"];
         } elif evaluation_mode == "All_vs_All" {
-            with open("distributed_combinations.json", "r") as file {
+            with open("distributed_combinations_filtered.json", "r") as file {
                 st.session_state.distributed_combinations = json.load(file);
             }
         }
@@ -388,8 +387,6 @@ can main(evaluation_mode: str="All_vs_All") {
     # Display the prompt
     prompt_container = st.container();
     prompt_container.text_area("Prompt", value=prompt, height=220, max_chars=None, key=None, help=None, disabled=True);
-
-
 
     # MTurk Worker ID input
     if "worker_id" not in st.session_state or not st.session_state.worker_id {
