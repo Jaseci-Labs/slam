@@ -71,6 +71,11 @@ ollama serve
 ```bash
 uvicorn query_engine:app --reload
 ```
+3. Environment Variables (Optional)
+```bash
+export ACTION_SERVER_URL=http://localhost:8000/
+export OLLAMA_SERVER_URL=http://localhost:11434/
+```
 
 ## Walkthrough
 TBA

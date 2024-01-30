@@ -6,8 +6,8 @@ import:py time;
 import:py streamlit as st;
 import:py from yaspin, yaspin;
 
-glob ACTION_SERVER_URL = "http://localhost:8000/";
-glob OLLAMA_SERVER_URL = "http://localhost:11434/";
+glob ACTION_SERVER_URL = os.environ.get("ACTION_SERVER_URL","http://localhost:8000/");
+glob OLLAMA_SERVER_URL = os.environ.get("OLLAMA_SERVER_URL","http://localhost:11434/");
 
 can call_action(action:str, **kwargs: dict) -> dict {
     url = f"{ACTION_SERVER_URL}{action}";
@@ -97,10 +97,12 @@ can login {
             username = st.text_input('Username');
             password = st.text_input('Password');
             if st.form_submit_button('Login') {
-                if username == os.environ.get("SLAM_ADMIN_USERNAME", "admin") and password == os.environ.get("SLAM_ADMIN_PASSWORD", "admin"){
-                    st.session_state.admin_privileges = True;
-                    st.rerun();
-                }
+                try {
+                    if username == os.environ["SLAM_ADMIN_USERNAME"] and password == os.environ.get["SLAM_ADMIN_PASSWORD"]{
+                        st.session_state.admin_privileges = True;
+                        st.rerun();
+                    } else {st.error("Invalid username or password");}
+                } except Exception as e {st.error("Admin Account not configured. Please contact the administrator.");}
             }
         }
     }
