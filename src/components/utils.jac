@@ -98,7 +98,7 @@ can login {
             password = st.text_input('Password');
             if st.form_submit_button('Login') {
                 try {
-                    if username == os.environ["SLAM_ADMIN_USERNAME"] and password == os.environ.get["SLAM_ADMIN_PASSWORD"]{
+                    if username == os.environ.get("SLAM_ADMIN_USERNAME", "admin") and password == os.environ.get("SLAM_ADMIN_PASSWORD", "admin"){
                         st.session_state.admin_privileges = True;
                         st.rerun();
                     } else {st.error("Invalid username or password");}

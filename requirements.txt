@@ -1,6 +1,7 @@
 jaseci
 jaclang
 streamlit
+yaspin
 captcha
 altair
 plotly
