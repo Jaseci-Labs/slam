@@ -1,14 +1,89 @@
 import:py streamlit as st;
 import:py os;
+import:py pandas as pd;
+import:py numpy as np;
+import:py altair as alt;
+import:py plotly.figure_factory as ff;
+import:py json;
+import:py datetime as dt;
 
-can init {
-    if os.path.exists("results") and len(os.listdir("results")) > 0 {
-        results = os.listdir("results");
+can init;
+can status_indicator;
+can area_chart;
+can bar_chart;
+can line_chart;
+can altair_chart;
+can plotly_figure;
+
+
+can dashboard {
+    init();
+    status_indicator();
+    area_chart();
+    bar_chart();
+    line_chart();
+    altair_chart();
+}
+
+:can:init {
+    if os.path.exists(os.path.join(".human_eval_config", "config.json")) {
+        st.session_state.current_hv_config = json.load(open(os.path.join(".human_eval_config", "config.json")));
+        with open(os.path.join(".human_eval_config", "worker_count.txt"), "r") as f {st.session_state.current_worker_count = int(f.read());}
     } else {
-        st.error("Results were not found. Initialize a Human Evaluation first or wait until the results are ready.");
+        st.error("Human Evaluation config was not found. Initialize a Human Evaluation first.");
+    }
+    if os.path.exists("results") and len(os.listdir("results")) > 0 {
+        st.session_state.hv_results_files = os.listdir("results");
+        # Load the Results in to session
+    } else {
+        st.error("Results were not found. Initialize a Human Evaluation first. If Initiated already, wait until the results are ready.");
     }
 }
 
-can dashboard {
-    st.title("Dashboard");
+:can:status_indicator {
+    (uptime_col, opened_col, full_output_col) = st.columns(3);
+
+    eval_start_time = st.session_state.current_hv_config["time_created"];
+    current_time = dt.datetime.now().strftime("%d/%m/%Y %H:%M:%S");
+    time_diff = dt.datetime.strptime(current_time, "%d/%m/%Y %H:%M:%S") - dt.datetime.strptime(eval_start_time, "%d/%m/%Y %H:%M:%S");
+    time_diff = f"{time_diff.days} days, {int(time_diff.seconds / 3600)} hours, {int(time_diff.seconds / 60) % 60} min";
+    with uptime_col{with st.container(border=True) {st.metric("Human Evaluation Uptime", time_diff);}}
+
+    n_workers = st.session_state.current_hv_config["config"]["n_workers"];
+    with opened_col{with st.container(border=True) {st.metric("Number of Opens", f"{st.session_state.current_worker_count}/{n_workers}");}}
+
+    with full_output_col{with st.container(border=True) {st.metric("Full Output", "Not Implemented");}}
+}
+
+:can:area_chart {
+    chart_data = pd.DataFrame(np.random.randn(20, 3), columns=["a", "b", "c"]);
+    st.area_chart(chart_data);
+}
+
+:can:bar_chart {
+    chart_data = pd.DataFrame(np.random.randn(20, 3), columns=["a", "b", "c"]);
+    st.bar_chart(chart_data);
+}
+
+:can:line_chart {
+    chart_data = pd.DataFrame(np.random.randn(20, 3), columns=["a", "b", "c"]);
+    st.line_chart(chart_data);
+}
+
+:can:altair_chart {
+    chart_data = pd.DataFrame(np.random.randn(20, 3), columns=["a", "b", "c"]);
+    c = alt.Chart(chart_data).mark_circle().encode(x="a", y="b", size="c", color="c", tooltip=["a", "b", "c"]);
+    st.altair_chart(c, use_container_width=True);
+}
+
+:can:plotly_figure {
+    x1 = np.random.randn(200) - 2;
+    x2 = np.random.randn(200);
+    x3 = np.random.randn(200) + 2;
+
+    hist_data = [x1, x2, x3];
+    group_labels = ['Group 1', 'Group 2', 'Group 3'];
+
+    fig = ff.create_distplot(hist_data, group_labels, bin_size=[.1, .25, .5]);
+    st.plotly_chart(fig, use_container_width=True);
 }

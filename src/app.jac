@@ -7,6 +7,7 @@ import:jac from components.human_eval, human_eval;
 import:jac from components.dashboard, dashboard;
 import:jac from components.llm_eval, evaluator;
 import:jac from components.about, about;
+import:jac from components.theme, footer;
 
 with entry {
     st.set_page_config(page_title="SLaM Tool", page_icon=":robot_face:", layout="wide");
@@ -28,4 +29,5 @@ can main {
         }
     }
     with about_tab {about();}
+    footer();
 }
