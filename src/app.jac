@@ -11,7 +11,8 @@ import:jac from components.theme, footer;
 
 can main {
     if "admin_privileges" not in st.session_state {st.session_state.admin_privileges = False;} 
-    (human_eval_tab, admin_tab, about_tab) = st.tabs(["Human Evaluation", "Admin Panel", "About"]);
+    # (human_eval_tab, admin_tab, about_tab) = st.tabs(["Human Evaluation", "Admin Panel", "About"]);
+    (human_eval_tab, admin_tab) = st.tabs(["Human Evaluation", "Admin Panel"]);
     with human_eval_tab {human_eval();}
     with admin_tab {
         if not st.session_state.admin_privileges {login();}
@@ -24,6 +25,6 @@ can main {
             with setup_tab {setup();}
         }
     }
-    with about_tab {about();}
+    # with about_tab {about();}
     footer();
 }

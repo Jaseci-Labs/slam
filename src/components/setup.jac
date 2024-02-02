@@ -15,7 +15,7 @@ can init;
 can hv_evaluation_method_selector;
 can hv_configurator;
 can add_data_sources;
-can create_neccessary_file (data_sources: list, k:int);
+can create_neccessary_file (data_sources: list);
 
 can setup {
     init();
@@ -24,7 +24,7 @@ can setup {
 
     with st.container(border=True) {hv_method = hv_evaluation_method_selector();}
     with st.container(border=True) {
-        (n_options, n_workers, ability_to_tie, data_sources, n_questions_per_worker, k) = hv_configurator();
+        (n_options, n_workers, ability_to_tie, data_sources, n_questions_per_worker, evenly_distributed) = hv_configurator();
         add_data_sources();
     }
     if data_sources {
@@ -36,14 +36,15 @@ can setup {
                     "n_questions_per_worker": n_questions_per_worker,
                     "n_options": n_options,
                     "ability_to_tie": ability_to_tie,
-                    "data_sources": data_sources
+                    "data_sources": data_sources,
+                    "evenly_distributed": evenly_distributed
                 },
                 "time_created": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             };
             st.session_state.config = config;
             json.dump(config, open(os.path.join(".human_eval_config", "config.json"), "w"));
 
-            models_responses_all = create_neccessary_file(data_sources, k);
+            models_responses_all = create_neccessary_file(data_sources);
             question_pairs = get_question_pairs(models_responses_all);
             get_distribution(question_pairs, n_workers, n_questions_per_worker);
             st.toast("Created necessary files!");
@@ -67,7 +68,8 @@ can setup {
                     "n_questions_per_worker": 10,
                     "n_options": 2,
                     "ability_to_tie": "Allow",
-                    "data_sources": None
+                    "data_sources": None,
+                    "evenly_distributed": False
                 }
             };
         }
@@ -112,6 +114,7 @@ can setup {
         json_files = [f for f in os.listdir("data") if f.endswith(".json")] if os.path.exists("data") else [];
         data_sources =  st.multiselect("Data sources (Usecases)", json_files, default=st.session_state.config["config"]["data_sources"]);
         ability_to_tie = st.selectbox("Ability to tie", ["Allow", "Not Allowed"], index=["Allow", "Not Allowed"].index(st.session_state.config["config"]["ability_to_tie"])) if n_options == 2 else "Not Allowed";
+        evenly_distributed = st.checkbox("Usecases are Evenly distributed among the workers", value=st.session_state.config["config"]["evenly_distributed"]);
     }
     with hv_config_3_col {
         if n_options == 2 {
@@ -129,7 +132,12 @@ can setup {
             st.caption("The calculator is not available for more than 2 options.");
         }
     }
-    return (n_options, n_workers, ability_to_tie, data_sources, n_questions_per_worker, min_n_responses_needed_per_model);
+    if evenly_distributed {
+        if not n_questions_per_worker % n_usecases == 0 {
+            st.warning("The number of questions per worker should be divisible by the number of usecases for even distribution.");
+        }
+    }
+    return (n_options, n_workers, ability_to_tie, data_sources, n_questions_per_worker, evenly_distributed);
 }
 
 :can:add_data_sources {
@@ -152,7 +160,6 @@ can setup {
     n_questions_per_worker = st.session_state.config["config"]["n_questions_per_worker"];
     unique_model_pairs = list(itertools.combinations(models, 2));
 
-    print((n_workers, n_questions_per_worker, n_usecases, len(unique_model_pairs)));
 
     k = int(math.ceil(n_workers * n_questions_per_worker / n_usecases / float(len(unique_model_pairs))));
     print(k);
@@ -169,19 +176,42 @@ can setup {
             }
         }
     }
-    print(len(question_pairs));
+    with open(os.path.join(".human_eval_config", "unique_question_pairs.json"), "w") as f {json.dump(question_pairs, f, indent=2);}
     return question_pairs;
 }
 
 :can:get_distribution (question_pairs:list, n_workers: int, n_questions_per_worker: int) {
-    selected_question_pairs = random.sample(question_pairs, n_workers*n_questions_per_worker);
-    random.shuffle(selected_question_pairs);
-    worker_ids = [str(uuid.uuid4()) for _ in range(n_workers)];
-    distribution = {worker_id: selected_question_pairs[i*n_questions_per_worker : (i+1)*n_questions_per_worker] for (i, worker_id) in enumerate(worker_ids)};
+    need_to_be_evenly_distributed = st.session_state.config["config"]["evenly_distributed"];
+    if not need_to_be_evenly_distributed {
+        selected_question_pairs = random.sample(question_pairs, n_workers*n_questions_per_worker);
+        random.shuffle(selected_question_pairs);
+        worker_ids = [str(uuid.uuid4()) for _ in range(n_workers)];
+        distribution = {worker_id: selected_question_pairs[i*n_questions_per_worker : (i+1)*n_questions_per_worker] for (i, worker_id) in enumerate(worker_ids)};
+    } else {
+        question_pairs_copy = question_pairs.copy();
+        random.shuffle(question_pairs_copy);
+        worker_ids = [str(uuid.uuid4()) for _ in range(n_workers)];
+        distribution = {worker_id: [] for worker_id in worker_ids};
+        n_usecases = len(st.session_state.config["config"]["data_sources"]);
+        questions_per_usecase_per_worker = int(n_questions_per_worker / n_usecases);
+        for worker_id in worker_ids {
+            for usecase in range(n_usecases) {
+                x = 0;
+                for (i, question_pair) in enumerate(question_pairs_copy) {
+                    if question_pair[0] == usecase {
+                        distribution[worker_id].append(question_pair);
+                        question_pairs_copy.pop(i);
+                        x += 1;
+                    }
+                    if x == questions_per_usecase_per_worker {break;}
+                }
+            }
+        }
+    }
     with open(os.path.join(".human_eval_config", "distribution.json"), "w") as f {json.dump(distribution, f, indent=2);}
 }
 
-:can:create_neccessary_file (data_sources: list, k:int) {
+:can:create_neccessary_file (data_sources: list) {
     with st.spinner("Creating Necessary Files...") {
         uid_responses = {};
         models_responses_all = [];
@@ -194,7 +224,6 @@ can setup {
                 prompt_info["prompt"] = data["prompt"];
                 prompt_info["prompt_disc"] = data["prompt_disc"];
                 for (model_name, responses) in data["outputs"].items() {
-                    assert len(responses) > k, f"Number of responses for {model_name} in {data_source} is less than {k}.";
                     model_responses = [];
                     for response in responses {
                         uid = str(uuid.uuid4());

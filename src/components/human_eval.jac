@@ -18,6 +18,7 @@ can human_eval {
             with open(os.path.join(".human_eval_config", "distribution.json"), "r") as f {all_questions = json.load(f);}
             st.session_state.question_set_id = list(all_questions.keys())[st.session_state.worker_count];
             st.session_state.question_set = all_questions[st.session_state.question_set_id];
+            random.shuffle(st.session_state.question_set);
             with open(os.path.join(".human_eval_config", "responses.json"), "r") as f {st.session_state.responses = json.load(f);}
             with open(os.path.join(".human_eval_config", "prompt_info.json"), "r") as f {st.session_state.prompt_info = json.load(f);}
         }
@@ -45,7 +46,8 @@ can human_eval {
     st.progress(st.session_state.question_index / st.session_state.hv_config["config"]["n_questions_per_worker"],
     "Question " + str(st.session_state.question_index + 1) + " / " + str(st.session_state.hv_config["config"]["n_questions_per_worker"]));
 
-    question = st.session_state.question_set[st.session_state.question_index];
+    question_index = st.session_state.question_index;
+    question = st.session_state.question_set[question_index];
     prompt_index = question[0];
     model_a = question[1][0];
     model_b = question[1][1];
@@ -53,7 +55,7 @@ can human_eval {
     model_b_respones = st.session_state.responses[question[2][1]];
 
     with st.expander("Instructions", expanded=True) {
-        st.markdown(st.session_state.prompt_info[prompt_index]["prompt_disc"]);
+        st.markdown(st.session_state.prompt_info[prompt_index]["prompt_disc"], unsafe_allow_html=True);
     }
 
     if st.session_state.hv_config["hv_method"] == "A/B Testing" {
@@ -61,9 +63,12 @@ can human_eval {
         with col_result {
             st.caption("Questions");
             with st.container(border=True) {
-                result = st.radio("Which one is better?", ["Response A", "Response B", "Both"], index=None,
-                                    captions=["A is better", "B is better", "Both are equally good"]);
+                overall = st.radio("Which one is better?", ["Response A", "Response B", "About the Same"], index=None,
+                                    captions=["A is better", "B is better", "Both are equally good"], key=f"better_{question_index}");
             }
+            feedback = st.text_area("Feedback (Optional)", height=100, key=f"feedback_{question_index}");
+            if overall and feedback {result = (overall, feedback);}
+            else {result = None;}
         }
     } else {
         (col_a, col_b) = st.columns(2);
@@ -84,17 +89,19 @@ can human_eval {
 
     if st.session_state.hv_config["hv_method"] == "A/B Testing with Criterions" {
         st.caption("Questions");
-        (col_clarity, col_intelligence, col_likability, col_trustworthiness, col_overall) = st.columns(5);
-        with col_clarity {with st.container(border=True) {clarity = st.radio("Which has more clarity?", ["Response A", "Response B", "Both"], index=None,captions=["A is clearer", "B is clearer", "Both are equally clear"]);}}
-        with col_intelligence {with st.container(border=True) {intelligence = st.radio("Which is more intelligent?", ["Response A", "Response B", "Both"], index=None,captions=["A is more intelligent", "B is more intelligent", "Both are equally intelligent"]);}}
-        with col_likability {with st.container(border=True) {likability = st.radio("Which is more likable?", ["Response A", "Response B", "Both"], index=None,captions=["A is more likable", "B is more likable", "Both are equally likable"]);}}
-        with col_trustworthiness {with st.container(border=True) {trustworthiness = st.radio("Which is more trustworthy?", ["Response A", "Response B", "Both"], index=None,captions=["A is more trustworthy", "B is more trustworthy", "Both are equally trustworthy"]);}}
-        with col_overall {with st.container(border=True) {overall = st.radio("Which is better overall?", ["Response A", "Response B", "Both"], index=None,captions=["A is better overall", "B is better overall", "Both are equally good overall"]);}}
-        if clarity and intelligence and likability and trustworthiness and overall {result = (clarity, intelligence, likability, trustworthiness, overall);}
+        (col_clarity, col_intelligence, col_likability, col_trustworthiness) = st.columns(4);
+        with col_clarity {with st.container(border=True) {clarity = st.radio("Which has more clarity?", ["Response A", "Response B", "About the Same"], index=None,captions=["A is clearer", "B is clearer", "Both are equally clear"], key=f"clarity_{question_index}");}}
+        with col_intelligence {with st.container(border=True) {intelligence = st.radio("Which is more intelligent?", ["Response A", "Response B", "About the Same"], index=None,captions=["A is more intelligent", "B is more intelligent", "Both are equally intelligent"], key=f"intelligence_{question_index}");}}
+        with col_likability {with st.container(border=True) {likability = st.radio("Which is more likable?", ["Response A", "Response B", "About the Same"], index=None,captions=["A is more likable", "B is more likable", "Both are equally likable"], key=f"likability_{question_index}");}}
+        with col_trustworthiness {with st.container(border=True) {trustworthiness = st.radio("Which is more trustworthy?", ["Response A", "Response B", "About the Same"], index=None,captions=["A is more trustworthy", "B is more trustworthy", "Both are equally trustworthy"], key=f"trustworthiness_{question_index}");}}
+        (col_overall, col_feedback) = st.columns(2);
+        with col_overall {with st.container(border=True) {overall = st.radio("Which is better overall?", ["Response A", "Response B", "About the Same"], index=None,captions=["A is better overall", "B is better overall", "Both are equally good overall"], key=f"overall_{question_index}");}}
+        with col_feedback {with st.container(border=True) {feedback = st.text_area("Reasoning behind your choice", key=f"feedback_{question_index}");}}
+        if clarity and intelligence and likability and trustworthiness and overall and feedback {result = (clarity, intelligence, likability, trustworthiness, overall, feedback);}
         else {result = None;}
     }
     
-    if st.button("Next Question") {
+    if st.button("Next Question", <>type="primary") {
         if result {
             st.session_state.evals.append({"result": result, "time": time.time()});
             st.session_state.question_index += 1;
@@ -175,7 +182,7 @@ can human_eval {
         }
         st.session_state.hv_config = human_eval_config;
         st.session_state.worker_count = current_count + 1;
-        with open(os.path.join(".human_eval_config", "worker_count.txt"), "w") as f {f.write(st.session_state.worker_count);}
+        with open(os.path.join(".human_eval_config", "worker_count.txt"), "w") as f {f.write(str(st.session_state.worker_count));}
     }
 }
 
