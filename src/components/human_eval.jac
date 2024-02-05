@@ -101,7 +101,7 @@ can human_eval {
         else {result = None;}
     }
     
-    if st.button("Next Question", <>type="primary") {
+    if st.button("Next Question", <>type="primary", key=f"next_{question_index}") {
         if result {
             st.session_state.evals.append({"result": result, "time": time.time()});
             st.session_state.question_index += 1;
@@ -115,6 +115,8 @@ can human_eval {
                     "question_index": st.session_state.question_index
                 }, f, indent=2);
             }
+            st.components.v1.html("<script>window.parent.document.querySelector('section.main').scrollTo(-1, -1);</script>", height=0);
+            time.sleep(0.5);
             st.rerun();
         } else {
             st.error("Please provide answers to all questions.");
