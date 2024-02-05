@@ -66,7 +66,7 @@ can human_eval {
                 overall = st.radio("Which one is better?", ["Response A", "Response B", "About the Same"], index=None,
                                     captions=["A is better", "B is better", "Both are equally good"], key=f"better_{question_index}");
             }
-            feedback = st.text_area("Feedback (Optional)", height=100, key=f"feedback_{question_index}");
+            feedback = st.text_area("Feedback", height=100, key=f"feedback_{question_index}");
             if overall and feedback {result = (overall, feedback);}
             else {result = None;}
         }
