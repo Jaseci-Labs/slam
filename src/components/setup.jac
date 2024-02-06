@@ -24,7 +24,7 @@ can setup {
 
     with st.container(border=True) {hv_method = hv_evaluation_method_selector();}
     with st.container(border=True) {
-        (n_options, n_workers, ability_to_tie, data_sources, n_questions_per_worker, evenly_distributed) = hv_configurator();
+        (n_options, n_workers, ability_to_tie, data_sources, n_questions_per_worker, evenly_distributed, show_captcha) = hv_configurator();
         add_data_sources();
     }
     if data_sources {
@@ -37,7 +37,8 @@ can setup {
                     "n_options": n_options,
                     "ability_to_tie": ability_to_tie,
                     "data_sources": data_sources,
-                    "evenly_distributed": evenly_distributed
+                    "evenly_distributed": evenly_distributed,
+                    "show_captcha": show_captcha
                 },
                 "time_created": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             };
@@ -69,7 +70,8 @@ can setup {
                     "n_options": 2,
                     "ability_to_tie": "Allow",
                     "data_sources": None,
-                    "evenly_distributed": False
+                    "evenly_distributed": False,
+                    "show_captcha": True
                 }
             };
         }
@@ -109,6 +111,7 @@ can setup {
         n_options = st.number_input("Number of options", min_value=2, max_value=5, value=st.session_state.config["config"]["n_options"], step=1);
         n_workers = st.number_input("Number of workers", min_value=10, step=1, value=st.session_state.config["config"]["n_workers"]);
         n_questions_per_worker = st.number_input("Number of questions per worker", min_value=2, max_value=100, step=1, value=st.session_state.config["config"]["n_questions_per_worker"]);
+        show_captcha = st.checkbox("Show Captcha", value=st.session_state.config["config"]["show_captcha"]);
     }
     with hv_config_2_col {
         json_files = [f for f in os.listdir("data") if f.endswith(".json")] if os.path.exists("data") else [];
@@ -137,7 +140,7 @@ can setup {
             st.warning("The number of questions per worker should be divisible by the number of usecases for even distribution.");
         }
     }
-    return (n_options, n_workers, ability_to_tie, data_sources, n_questions_per_worker, evenly_distributed);
+    return (n_options, n_workers, ability_to_tie, data_sources, n_questions_per_worker, evenly_distributed, show_captcha);
 }
 
 :can:add_data_sources {
