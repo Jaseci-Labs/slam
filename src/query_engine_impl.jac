@@ -5,6 +5,7 @@ import:py from langchain.schema.output_parser, StrOutputParser;
 import:py from langchain.callbacks, get_openai_callback;
 import:py from langchain.callbacks.base, BaseCallbackHandler;
 import:py from jaseci.utils.utils, logger;
+import:py ollama;
 
 obj ChatPromptHandler:BaseCallbackHandler: {
     can <init>;
@@ -37,6 +38,7 @@ obj ChatPromptHandler:BaseCallbackHandler: {
     if self.provider_name == "openai" {
         return ChatOpenAI(model_name = self.model_name, temperature = self.temperature);
     } elif self.provider_name == "ollama" {
+        if self.model_name not in ollama.list()['models'] {ollama.pull(self.model_name);}
         return ChatOllama(model = self.model_name, temperature = self.temperature);
     } elif self.provider_name == "llama.cpp" {
         return LlamaCpp(model = self.model_name);
