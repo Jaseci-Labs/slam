@@ -182,6 +182,7 @@ can human_eval {
             with open(os.path.join(".human_eval_config", "worker_count.txt"), "w") as f {f.write("-1");}
             current_count = -1;
         }
+        if not human_eval_config["config"]["show_captcha"] {st.session_state.is_human = True;}
         st.session_state.hv_config = human_eval_config;
         st.session_state.worker_count = current_count + 1;
         with open(os.path.join(".human_eval_config", "worker_count.txt"), "w") as f {f.write(str(st.session_state.worker_count));}
