@@ -35,6 +35,15 @@ can human_eval {
                 st.markdown("You have completed all the questions.");
                 st.markdown("Please copy the following code and paste it in the form to receive your payment.");
                 st.markdown("```\n" + st.session_state.question_set_id + "\n```");
+                if st.button("Do it again") {
+                    with open(os.path.join(".human_eval_config", "worker_count.txt"), "r") as f {current_count = int(f.read());}
+                    st.session_state.worker_count = current_count + 1;
+                    st.session_state.question_set_id = None;
+                    st.session_state.question_index = 0;
+                    st.session_state.start_time = time.time();
+                    st.session_state.evals = [];
+                    st.rerun();
+                }
             }
         }
     } else {
@@ -177,7 +186,6 @@ can human_eval {
         human_eval_config = json.load(open(os.path.join(".human_eval_config", "config.json"), "r"));
         if os.path.exists(os.path.join(".human_eval_config", "worker_count.txt")) {
             with open(os.path.join(".human_eval_config", "worker_count.txt"), "r") as f {current_count = int(f.read());}
-            
         } else {
             with open(os.path.join(".human_eval_config", "worker_count.txt"), "w") as f {f.write("-1");}
             current_count = -1;
