@@ -38,6 +38,7 @@ can human_eval {
                 if st.button("Do it again") {
                     with open(os.path.join(".human_eval_config", "worker_count.txt"), "r") as f {current_count = int(f.read());}
                     st.session_state.worker_count = current_count + 1;
+                    with open(os.path.join(".human_eval_config", "worker_count.txt"), "w") as f {f.write(str(st.session_state.worker_count));}
                     st.session_state.question_set_id = None;
                     st.session_state.question_index = 0;
                     st.session_state.start_time = time.time();
