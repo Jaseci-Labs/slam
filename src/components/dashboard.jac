@@ -6,6 +6,8 @@ import:py altair as alt;
 import:py plotly.figure_factory as ff;
 import:py json;
 import:py datetime as dt;
+import:py from py_utils, evaluate_responses;
+import:py from py_utils, generate_heatmaps, plot_stacked_bar_chart;
 
 can init;
 can status_indicator;
@@ -14,16 +16,24 @@ can bar_chart;
 can line_chart;
 can altair_chart;
 can plotly_figure;
+can heat_map;
+can stacked_bar_chart;
 
 
 can dashboard {
     init();
     if st.session_state.get("current_hv_config", None) {
         status_indicator();
-        area_chart();
-        bar_chart();
-        line_chart();
-        altair_chart();
+        chart_type = st.selectbox("Select a chart type:", ("Area Chart", "Bar Chart", "Line Chart", "Altair Chart", "Plotly Figure", "Heat Map","Stacked Bar Chart"));
+
+        # Conditional rendering based on the dropdown selection
+        if chart_type == "Area Chart"{area_chart();}
+        elif chart_type == "Bar Chart"{bar_chart();}
+        elif chart_type == "Line Chart"{line_chart();}
+        elif chart_type == "Altair Chart"{altair_chart();}
+        elif chart_type == "Plotly Figure"{plotly_figure();}
+        elif chart_type == "Heat Map"{heat_map();}
+        elif chart_type == "Stacked Bar Chart"{stacked_bar_chart();}
     }
 }
 
@@ -88,4 +98,20 @@ can dashboard {
 
     fig = ff.create_distplot(hist_data, group_labels, bin_size=[.1, .25, .5]);
     st.plotly_chart(fig, use_container_width=True);
+}
+
+:can:heat_map {
+    workers_data_dir = "/home/ubuntu/slam2/slam/results";
+    distribution_file = "/home/ubuntu/slam2/slam/.human_eval_config/distribution.json";
+    response_file = "/home/ubuntu/slam2/slam/.human_eval_config/responses.json";
+    formatted_data = evaluate_responses(workers_data_dir, distribution_file,response_file=response_file);
+    generate_heatmaps(formatted_data,"new_heat_map");
+}
+
+:can:stacked_bar_chart {
+    workers_data_dir = "/home/ubuntu/slam2/slam/results";
+    distribution_file = "/home/ubuntu/slam2/slam/.human_eval_config/distribution.json";
+    response_file = "/home/ubuntu/slam2/slam/.human_eval_config/responses.json";
+    formatted_data = evaluate_responses(workers_data_dir, distribution_file,response_file=response_file);
+    plot_stacked_bar_chart(formatted_data);
 }
