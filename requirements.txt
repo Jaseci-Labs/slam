@@ -8,3 +8,4 @@ plotly
 ollama
 langchain==0.0.354
 openai
+pydrive
