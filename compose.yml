@@ -1,0 +1,11 @@
+services:
+  lame-tool:
+    build: .
+    ports:
+      - "5000:8501"
+    environment:
+      - SLAM_ADMIN_USERNAME=username
+      - SLAM_ADMIN_PASSWORD=password
+      - SLAM_PROJECT_ID=project_id
+    volumes:
+      - ./results:/app/results

@@ -26,19 +26,13 @@ you understand the performance of the LLMs.
 Step 1: Pull the docker image from the docker hub
 
 ```bash
-docker pull jaseci/slam-tool:latest
-```
-
-or
-
-```bash
 docker build -t jaseci/slam-tool:latest .
 ```
 
 Step 2: add the following environment variables to the container to setup the admin panel
 
 ```bash
-docker run -p 8501:8501 -e SLAM_ADMIN_USERNAME=<user_name> -e SLAM_ADMIN_PASSWORD=<password> jaseci/slam-tool:latest
+docker run -p 8501:8501 -e SLAM_ADMIN_USERNAME=<user_name> -e SLAM_ADMIN_PASSWORD=<password> SLAM_PROJECT_ID=<projectname> jaseci/slam-tool:latest
 ```
 
 Step 3: Open the browser and go to the following link
@@ -73,6 +67,7 @@ Step 4: Setup the environment variables
 ```bash
 export SLAM_ADMIN_USERNAME=<user_name>
 export SLAM_ADMIN_PASSWORD=<password>
+export SLAM_PROJECT_ID=<project_id>
 ```
 
 Step 5: Run the application
