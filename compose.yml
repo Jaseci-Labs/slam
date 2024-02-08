@@ -8,4 +8,4 @@ services:
       - SLAM_ADMIN_PASSWORD=password
       - SLAM_PROJECT_ID=project_id
     volumes:
-      - ./results:/app/results
+      - /home/ubuntu/chandra/slam/results:/app/results

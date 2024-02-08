@@ -79,6 +79,7 @@ can human_eval {
     }
 
     if st.session_state.hv_config["hv_method"] == "A/B Testing" {
+        st.markdown("You are given two responses below, Select which one you prefer.");
         (col_a, col_result, col_b) = st.columns(3);
         with col_result {
             st.caption("Questions");
@@ -91,6 +92,7 @@ can human_eval {
             else {result = None;}
         }
     } else {
+        st.markdown("You are given two responses below, evaluate them based on the criterias below.");
         (col_a, col_b) = st.columns(2);
     }
     

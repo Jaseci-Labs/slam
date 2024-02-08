@@ -5,6 +5,7 @@ yaspin
 captcha
 altair
 plotly
+seaborn
 ollama
 langchain==0.0.354
 openai
