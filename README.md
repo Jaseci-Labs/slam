@@ -108,6 +108,24 @@ export ACTION_SERVER_URL=http://localhost:8000/
 export OLLAMA_SERVER_URL=http://localhost:11434/
 ```
 
+## Tips and Tricks
+
+### Continuos Backup of Results
+
+if you want to have continuos backup of the results to a google drive folder. You can do the following.
+
+Step 1: Set the Google Drive folder id as a environment variable
+```bash
+export GDRIVE_FOLDER_ID=<folder_id>
+```
+
+Step 2: Initiate a CRON Job to run the `scripts/results2drive.py` every 5 minutes. Make sure to have a oauth files (`setting.yaml` and `credentials.json`) in the folder you initiate the cron job.
+```bash
+*/5 * * * * /path/to/python scripts/results2drive.py
+```
+
+Follow the [PyDrive OAuth](https://pythonhosted.org/PyDrive/oauth.html) to setup the oauth files.
+
 ## Walkthrough
 
 TBA

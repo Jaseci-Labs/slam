@@ -5,6 +5,8 @@ results/
 test.ipynb
 test.py
 .human_eval_config
+credentials.json
+settings.yaml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
