@@ -44,7 +44,7 @@ can human_eval {
                 st.markdown("Thank you for your participation!");
                 st.markdown("You have completed all the questions.");
                 st.markdown("Please copy the following code and paste it in the form to receive your payment.");
-                st.markdown("```\n" + st.session_state.question_set_id + "\n```");
+                st.markdown("```\n" + st.session_state.hv_config["config"]["completion_code"] + "\n```");
                 if st.button("Do it again") {
                     with open(os.path.join(".human_eval_config", "worker_count.txt"), "r") as f {current_count = int(f.read());}
                     st.session_state.worker_count = current_count + 1;

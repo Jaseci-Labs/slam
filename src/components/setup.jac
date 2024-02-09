@@ -27,6 +27,7 @@ can setup {
         (n_options, n_workers, ability_to_tie, data_sources, n_questions_per_worker, evenly_distributed, show_captcha) = hv_configurator();
         add_data_sources();
     }
+
     if data_sources {
         if st.button("Save"){
             config = {
@@ -38,7 +39,8 @@ can setup {
                     "ability_to_tie": ability_to_tie,
                     "data_sources": data_sources,
                     "evenly_distributed": evenly_distributed,
-                    "show_captcha": show_captcha
+                    "show_captcha": show_captcha,
+                    "completion_code": str(uuid.uuid4())
                 },
                 "time_created": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             };
@@ -71,7 +73,8 @@ can setup {
                     "ability_to_tie": "Allow",
                     "data_sources": None,
                     "evenly_distributed": False,
-                    "show_captcha": True
+                    "show_captcha": True,
+                    "completion_code": str(uuid.uuid4())
                 }
             };
         }
