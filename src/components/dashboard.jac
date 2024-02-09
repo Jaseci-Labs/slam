@@ -101,17 +101,17 @@ can dashboard {
 }
 
 :can:heat_map {
-    workers_data_dir = "/home/ubuntu/slam2/slam/results";
-    distribution_file = "/home/ubuntu/slam2/slam/.human_eval_config/distribution.json";
-    response_file = "/home/ubuntu/slam2/slam/.human_eval_config/responses.json";
+    workers_data_dir = os.path.abspath("results");
+    distribution_file = os.path.abspath(".human_eval_config/distribution.json");
+    response_file = os.path.abspath(".human_eval_config/responses.json");
     formatted_data = evaluate_responses(workers_data_dir, distribution_file,response_file=response_file);
     generate_heatmaps(formatted_data,"new_heat_map");
 }
 
 :can:stacked_bar_chart {
-    workers_data_dir = "/home/ubuntu/slam2/slam/results";
-    distribution_file = "/home/ubuntu/slam2/slam/.human_eval_config/distribution.json";
-    response_file = "/home/ubuntu/slam2/slam/.human_eval_config/responses.json";
+    workers_data_dir = os.path.abspath("results");
+    distribution_file = os.path.abspath(".human_eval_config/distribution.json");
+    response_file = os.path.abspath(".human_eval_config/responses.json");
     formatted_data = evaluate_responses(workers_data_dir, distribution_file,response_file=response_file);
     plot_stacked_bar_chart(formatted_data);
 }
