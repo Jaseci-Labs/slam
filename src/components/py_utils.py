@@ -8,22 +8,9 @@ import json
 import streamlit as st
 
 
-def generate_heatmaps(workers_data, img_name):
-    all_models = [
-        "zephyr_7b-beta",
-        "orca-mini_3b",
-        "stablelm-zephyr_3b",
-        "orca2_7b",
-        "llama2_7b-chat",
-        "openchat_7b-v3.5",
-        "neural-chat_7b",
-        "mistral_7b-instruct",
-        "gpt-4",
-        "starling-lm_7b",
-        "vicuna_7b",
-    ]
-
-    criteria = ["clarity", "intelligence", "likability", "trustworthy", "overall"]
+def generate_heatmaps(workers_data, all_models, criteria=None):
+    if not criteria:
+        criteria = ["clarity", "intelligence", "likability", "trustworthy", "overall"]
 
     model_performance = {
         model: {
@@ -64,9 +51,12 @@ def generate_heatmaps(workers_data, img_name):
 
     df = pd.DataFrame(rows_list)
     pivot_wins = df.pivot_table(index="model", columns="criterion", values="wins")
-
-    fig, axes = plt.subplots(3, 2, figsize=(14, 10))
-    axes_flat = axes.flatten()
+    if len(criteria) > 1:
+        fig, axes = plt.subplots(3, 2, figsize=(14, 10))
+        axes_flat = axes.flatten()
+    else:
+        fig, axes = plt.subplots(1, 1, figsize=(8, 4))
+        axes_flat = [axes]
     individual_max = max(
         df[df["criterion"] == criterion]["wins"].max() for criterion in criteria
     )
@@ -118,16 +108,17 @@ def generate_heatmaps(workers_data, img_name):
     st.pyplot(plt)
 
 
-def evaluate_responses(workers_data_dir, distribution_file, response_file):
+def format_responses(workers_data_dir, distribution_file, response_file, criteria_set):
     out_dataset = []
-    criteria_set = [
-        "clarity",
-        "intelligence",
-        "likability",
-        "trustworthy",
-        "overall",
-        "feedback",
-    ]
+    if not criteria_set:
+        criteria_set = [
+            "clarity",
+            "intelligence",
+            "likability",
+            "trustworthy",
+            "overall",
+        ]
+
     with open(distribution_file, "r") as file:
         distribution = json.load(file)
     with open(response_file, "r") as file:
@@ -177,22 +168,9 @@ def evaluate_responses(workers_data_dir, distribution_file, response_file):
     return out_dataset
 
 
-def plot_stacked_bar_chart(workers_data):
-    all_models = [
-        "zephyr_7b-beta",
-        "orca-mini_3b",
-        "stablelm-zephyr_3b",
-        "orca2_7b",
-        "llama2_7b-chat",
-        "openchat_7b-v3.5",
-        "neural-chat_7b",
-        "mistral_7b-instruct",
-        "gpt-4",
-        "starling-lm_7b",
-        "vicuna_7b",
-    ]
-
-    criteria = ["clarity", "intelligence", "likability", "trustworthy", "overall"]
+def generate_stacked_bar_chart(workers_data, all_models, criteria=None):
+    if not criteria:
+        criteria = ["clarity", "intelligence", "likability", "trustworthy", "overall"]
     model_performance = {
         model: {
             criterion: {"wins": 0, "ties": 0, "losses": 0} for criterion in criteria
@@ -246,22 +224,22 @@ def plot_stacked_bar_chart(workers_data):
             )
 
     df = pd.DataFrame(df_data)
-    # global_min = df[["wins", "ties", "losses"]].min().min()
-    # global_max = df[["wins", "ties", "losses"]].max().max()
+    if len(criteria) > 1:
+        fig, axes = plt.subplots(2, 3, figsize=(12, 8), sharey=True)
 
-    fig, axes = plt.subplots(2, 3, figsize=(12, 8), sharey=True)
-    # axes = axes.flatten()
-
+    else:
+        fig, axes = plt.subplots(1, 1, figsize=(8, 4), sharey=True)
+        axes = axes
     bar_colors = ["#228B22", "#DAA520", "#B22222"]
 
     for i, criterion in enumerate(criteria):
-        # ax = axes[i]
-        row = i // 3
-        col = i % 3
-        ax = axes[row, col]
-        if i == 5:
-            fig.delaxes(axes[row, col])
-            continue
+        if len(criteria) > 1:
+            row = i // 3
+            col = i % 3
+            ax = axes[row, col]
+            if i == 5:
+                fig.delaxes(axes[row, col])
+                continue
         crit_df = df[df["criterion"] == criterion].sort_values("wins", ascending=False)
         models = crit_df["model"]
 
@@ -289,17 +267,10 @@ def plot_stacked_bar_chart(workers_data):
         ax.set_ylabel("Counts")
         ax.set_xticklabels(models, rotation=45, ha="right")
         ax.grid(axis="y")
-        # # Normalize the color of the bars to the global min and max
-        # for bar, color in zip([wins, ties, losses], bar_colors):
-        #     for patch in bar.patches:
-        #         patch.set_color(
-        #             plt.cm.viridis(
-        #                 (patch.get_height() - global_min) / (global_max - global_min)
-        #             )
-        #       )
-
-    handles, labels = axes[0, 0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="upper center", ncol=3)
-
+    if len(criteria) > 1:
+        handles, labels = axes[0, 0].get_legend_handles_labels()
+        fig.legend(handles, labels, loc="upper center", ncol=3)
+    else:
+        fig.legend(loc="upper center", ncol=3)
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     st.pyplot(plt)

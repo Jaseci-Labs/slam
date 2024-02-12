@@ -6,8 +6,9 @@ import:py altair as alt;
 import:py plotly.figure_factory as ff;
 import:py json;
 import:py datetime as dt;
-import:py from py_utils, evaluate_responses;
-import:py from py_utils, generate_heatmaps, plot_stacked_bar_chart;
+import:py from py_utils, format_responses;
+import:py from py_utils, generate_heatmaps, generate_stacked_bar_chart;
+# import:jac from utils, parse_worker_data;
 
 can init;
 can status_indicator;
@@ -101,17 +102,39 @@ can dashboard {
 }
 
 :can:heat_map {
+    criteria = None;
     workers_data_dir = os.path.abspath("results");
     distribution_file = os.path.abspath(".human_eval_config/distribution.json");
     response_file = os.path.abspath(".human_eval_config/responses.json");
-    formatted_data = evaluate_responses(workers_data_dir, distribution_file,response_file=response_file);
-    generate_heatmaps(formatted_data,"new_heat_map");
+    with open(os.path.abspath(".human_eval_config/models_responses.json"), "r") as f{
+        list_of_models = list (json.load(f)[0].keys());
+    }
+    with open(os.path.abspath(".human_eval_config/config.json"), "r") as f{
+        eval_type = json.load(f)["hv_method"];
+    }
+    if (eval_type == "A/B Testing") {
+        criteria = ["prefer"];
+    }
+    formatted_data = format_responses(workers_data_dir, distribution_file,response_file=response_file,criteria_set = criteria);
+    generate_heatmaps(formatted_data,list_of_models, criteria);
 }
 
 :can:stacked_bar_chart {
+    criteria = None;
     workers_data_dir = os.path.abspath("results");
     distribution_file = os.path.abspath(".human_eval_config/distribution.json");
     response_file = os.path.abspath(".human_eval_config/responses.json");
-    formatted_data = evaluate_responses(workers_data_dir, distribution_file,response_file=response_file);
-    plot_stacked_bar_chart(formatted_data);
+    with open(os.path.abspath(".human_eval_config/models_responses.json"), "r") as f{
+        list_of_models = list (json.load(f)[0].keys());
+    }
+    with open(os.path.abspath(".human_eval_config/config.json"), "r") as f{
+        eval_type = json.load(f)["hv_method"];
+    }
+    if (eval_type == "A/B Testing") {
+        criteria = ["prefer"];
+    }
+
+    # formatted_data = parse_worker_data(workers_data_dir,distribution_file,response_file);
+    formatted_data = format_responses(workers_data_dir, distribution_file,response_file=response_file,criteria_set = criteria);
+    generate_stacked_bar_chart(formatted_data, list_of_models, criteria);
 }
