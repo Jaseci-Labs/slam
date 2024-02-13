@@ -37,13 +37,14 @@ def generate_heatmaps(workers_data, all_models, criteria=None):
                 if result == "Response A":
                     model_performance[model1][crit]["wins"] += 1
                     model_performance[model2][crit]["losses"] += 1
+                    preference_matrix[crit][model1][model2] += 1
                 elif result == "Response B":
                     model_performance[model1][crit]["losses"] += 1
                     model_performance[model2][crit]["wins"] += 1
+                    preference_matrix[crit][model2][model1] += 1
                 else:
                     model_performance[model1][crit]["ties"] += 1
                     model_performance[model2][crit]["ties"] += 1
-
     rows_list = []
     for model, crit_dict in model_performance.items():
         for crit, win_tie_loss in crit_dict.items():
@@ -57,9 +58,11 @@ def generate_heatmaps(workers_data, all_models, criteria=None):
     else:
         fig, axes = plt.subplots(1, 1, figsize=(8, 4))
         axes_flat = [axes]
-    individual_max = max(
-        df[df["criterion"] == criterion]["wins"].max() for criterion in criteria
-    )
+    global_individual_max = 0
+    for criterion in criteria:
+        for model in all_models:
+            max_wins = max(preference_matrix[criterion][model].values())
+            global_individual_max = max(global_individual_max, max_wins)
     total_max = df[["wins", "ties", "losses"]].max().max()
     for i, criterion in enumerate(criteria):
         model_names = sorted(
@@ -84,7 +87,7 @@ def generate_heatmaps(workers_data, all_models, criteria=None):
             yticklabels=model_names,
             ax=axes_flat[i],
             cbar=True,
-            vmax=individual_max,
+            vmax=global_individual_max,
             cbar_kws={"label": "Individual Wins"},
         )
         for j, model in enumerate(model_names):
@@ -126,9 +129,13 @@ def format_responses(workers_data_dir, distribution_file, response_file, criteri
     for filename in os.listdir(workers_data_dir):
         file_path = os.path.join(workers_data_dir, filename)
         if os.path.isfile(file_path):
-            with open(file_path, "r") as file:
-                worker_data = json.load(file)
-            if "question_index" in worker_data and worker_data["question_index"] == 5:
+            try:
+                with open(file_path, "r") as file:
+                    worker_data = json.load(file)
+            except:
+                print(file_path)
+                continue
+            if "question_index" in worker_data and worker_data["question_index"] == 10:
                 curr_distribution_set = distribution.get(
                     worker_data["question_set_id"], None
                 )
