@@ -7,3 +7,4 @@ __jac_gen__
 notebooks
 __pycache__
 test.ipynb
+.backup

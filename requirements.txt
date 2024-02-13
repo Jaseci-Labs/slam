@@ -1,5 +1,5 @@
 jaseci
-jaclang
+jaclang==0.4.7
 streamlit
 yaspin
 captcha

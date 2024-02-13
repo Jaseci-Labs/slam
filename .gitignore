@@ -7,6 +7,7 @@ test.py
 .human_eval_config
 credentials.json
 settings.yaml
+.backup
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
