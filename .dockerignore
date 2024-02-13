@@ -4,3 +4,6 @@ data
 .human_eval_config
 runs
 __jac_gen__
+notebooks
+__pycache__
+test.ipynb
