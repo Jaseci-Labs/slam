@@ -131,6 +131,7 @@ can human_eval {
                 json.dump({
                     "worker_id": st.session_state.worker_id,
                     "question_set_id": st.session_state.question_set_id,
+                    "question_set": st.session_state.question_set,
                     "evals": st.session_state.evals,
                     "start_time": st.session_state.start_time,
                     "end_time": time.time(),
