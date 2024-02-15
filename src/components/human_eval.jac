@@ -18,13 +18,17 @@ can human_eval {
             (captcha_col, worker_id_col) = st.columns(2);
             with captcha_col {captcha();}
             with worker_id_col {worker_id();}
-        }else {
+        } else {
             if st.session_state.worker_count is None {
                 if os.path.exists(os.path.join(".human_eval_config", "worker_count.txt")) {
                     with open(os.path.join(".human_eval_config", "worker_count.txt"), "r") as f {current_count = int(f.read());}
                 } else {
                     with open(os.path.join(".human_eval_config", "worker_count.txt"), "w") as f {f.write("-1");}
                     current_count = -1;
+                }
+                if current_count >= st.session_state.hv_config["config"]["n_workers"] {
+                    st.error("Need to Reset Worker Count. Please Try Again Late.r");
+                    return;
                 }
                 st.session_state.worker_count = current_count + 1;
                 with open(os.path.join(".human_eval_config", "worker_count.txt"), "w") as f {f.write(str(st.session_state.worker_count));}
@@ -33,7 +37,6 @@ can human_eval {
                 with open(os.path.join(".human_eval_config", "distribution.json"), "r") as f {all_questions = json.load(f);}
                 st.session_state.question_set_id = list(all_questions.keys())[st.session_state.worker_count];
                 st.session_state.question_set = all_questions[st.session_state.question_set_id];
-                random.shuffle(st.session_state.question_set);
                 with open(os.path.join(".human_eval_config", "responses.json"), "r") as f {st.session_state.responses = json.load(f);}
                 with open(os.path.join(".human_eval_config", "prompt_info.json"), "r") as f {st.session_state.prompt_info = json.load(f);}
             }
@@ -125,7 +128,7 @@ can human_eval {
     
     if st.button("Next Question", <>type="primary", key=f"next_{question_index}") {
         if result {
-            st.session_state.evals.append({"result": result, "time": time.time()});
+            st.session_state.evals.append({"result": result, "time": time.time(), "question": question});
             st.session_state.question_index += 1;
             with open(os.path.join("results", f"{st.session_state.worker_id}_{st.session_state.question_set_id}.json"), "w") as f {
                 json.dump({
