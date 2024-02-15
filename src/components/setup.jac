@@ -160,7 +160,7 @@ can setup {
 
 :can:get_question_pairs (models_responses_all: dict) {
     n_usecases = len(models_responses_all);
-    models = list(models_responses_all[0].keys());
+    models = list(list(models_responses_all.values())[0].keys());
     random.shuffle(models);
     n_workers = st.session_state.config["config"]["n_workers"];
     n_questions_per_worker = st.session_state.config["config"]["n_questions_per_worker"];
@@ -171,14 +171,14 @@ can setup {
     print(k);
 
     question_pairs = [];
-    for (i, models_responses) in enumerate(models_responses_all) {
+    for (prompt_id, models_responses) in models_responses_all.items() {
         for model_pair in unique_model_pairs {
             model_a_responses = models_responses[model_pair[0]];
             model_b_responses = models_responses[model_pair[1]];
             unique_question_pairs = list(itertools.product(model_a_responses, model_b_responses));
             unique_question_pairs = random.sample(unique_question_pairs, k);
             for question_pair in unique_question_pairs {
-                question_pairs.append((i, model_pair, question_pair));
+                question_pairs.append((prompt_id, {model_pair[0]: question_pair[0], model_pair[1]: question_pair[1]}));
             }
         }
     }
@@ -198,13 +198,14 @@ can setup {
         random.shuffle(question_pairs_copy);
         worker_ids = [str(uuid.uuid4()) for _ in range(n_workers)];
         distribution = {worker_id: [] for worker_id in worker_ids};
-        n_usecases = len(st.session_state.config["config"]["data_sources"]);
-        questions_per_usecase_per_worker = int(n_questions_per_worker / n_usecases);
+        prompt_infos = json.load(open(os.path.join(".human_eval_config", "prompt_info.json")));
+        prompt_ids = [prompt_info["prompt_id"] for prompt_info in prompt_infos];
+        questions_per_usecase_per_worker = int(n_questions_per_worker / len(prompt_ids));
         for worker_id in worker_ids {
-            for usecase in range(n_usecases) {
+            for prompt_id in prompt_ids {
                 x = 0;
                 for (i, question_pair) in enumerate(question_pairs_copy) {
-                    if question_pair[0] == usecase {
+                    if question_pair[0] == prompt_id{
                         distribution[worker_id].append(question_pair);
                         question_pairs_copy.pop(i);
                         x += 1;
@@ -220,15 +221,17 @@ can setup {
 :can:create_neccessary_file (data_sources: list) {
     with st.spinner("Creating Necessary Files...") {
         uid_responses = {};
-        models_responses_all = [];
+        models_responses_all = {};
         prompt_infos = [];
         for data_source in data_sources {
+            prompt_id = str(uuid.uuid4());
             prompt_info = {};
             models_responses = {};
             with open(os.path.join("data", data_source)) as f {
                 data = json.load(f);
                 prompt_info["prompt"] = data["prompt"];
                 prompt_info["prompt_disc"] = data["prompt_disc"];
+                prompt_info["prompt_id"] = prompt_id;
                 for (model_name, responses) in data["outputs"].items() {
                     model_responses = [];
                     for response in responses {
@@ -240,7 +243,7 @@ can setup {
                 }
             }
             prompt_infos.append(prompt_info);
-            models_responses_all.append(models_responses);
+            models_responses_all[prompt_id] = models_responses;
         }
         json.dump(uid_responses, open(os.path.join(".human_eval_config", "responses.json"), "w"), indent=2);
         json.dump(models_responses_all, open(os.path.join(".human_eval_config", "models_responses.json"), "w"), indent=2);

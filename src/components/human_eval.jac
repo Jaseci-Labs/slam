@@ -27,7 +27,7 @@ can human_eval {
                     current_count = -1;
                 }
                 if current_count >= st.session_state.hv_config["config"]["n_workers"] {
-                    st.error("Need to Reset Worker Count. Please Try Again Late.r");
+                    st.error("Something seems to be Wrong. Dev team is notified. Please Try Again Later. Thank You!");
                     return;
                 }
                 st.session_state.worker_count = current_count + 1;
@@ -71,14 +71,15 @@ can human_eval {
 
     question_index = st.session_state.question_index;
     question = st.session_state.question_set[question_index];
-    prompt_index = question[0];
-    model_a = question[1][0];
-    model_b = question[1][1];
-    model_a_respones = st.session_state.responses[question[2][0]];
-    model_b_respones = st.session_state.responses[question[2][1]];
+    prompt_id = question[0];
+    prompt_disc = [x["prompt_disc"] for x in st.session_state.prompt_info if x["prompt_id"] == prompt_id][0];
+    (model_a, model_a_respones_id) = list(question[1].items())[0];
+    (model_b, model_b_respones_id) = list(question[1].items())[1];
+    model_a_respones = st.session_state.responses[model_a_respones_id];
+    model_b_respones = st.session_state.responses[model_b_respones_id];
 
     with st.expander("Instructions", expanded=True) {
-        st.markdown(st.session_state.prompt_info[prompt_index]["prompt_disc"], unsafe_allow_html=True);
+        st.markdown(prompt_disc, unsafe_allow_html=True);
     }
 
     if st.session_state.hv_config["hv_method"] == "A/B Testing" {
@@ -91,7 +92,7 @@ can human_eval {
                                     captions=["A is better", "B is better", "Both are equally good"], key=f"better_{question_index}");
             }
             feedback = st.text_area("Reasoning behind your choice", height=100, key=f"feedback_{question_index}");
-            if overall and feedback {result = (overall, feedback);}
+            if overall and feedback {result = {"overall": overall, "feedback": feedback};}
             else {result = None;}
         }
     } else {
@@ -122,7 +123,16 @@ can human_eval {
         (col_overall, col_feedback) = st.columns(2);
         with col_overall {with st.container(border=True) {overall = st.radio("Which is better overall?", ["Response A", "Response B", "About the Same"], index=None,captions=["A is better overall", "B is better overall", "Both are equally good overall"], key=f"overall_{question_index}");}}
         with col_feedback {with st.container(border=True) {feedback = st.text_area("Reasoning behind your choice", key=f"feedback_{question_index}");}}
-        if clarity and intelligence and likability and trustworthiness and overall and feedback {result = (clarity, intelligence, likability, trustworthiness, overall, feedback);}
+        if clarity and intelligence and likability and trustworthiness and overall and feedback {
+            result = {
+                "clarity": clarity,
+                "intelligence": intelligence,
+                "likability": likability,
+                "trustworthiness": trustworthiness,
+                "overall": overall,
+                "feedback": feedback
+            };
+        }
         else {result = None;}
     }
     
@@ -134,7 +144,6 @@ can human_eval {
                 json.dump({
                     "worker_id": st.session_state.worker_id,
                     "question_set_id": st.session_state.question_set_id,
-                    "question_set": st.session_state.question_set,
                     "evals": st.session_state.evals,
                     "start_time": st.session_state.start_time,
                     "end_time": time.time(),
