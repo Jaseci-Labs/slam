@@ -10,7 +10,13 @@ import streamlit as st
 
 def generate_heatmaps(workers_data, all_models, criteria=None):
     if not criteria:
-        criteria = ["clarity", "intelligence", "likability", "trustworthy", "overall"]
+        criteria = [
+            "clarity",
+            "intelligence",
+            "likability",
+            "trustworthiness",
+            "overall",
+        ]
 
     model_performance = {
         model: {
@@ -118,7 +124,7 @@ def format_responses(workers_data_dir, distribution_file, response_file, criteri
             "clarity",
             "intelligence",
             "likability",
-            "trustworthy",
+            "trustworthiness",
             "overall",
         ]
 
@@ -141,26 +147,29 @@ def format_responses(workers_data_dir, distribution_file, response_file, criteri
                 )
                 if curr_distribution_set is not None:
                     curr_worker_data_set = []
-                    for i, (curr_dist, curr_worker_data) in enumerate(
-                        zip(curr_distribution_set, worker_data["evals"])
-                    ):
-                        model_a, response_a_id = curr_dist[1][0], curr_dist[2][0]
-                        model_b, response_b_id = curr_dist[1][1], curr_dist[2][1]
+                    for i, curr_worker_data in enumerate(worker_data["evals"]):
+                        curr_set = curr_worker_data.get("question")
+                        model_names = list(curr_set[1].keys())
+                        model_a, response_a_id = (
+                            model_names[0],
+                            curr_set[1][model_names[0]],
+                        )
+                        model_b, response_b_id = (
+                            model_names[1],
+                            curr_set[1][model_names[1]],
+                        )
                         response_a = all_responses.get(response_a_id, None)
                         response_b = all_responses.get(response_b_id, None)
-                        criteria_data = [
-                            {
-                                criteria_set[i]: curr_worker_data["result"][i]
-                                for i in range(len(criteria_set))
-                            }
-                        ]
+
                         curr_resp_contruct = {
                             "model_a": model_a,
                             "response_a": response_a,
                             "model_b": model_b,
                             "response_b": response_b,
                         }
-                        curr_resp_contruct.update(criteria_data[0])
+                        curr_resp_contruct.update(curr_worker_data["result"])
+                        curr_resp_contruct.update({"prompt_id": curr_set[0]})
+                        # print(json.dumps(curr_resp_contruct))
                         if i == 0:
                             start_time = datetime.fromtimestamp(
                                 worker_data["start_time"]
@@ -177,7 +186,13 @@ def format_responses(workers_data_dir, distribution_file, response_file, criteri
 
 def generate_stacked_bar_chart(workers_data, all_models, criteria=None):
     if not criteria:
-        criteria = ["clarity", "intelligence", "likability", "trustworthy", "overall"]
+        criteria = [
+            "clarity",
+            "intelligence",
+            "likability",
+            "trustworthiness",
+            "overall",
+        ]
     model_performance = {
         model: {
             criterion: {"wins": 0, "ties": 0, "losses": 0} for criterion in criteria
@@ -193,6 +208,8 @@ def generate_stacked_bar_chart(workers_data, all_models, criteria=None):
             model2 = response["model_b"]
             for crit in criteria:
                 result = response.get(crit)
+                if crit == "trustworthy":
+                    print(result)
                 if result == "Response A":
                     model_performance[model1][crit]["wins"] += 1
                     model_performance[model2][crit]["losses"] += 1
@@ -249,7 +266,8 @@ def generate_stacked_bar_chart(workers_data, all_models, criteria=None):
                 continue
         crit_df = df[df["criterion"] == criterion].sort_values("wins", ascending=False)
         models = crit_df["model"]
-
+        if criterion == "trustworthiness":
+            print(crit_df)
         wins = ax.bar(models, crit_df["wins"], label="Wins", color=bar_colors[0])
         ties = ax.bar(
             models,

@@ -107,7 +107,8 @@ can dashboard {
     distribution_file = os.path.abspath(".human_eval_config/distribution.json");
     response_file = os.path.abspath(".human_eval_config/responses.json");
     with open(os.path.abspath(".human_eval_config/models_responses.json"), "r") as f{
-        list_of_models = list (json.load(f)[0].keys());
+        data=json.load(f);
+        list_of_models = data[next(iter(data))].keys();
     }
     with open(os.path.abspath(".human_eval_config/config.json"), "r") as f{
         eval_type = json.load(f)["hv_method"];
@@ -125,7 +126,8 @@ can dashboard {
     distribution_file = os.path.abspath(".human_eval_config/distribution.json");
     response_file = os.path.abspath(".human_eval_config/responses.json");
     with open(os.path.abspath(".human_eval_config/models_responses.json"), "r") as f{
-        list_of_models = list (json.load(f)[0].keys());
+        data=json.load(f);
+        list_of_models = data[next(iter(data))].keys();
     }
     with open(os.path.abspath(".human_eval_config/config.json"), "r") as f{
         eval_type = json.load(f)["hv_method"];
