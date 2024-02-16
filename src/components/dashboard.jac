@@ -6,9 +6,9 @@ import:py altair as alt;
 import:py plotly.figure_factory as ff;
 import:py json;
 import:py datetime as dt;
-import:py from py_utils, format_responses;
-import:py from py_utils, generate_heatmaps, generate_stacked_bar_chart;
-# import:jac from utils, parse_worker_data;
+import:py from py_utils, format_responses_by_prompt;
+import:py from py_utils, generate_heatmaps, generate_stacked_bar_chart, get_unique_prompt_ids;
+import:jac from utils, parse_worker_data;
 
 can init;
 can status_indicator;
@@ -106,6 +106,8 @@ can dashboard {
     workers_data_dir = os.path.abspath("results");
     distribution_file = os.path.abspath(".human_eval_config/distribution.json");
     response_file = os.path.abspath(".human_eval_config/responses.json");
+    prompt_data_dir = os.path.abspath("data");
+    prompt_info_file = os.path.abspath(".human_eval_config/prompt_info.json");
     with open(os.path.abspath(".human_eval_config/models_responses.json"), "r") as f{
         data=json.load(f);
         list_of_models = data[next(iter(data))].keys();
@@ -114,10 +116,21 @@ can dashboard {
         eval_type = json.load(f)["hv_method"];
     }
     if (eval_type == "A/B Testing") {
-        criteria = ["prefer"];
+        criteria = ["overall"];
     }
-    formatted_data = format_responses(workers_data_dir, distribution_file,response_file=response_file,criteria_set = criteria);
-    generate_heatmaps(formatted_data,list_of_models, criteria);
+    formatted_data = format_responses_by_prompt(workers_data_dir, distribution_file, response_file);
+    prompt_info = get_unique_prompt_ids(prompt_data_dir,prompt_info_file);
+    prompt_ids = list(prompt_info.keys());
+    prompt_ids.insert(0, "all_combined");
+    selected_prompt_id = st.selectbox("Select Prompt:", prompt_ids);
+    if selected_prompt_id != "all_combined"{
+        generate_heatmaps(formatted_data, list_of_models,prompt_info[selected_prompt_id], criteria);
+    } else{
+        generate_heatmaps(formatted_data, list_of_models,selected_prompt_id, criteria);
+    }
+    # # formatted_data = format_responses(workers_data_dir, distribution_file,response_file=response_file,criteria_set = criteria);
+    # formatted_data = parse_worker_data(workers_data_dir,distribution_file,response_file);
+    # generate_heatmaps(formatted_data,list_of_models, criteria);
 }
 
 :can:stacked_bar_chart {
@@ -125,6 +138,8 @@ can dashboard {
     workers_data_dir = os.path.abspath("results");
     distribution_file = os.path.abspath(".human_eval_config/distribution.json");
     response_file = os.path.abspath(".human_eval_config/responses.json");
+    prompt_data_dir = os.path.abspath("data");
+    prompt_info_file = os.path.abspath(".human_eval_config/prompt_info.json");
     with open(os.path.abspath(".human_eval_config/models_responses.json"), "r") as f{
         data=json.load(f);
         list_of_models = data[next(iter(data))].keys();
@@ -133,10 +148,16 @@ can dashboard {
         eval_type = json.load(f)["hv_method"];
     }
     if (eval_type == "A/B Testing") {
-        criteria = ["prefer"];
+        criteria = ["overall"];
     }
-
-    # formatted_data = parse_worker_data(workers_data_dir,distribution_file,response_file);
-    formatted_data = format_responses(workers_data_dir, distribution_file,response_file=response_file,criteria_set = criteria);
-    generate_stacked_bar_chart(formatted_data, list_of_models, criteria);
+    formatted_data = format_responses_by_prompt(workers_data_dir, distribution_file, response_file);
+    prompt_info = get_unique_prompt_ids(prompt_data_dir,prompt_info_file);
+    prompt_ids = list(prompt_info.keys());
+    prompt_ids.insert(0, "all_combined");
+    selected_prompt_id = st.selectbox("Select Prompt:", prompt_ids);
+    if selected_prompt_id != "all_combined"{
+        generate_stacked_bar_chart(formatted_data, list_of_models,prompt_info[selected_prompt_id], criteria);
+    } else{
+        generate_stacked_bar_chart(formatted_data, list_of_models,selected_prompt_id, criteria);
+    }
 }
