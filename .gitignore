@@ -8,6 +8,9 @@ test.py
 credentials.json
 settings.yaml
 .backup
+.new_backup
+notebooks/*.csv
+notebooks/*.xlsx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
