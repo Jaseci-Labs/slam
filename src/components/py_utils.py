@@ -11,11 +11,11 @@ import streamlit as st
 def generate_stacked_bar_chart(formatted_output, all_models, prompt_id, criteria=None):
     if not criteria:
         criteria = [
+            "overall", 
             "clarity",
             "intelligence",
             "likability",
             "trustworthiness",
-            "overall",
         ]
 
     model_performance = {
@@ -137,11 +137,11 @@ def generate_stacked_bar_chart(formatted_output, all_models, prompt_id, criteria
 def generate_heatmaps(formatted_output, all_models, prompt_id, criteria=None):
     if not criteria:
         criteria = [
+            "overall", 
             "clarity",
             "intelligence",
             "likability",
             "trustworthiness",
-            "overall",
         ]
 
     model_performance = {
