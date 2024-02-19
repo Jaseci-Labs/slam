@@ -327,3 +327,19 @@ def get_unique_prompt_ids(prompt_data_dir, prompt_info_file):
                 if prompt_data == list(inv_prompt.values())[0]:
                     prompt_ids[use_case_name] = list(inv_prompt.keys())[0]
     return prompt_ids
+
+
+def generate_heatmap_time(formatted_data):
+    json_df = pd.json_normalize(formatted_data, record_path=['responses'], meta=['prompt_id'])
+    df_input = json_df.copy()
+    df_pairs = pd.concat([
+    df_input[['model_a', 'model_b', 'time_taken']].rename(columns={'model_a': 'model_1', 'model_b': 'model_2'}),
+    df_input[['model_b', 'model_a', 'time_taken']].rename(columns={'model_b': 'model_1', 'model_a': 'model_2'})
+    ])
+    df_grouped = df_pairs.groupby(['model_1', 'model_2'], as_index=False).agg({'time_taken': 'mean'})
+    pivot_table = df_grouped.pivot(index='model_1', columns='model_2', values='time_taken')
+
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(pivot_table, annot=True, cmap='viridis', fmt=".2f")
+    plt.title('Heatmap of Time Taken Between Model Pairs')
+    st.pyplot(plt)
