@@ -8,6 +8,8 @@ import:py json;
 import:py datetime as dt;
 import:py from py_utils, format_responses;
 import:py from py_utils, generate_heatmaps, generate_stacked_bar_chart;
+import:py zipfile;
+import:py shutil;
 # import:jac from utils, parse_worker_data;
 
 can init;
@@ -22,7 +24,6 @@ can stacked_bar_chart;
 
 
 can dashboard {
-    init();
     if st.session_state.get("current_hv_config", None) {
         status_indicator();
         chart_type = st.selectbox("Select a chart type:", ("Area Chart", "Bar Chart", "Line Chart", "Altair Chart", "Plotly Figure", "Heat Map","Stacked Bar Chart"));
@@ -35,6 +36,8 @@ can dashboard {
         elif chart_type == "Plotly Figure"{plotly_figure();}
         elif chart_type == "Heat Map"{heat_map();}
         elif chart_type == "Stacked Bar Chart"{stacked_bar_chart();}
+    } else {
+        init();
     }
 }
 
@@ -42,14 +45,29 @@ can dashboard {
     if os.path.exists(os.path.join(".human_eval_config", "config.json")) {
         st.session_state.current_hv_config = json.load(open(os.path.join(".human_eval_config", "config.json")));
         with open(os.path.join(".human_eval_config", "worker_count.txt"), "r") as f {st.session_state.current_worker_count = int(f.read());}
-    } else {
-        st.error("Human Evaluation config was not found. Initialize a Human Evaluation first.");
-    }
-    if os.path.exists("results") and len(os.listdir("results")) > 0 {
-        st.session_state.hv_results_files = os.listdir("results");
-        # Load the Results in to session
-    } else {
-        st.error("Results were not found. Initialize a Human Evaluation first. If Initiated already, wait until the results are ready.");
+    } else {st.error("Human Evaluation config was not found. Initialize a Human Evaluation first.");}
+
+    if os.path.exists("results") and len(os.listdir("results")) > 0 {st.session_state.hv_results_files = os.listdir("results");}
+    else {st.error("Results were not found. Initialize a Human Evaluation first. If Initiated already, wait until the results are ready.");}
+
+    with st.form("upload_files_form", clear_on_submit=True) {
+        uploaded_file = st.file_uploader("Upload the Output File");
+        submitted = st.form_submit_button("Upload & Unzip");
+        st.caption("CAUTION: This will overwrite the existing files.");
+        shutil.rmtree("results", ignore_errors=True);
+        shutil.rmtree(".human_eval_config", ignore_errors=True);
+        if submitted and uploaded_file {
+            with zipfile.ZipFile(uploaded_file, "r") as zip_ref {zip_ref.extractall(".");}
+            if os.path.exists("results.zip") {
+                with zipfile.ZipFile("results.zip", "r") as zip_ref {zip_ref.extractall(".");}
+                os.remove("results.zip");
+            }
+            if os.path.exists("config.zip") {
+                with zipfile.ZipFile("config.zip", "r") as zip_ref {zip_ref.extractall(".");}
+                os.remove("config.zip");
+            }
+            st.rerun();
+        }
     }
 }
 
