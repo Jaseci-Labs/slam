@@ -6,12 +6,14 @@ import numpy as np
 import pandas as pd
 import json
 import streamlit as st
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 
 
 def generate_stacked_bar_chart(formatted_output, all_models, prompt_id, criteria=None):
     if not criteria:
         criteria = [
-            "overall", 
+            "overall",
             "clarity",
             "intelligence",
             "likability",
@@ -137,7 +139,7 @@ def generate_stacked_bar_chart(formatted_output, all_models, prompt_id, criteria
 def generate_heatmaps(formatted_output, all_models, prompt_id, criteria=None):
     if not criteria:
         criteria = [
-            "overall", 
+            "overall",
             "clarity",
             "intelligence",
             "likability",
@@ -184,6 +186,7 @@ def generate_heatmaps(formatted_output, all_models, prompt_id, criteria=None):
             rows_list.append({"model": model, "criterion": crit, **win_tie_loss})
 
     df = pd.DataFrame(rows_list)
+
     pivot_wins = df.pivot_table(index="model", columns="criterion", values="wins")
     if len(criteria) > 1:
         fig, axes = plt.subplots(3, 2, figsize=(14, 10))
@@ -330,16 +333,28 @@ def get_unique_prompt_ids(prompt_data_dir, prompt_info_file):
 
 
 def generate_heatmap_time(formatted_data):
-    json_df = pd.json_normalize(formatted_data, record_path=['responses'], meta=['prompt_id'])
+    json_df = pd.json_normalize(
+        formatted_data, record_path=["responses"], meta=["prompt_id"]
+    )
     df_input = json_df.copy()
-    df_pairs = pd.concat([
-    df_input[['model_a', 'model_b', 'time_taken']].rename(columns={'model_a': 'model_1', 'model_b': 'model_2'}),
-    df_input[['model_b', 'model_a', 'time_taken']].rename(columns={'model_b': 'model_1', 'model_a': 'model_2'})
-    ])
-    df_grouped = df_pairs.groupby(['model_1', 'model_2'], as_index=False).agg({'time_taken': 'mean'})
-    pivot_table = df_grouped.pivot(index='model_1', columns='model_2', values='time_taken')
+    df_pairs = pd.concat(
+        [
+            df_input[["model_a", "model_b", "time_taken"]].rename(
+                columns={"model_a": "model_1", "model_b": "model_2"}
+            ),
+            df_input[["model_b", "model_a", "time_taken"]].rename(
+                columns={"model_b": "model_1", "model_a": "model_2"}
+            ),
+        ]
+    )
+    df_grouped = df_pairs.groupby(["model_1", "model_2"], as_index=False).agg(
+        {"time_taken": "mean"}
+    )
+    pivot_table = df_grouped.pivot(
+        index="model_1", columns="model_2", values="time_taken"
+    )
 
     plt.figure(figsize=(10, 8))
-    sns.heatmap(pivot_table, annot=True, cmap='viridis', fmt=".2f")
-    plt.title('Heatmap of Time Taken Between Model Pairs')
+    sns.heatmap(pivot_table, annot=True, cmap="viridis", fmt=".2f")
+    plt.title("Heatmap of Time Taken Between Model Pairs")
     st.pyplot(plt)
