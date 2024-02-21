@@ -30,6 +30,7 @@ can setup {
 
     if data_sources {
         if st.button("Save"){
+            os.makedirs(".human_eval_config", exist_ok=True);
             config = {
                 "hv_method": hv_method,
                 "config": {
@@ -45,6 +46,7 @@ can setup {
                 "time_created": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             };
             st.session_state.config = config;
+            
             json.dump(config, open(os.path.join(".human_eval_config", "config.json"), "w"));
 
             models_responses_all = create_neccessary_file(data_sources);
@@ -59,7 +61,6 @@ can setup {
 }
 
 :can:init {
-    os.makedirs(".human_eval_config", exist_ok=True);
     if "config" not in st.session_state {
         if os.path.exists(os.path.join(".human_eval_config", "config.json")) {
             config = json.load(open(os.path.join(".human_eval_config", "config.json")));
@@ -147,14 +148,17 @@ can setup {
 }
 
 :can:add_data_sources {
-    uploaded_json_files = st.file_uploader("Upload data sources", accept_multiple_files=True, <>type="json");
-    if uploaded_json_files {
-        os.makedirs("data", exist_ok=True);
-        for uploaded_json_file in uploaded_json_files {
-            json_file = json.load(uploaded_json_file);
-            json.dump(json_file, open(os.path.join("data", uploaded_json_file.name), "w"));
+    with st.form("upload_datasources", clear_on_submit=True) {
+        uploaded_json_files = st.file_uploader("Upload data sources", accept_multiple_files=True, <>type="json");
+        submitted = st.form_submit_button("Submit");
+        if submitted and uploaded_json_files {
+            os.makedirs("data", exist_ok=True);
+            for uploaded_json_file in uploaded_json_files {
+                json_file = json.load(uploaded_json_file);
+                json.dump(json_file, open(os.path.join("data", uploaded_json_file.name), "w"));
+            }
+            st.rerun();
         }
-        st.rerun();
     }
 }
 
