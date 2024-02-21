@@ -5,6 +5,7 @@ import:py shutil;
 import:py time;
 import:py streamlit as st;
 import:py from yaspin, yaspin;
+import:py from datetime, datetime;
 
 glob ACTION_SERVER_URL = os.environ.get("ACTION_SERVER_URL","http://localhost:8000/");
 glob OLLAMA_SERVER_URL = os.environ.get("OLLAMA_SERVER_URL","http://localhost:11434/");
@@ -106,4 +107,45 @@ can login {
             }
         }
     }
+}
+
+can parse_worker_data(workers_data_dir:str, distribution_file:str, response_file:str) {
+    with open(distribution_file, "r") as fp{distribution = json.load(fp);}
+    with open(response_file, "r") as fp{all_responses = json.load(fp);}
+    out_dataset=[];
+
+    for filename in os.listdir(workers_data_dir) {
+        file_path = os.path.join(workers_data_dir, filename);
+        if os.path.isfile(file_path){
+            with open(file_path, "r") as fp{worker_data = json.load(fp);}
+            if "question_index" in worker_data and worker_data["question_index"] == 10 {
+                curr_distribution_set = distribution.get(worker_data["question_set_id"], None);
+                if curr_distribution_set is not None {
+                    curr_worker_data_set = [];
+                    for (i, curr_worker_data) in enumerate(worker_data["evals"]) {
+                        curr_set = curr_worker_data.get("question");
+                        model_names = list(curr_set[1].keys());
+                        (model_a, response_a_id) = (model_names[0], curr_set[1][model_names[0]]);
+                        (model_b, response_b_id) = (model_names[1], curr_set[1][model_names[1]]);
+                        response_a = all_responses.get(response_a_id, None);
+                        response_b = all_responses.get(response_b_id, None);
+                        curr_resp_contruct = {"model_a": model_a, "response_a": response_a, "model_b": model_b, "response_b": response_b};
+                        curr_resp_contruct.update(curr_worker_data["result"]);
+                        curr_resp_contruct.update({"prompt_id": curr_set[0]});
+                        if i == 0 {
+                            start_time = datetime.fromtimestamp(worker_data["start_time"]);
+                        }
+                        end_time = datetime.fromtimestamp(curr_worker_data["time"]);
+                        curr_resp_contruct.update(
+                            {"time_taken": (end_time - start_time).total_seconds()}
+                        );
+                        start_time = end_time;
+                        curr_worker_data_set.append(curr_resp_contruct);
+                    }
+                    out_dataset.append({worker_data["worker_id"]: curr_worker_data_set});
+                }
+            }
+        }
+    }
+    return out_dataset;
 }

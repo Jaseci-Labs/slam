@@ -4,10 +4,12 @@ import:py pandas as pd;
 import:py numpy as np;
 import:py altair as alt;
 import:py plotly.figure_factory as ff;
+import:py plotly.express as px;
 import:py json;
 import:py datetime as dt;
-import:py from py_utils, format_responses;
-import:py from py_utils, generate_heatmaps, generate_stacked_bar_chart;
+import:py from py_utils, format_responses_by_prompt, generate_heatmap_time;
+import:py from py_utils, generate_heatmaps, generate_stacked_bar_chart, get_unique_prompt_ids;
+import:jac from utils, parse_worker_data;
 import:py zipfile;
 import:py shutil;
 # import:jac from utils, parse_worker_data;
@@ -21,13 +23,14 @@ can altair_chart;
 can plotly_figure;
 can heat_map;
 can stacked_bar_chart;
+can plotly_histogram;
 
 
 can dashboard {
     if st.session_state.get("current_hv_config", None) {
         status_indicator();
-        chart_type = st.selectbox("Select a chart type:", ("Area Chart", "Bar Chart", "Line Chart", "Altair Chart", "Plotly Figure", "Heat Map","Stacked Bar Chart"));
-
+        # chart_type = st.selectbox("Select a chart type:", ("Area Chart", "Bar Chart", "Line Chart", "Altair Chart", "Plotly Figure", "Heat Map","Stacked Bar Chart","Histogram"));
+        chart_type = st.selectbox("Select a chart type:", ("Plotly Figure", "Heat Map","Stacked Bar Chart","Histogram"));
         # Conditional rendering based on the dropdown selection
         if chart_type == "Area Chart"{area_chart();}
         elif chart_type == "Bar Chart"{bar_chart();}
@@ -36,6 +39,7 @@ can dashboard {
         elif chart_type == "Plotly Figure"{plotly_figure();}
         elif chart_type == "Heat Map"{heat_map();}
         elif chart_type == "Stacked Bar Chart"{stacked_bar_chart();}
+        elif chart_type == "Histogram"{plotly_histogram();}
     } else {
         init();
     }
@@ -108,15 +112,101 @@ can dashboard {
 }
 
 :can:plotly_figure {
-    x1 = np.random.randn(200) - 2;
-    x2 = np.random.randn(200);
-    x3 = np.random.randn(200) + 2;
+    # x1 = np.random.randn(200) - 2;
+    # x2 = np.random.randn(200);
+    # x3 = np.random.randn(200) + 2;
 
-    hist_data = [x1, x2, x3];
-    group_labels = ['Group 1', 'Group 2', 'Group 3'];
-
-    fig = ff.create_distplot(hist_data, group_labels, bin_size=[.1, .25, .5]);
+    # hist_data = [x1, x2, x3];
+    # group_labels = ['Group 1', 'Group 2', 'Group 3'];
+    criteria = None;
+    workers_data_dir = os.path.abspath("results");
+    distribution_file = os.path.abspath(".human_eval_config/distribution.json");
+    response_file = os.path.abspath(".human_eval_config/responses.json");
+    prompt_data_dir = os.path.abspath("data");
+    prompt_info_file = os.path.abspath(".human_eval_config/prompt_info.json");
+    with open(os.path.abspath(".human_eval_config/models_responses.json"), "r") as f{
+        data=json.load(f);
+        list_of_models = data[next(iter(data))].keys();
+    }
+    with open(os.path.abspath(".human_eval_config/config.json"), "r") as f{
+        eval_type = json.load(f)["hv_method"];
+    }
+    if (eval_type == "A/B Testing") {
+        criteria = ["overall"];
+    }
+    formatted_data = format_responses_by_prompt(workers_data_dir, distribution_file, response_file);
+    normalize_df = pd.json_normalize(formatted_data, record_path=['responses'], meta=['prompt_id']);
+    prompt_info = get_unique_prompt_ids(prompt_data_dir,prompt_info_file);
+    prompt_id_to_name = dict(zip(prompt_info.values(), prompt_info.keys()));
+    # Plotting with Plotly
+    normalize_df['prompt_name'] = normalize_df['prompt_id'].replace(prompt_id_to_name);
+    normalize_df = normalize_df[normalize_df['time_taken'] <= 1000];
+    data=[];
+    labels=[];
+    for (name, group) in normalize_df.groupby('prompt_name'){
+        data.append(group['time_taken'].tolist());
+        labels.append(name);
+    }
+    fig = ff.create_distplot(
+        data, labels, 
+        bin_size=.2,  # Adjust bin size as needed
+        show_hist=True, show_rug=False,
+        histnorm='probability density'
+    );
+    # fig = ff.create_distplot(hist_data, group_labels, bin_size=[.1, .25, .5]);
+    fig.update_layout(
+        title_text='Distribution of Seconds-per-Comparison by Prompt',
+        xaxis_title_text='Time Taken (seconds)',
+        yaxis_title_text='Density'
+    );
     st.plotly_chart(fig, use_container_width=True);
+}
+
+
+:can:plotly_histogram {
+    criteria = None;
+    workers_data_dir = os.path.abspath("results");
+    distribution_file = os.path.abspath(".human_eval_config/distribution.json");
+    response_file = os.path.abspath(".human_eval_config/responses.json");
+    prompt_data_dir = os.path.abspath("data");
+    prompt_info_file = os.path.abspath(".human_eval_config/prompt_info.json");
+    with open(os.path.abspath(".human_eval_config/models_responses.json"), "r") as f{
+        data=json.load(f);
+        list_of_models = data[next(iter(data))].keys();
+    }
+    with open(os.path.abspath(".human_eval_config/config.json"), "r") as f{
+        eval_type = json.load(f)["hv_method"];
+    }
+    if (eval_type == "A/B Testing") {
+        criteria = ["overall"];
+    }
+    formatted_data = format_responses_by_prompt(workers_data_dir, distribution_file, response_file);
+    normalize_df = pd.json_normalize(formatted_data, record_path=['responses'], meta=['prompt_id']);
+    prompt_info = get_unique_prompt_ids(prompt_data_dir,prompt_info_file);
+    prompt_id_to_name = dict(zip(prompt_info.values(), prompt_info.keys()));
+    # Plotting with Plotly
+    normalize_df['prompt_name'] = normalize_df['prompt_id'].replace(prompt_id_to_name);
+    normalize_df = normalize_df[normalize_df['time_taken'] <= 1000];
+    fig = px.histogram(
+        normalize_df, 
+        x='time_taken', 
+        color='prompt_name',
+        barmode='overlay', 
+        nbins=30,
+        histnorm='probability density'
+    );
+
+    # Update the layout for a better look
+    fig.update_layout(
+        title_text='Histogram of Seconds-per-Comparison by Prompt', 
+        xaxis_title_text='Time Taken (seconds)',
+        yaxis_title_text='Density', 
+        bargap=0.1,  
+        bargroupgap=0.1
+    );
+
+    st.plotly_chart(fig, use_container_width=True);
+
 }
 
 :can:heat_map {
@@ -124,17 +214,35 @@ can dashboard {
     workers_data_dir = os.path.abspath("results");
     distribution_file = os.path.abspath(".human_eval_config/distribution.json");
     response_file = os.path.abspath(".human_eval_config/responses.json");
+    prompt_data_dir = os.path.abspath("data");
+    prompt_info_file = os.path.abspath(".human_eval_config/prompt_info.json");
     with open(os.path.abspath(".human_eval_config/models_responses.json"), "r") as f{
-        list_of_models = list (json.load(f)[0].keys());
+        data=json.load(f);
+        list_of_models = data[next(iter(data))].keys();
     }
     with open(os.path.abspath(".human_eval_config/config.json"), "r") as f{
         eval_type = json.load(f)["hv_method"];
     }
     if (eval_type == "A/B Testing") {
-        criteria = ["prefer"];
+        criteria = ["overall"];
     }
-    formatted_data = format_responses(workers_data_dir, distribution_file,response_file=response_file,criteria_set = criteria);
-    generate_heatmaps(formatted_data,list_of_models, criteria);
+    formatted_data = format_responses_by_prompt(workers_data_dir, distribution_file, response_file);
+    prompt_info = get_unique_prompt_ids(prompt_data_dir,prompt_info_file);
+    prompt_ids = list(prompt_info.keys());
+    prompt_ids.insert(0, "all_combined");
+    prompt_ids.insert(1, "time_vs_pair");
+    selected_prompt_id = st.selectbox("Select Prompt:", prompt_ids);
+    if selected_prompt_id == "time_vs_pair"{
+        generate_heatmap_time(formatted_data);
+        
+    } elif selected_prompt_id != "all_combined" {
+        generate_heatmaps(formatted_data, list_of_models,prompt_info[selected_prompt_id], criteria);
+    } else {
+        generate_heatmaps(formatted_data, list_of_models,selected_prompt_id, criteria);
+    }
+    # # formatted_data = format_responses(workers_data_dir, distribution_file,response_file=response_file,criteria_set = criteria);
+    # formatted_data = parse_worker_data(workers_data_dir,distribution_file,response_file);
+    # generate_heatmaps(formatted_data,list_of_models, criteria);
 }
 
 :can:stacked_bar_chart {
@@ -142,17 +250,26 @@ can dashboard {
     workers_data_dir = os.path.abspath("results");
     distribution_file = os.path.abspath(".human_eval_config/distribution.json");
     response_file = os.path.abspath(".human_eval_config/responses.json");
+    prompt_data_dir = os.path.abspath("data");
+    prompt_info_file = os.path.abspath(".human_eval_config/prompt_info.json");
     with open(os.path.abspath(".human_eval_config/models_responses.json"), "r") as f{
-        list_of_models = list (json.load(f)[0].keys());
+        data=json.load(f);
+        list_of_models = data[next(iter(data))].keys();
     }
     with open(os.path.abspath(".human_eval_config/config.json"), "r") as f{
         eval_type = json.load(f)["hv_method"];
     }
     if (eval_type == "A/B Testing") {
-        criteria = ["prefer"];
+        criteria = ["overall"];
     }
-
-    # formatted_data = parse_worker_data(workers_data_dir,distribution_file,response_file);
-    formatted_data = format_responses(workers_data_dir, distribution_file,response_file=response_file,criteria_set = criteria);
-    generate_stacked_bar_chart(formatted_data, list_of_models, criteria);
+    formatted_data = format_responses_by_prompt(workers_data_dir, distribution_file, response_file);
+    prompt_info = get_unique_prompt_ids(prompt_data_dir,prompt_info_file);
+    prompt_ids = list(prompt_info.keys());
+    prompt_ids.insert(0, "all_combined");
+    selected_prompt_id = st.selectbox("Select Prompt:", prompt_ids);
+    if selected_prompt_id != "all_combined"{
+        generate_stacked_bar_chart(formatted_data, list_of_models,prompt_info[selected_prompt_id], criteria);
+    } else{
+        generate_stacked_bar_chart(formatted_data, list_of_models,selected_prompt_id, criteria);
+    }
 }
