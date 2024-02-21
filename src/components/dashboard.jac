@@ -58,9 +58,9 @@ can dashboard {
         uploaded_file = st.file_uploader("Upload the Output File");
         submitted = st.form_submit_button("Upload & Unzip");
         st.caption("CAUTION: This will overwrite the existing files.");
-        shutil.rmtree("results", ignore_errors=True);
-        shutil.rmtree(".human_eval_config", ignore_errors=True);
         if submitted and uploaded_file {
+            shutil.rmtree("results", ignore_errors=True);
+            shutil.rmtree(".human_eval_config", ignore_errors=True);
             with zipfile.ZipFile(uploaded_file, "r") as zip_ref {zip_ref.extractall(".");}
             if os.path.exists("results.zip") {
                 with zipfile.ZipFile("results.zip", "r") as zip_ref {zip_ref.extractall(".");}
@@ -73,6 +73,7 @@ can dashboard {
             st.rerun();
         }
     }
+    if st.button("Refresh") {st.rerun();}
 }
 
 :can:status_indicator {

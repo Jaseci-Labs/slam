@@ -32,7 +32,7 @@ docker build -t jaseci/slam-tool:latest .
 Step 2: add the following environment variables to the container to setup the admin panel
 
 ```bash
-docker run -p 8501:8501 -e SLAM_ADMIN_USERNAME=<user_name> -e SLAM_ADMIN_PASSWORD=<password> SLAM_PROJECT_ID=<projectname> jaseci/slam-tool:latest
+docker run -p 8501:8501 -e SLAM_ADMIN_USERNAME=<user_name> -e SLAM_ADMIN_PASSWORD=<password> jaseci/slam-tool:latest
 ```
 
 Step 3: Open the browser and go to the following link
