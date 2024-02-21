@@ -27,8 +27,8 @@ can dashboard {
     init();
     if st.session_state.get("current_hv_config", None) {
         status_indicator();
-        chart_type = st.selectbox("Select a chart type:", ("Area Chart", "Bar Chart", "Line Chart", "Altair Chart", "Plotly Figure", "Heat Map","Stacked Bar Chart","Histogram"));
-
+        # chart_type = st.selectbox("Select a chart type:", ("Area Chart", "Bar Chart", "Line Chart", "Altair Chart", "Plotly Figure", "Heat Map","Stacked Bar Chart","Histogram"));
+        chart_type = st.selectbox("Select a chart type:", ("Plotly Figure", "Heat Map","Stacked Bar Chart","Histogram"));
         # Conditional rendering based on the dropdown selection
         if chart_type == "Area Chart"{area_chart();}
         elif chart_type == "Bar Chart"{bar_chart();}
