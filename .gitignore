@@ -11,6 +11,7 @@ settings.yaml
 .new_backup
 notebooks/*.csv
 notebooks/*.xlsx
+*.zip
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

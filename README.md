@@ -18,7 +18,7 @@ you understand the performance of the LLMs.
 
 ### Prerequisites
 
-- Python 3.6 or higher
+- Python 3.11 or higher
 - Docker (Optional)
 
 ### Docker Installation
@@ -119,12 +119,19 @@ Step 1: Set the Google Drive folder id as a environment variable
 export GDRIVE_FOLDER_ID=<folder_id>
 ```
 
-Step 2: Initiate a CRON Job to run the `scripts/results2drive.py` every 5 minutes. Make sure to have a oauth files (`setting.yaml` and `credentials.json`) in the folder you initiate the cron job.
+Step 2: Initiate a CRON Job to run the `scripts/backup.jac` every 5 minutes. Make sure to have a oauth files (`setting.yaml` and `credentials.json`) in the folder you initiate the cron job.
 ```bash
-*/5 * * * * /path/to/python scripts/results2drive.py
+*/5 * * * * jac run scripts/backup.jac
 ```
 
 Follow the [PyDrive OAuth](https://pythonhosted.org/PyDrive/oauth.html) to setup the oauth files.
+
+### Loading BackUps
+
+Step 1: Open the App and Login with the admin credentials
+Step 2: Go to the Dashboard page and Drag and Drop your Zip file
+Step 3: Click Upload and Unzip
+Step 4: Click Refresh to see the Diagrams and Visualizations
 
 ## Walkthrough
 
