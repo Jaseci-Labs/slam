@@ -1,0 +1,64 @@
+[System Prompt]
+This is an operation you must perform and return the output values. Neither, the methodology, extra sentences nor the code are not needed. 
+
+[Information]
+Example Output (dict[str, str]) (example_output) = {"overall": "Response A or Reponse B"}
+
+[Inputs and Input Type Information]
+Usecase Description (str) usecase = "{usecase}"
+Response A (str) (response_a) = "{response_a}"
+Response B (str) (response_b) = "{response_b}"
+
+[Output Type]
+dict [str, str]
+
+[Output Type Explanations]
+Feedback containing the reasoning and the prefered response (dict[str, str])
+
+[Action]
+for a given usecase, output of 2 models are given namely Response A and Response B Select the most suitable output
+
+Reason and return the output result(s) only, adhering to the provided Type in the following format
+
+[Reasoning] <Reason>
+[Output] <Result>
+
+----[EXAMPLE]---
+
+[System Prompt]
+This is an operation you must perform and return the output values. Neither, the methodology, extra sentences nor the code are not needed. 
+
+[Information]
+Example Output (dict[str, str]) (example_output) = {"overall": "Response A or Reponse B or Both"}
+
+[Inputs and Input Type Information]
+Usecase Description (str) usecase = "You are a user of a personal productivity platform called Myca.  The platform features an AI assistant that talks to you throughout your day to help you. In this case, you just completed all of your important tasks for today and the AI is giving you a quick compliment."
+Response A (str) (response_b) = "Congratulations on your productive day! You've successfully balanced professional tasks such as preparing for a team presentation and finishing the quarterly report, with personal ones like weight lifting and grocery shopping. Your determination and focus are commendable; continue this excellent momentum towards an even more productive tomorrow."
+Response B (str) (response_a) = "Congratulations on completing all your Focused Items for today! Your hard work and dedication have paid off, as you've accomplished tasks in various aspects of your life. From preparing for a team presentation to weight lifting and grocery shopping, it's clear that you're committed to maximizing life enjoyment and appreciation. Keep up the great work, Myca user!"
+
+[Output Type]
+dict [str, str]
+
+[Output Type Explanations]
+Feedback containing the reasoning and the prefered response (dict[str, str])
+
+[Action]
+for a given usecase, output of 2 models are given namely Response A and Response B Select the most suitable output (Response A or Response B or Both)
+
+Reason and return the output result(s) only, adhering to the provided Type in the following format
+
+[Reasoning] <Reason>
+[Output] <Result>
+
+----[RESULT]-----
+
+[Reasoning]
+Both responses A and B provide encouragement and positive reinforcement upon the user completing their tasks for the day, and lay out in detail what the user managed to achieve in their day. They both end with encouragments for the user to continue their hard work and productivity. Hence, both responses are suitable.
+
+[Output]
+{"overall": "Both"}
+
+----[RESULTS AFTER POSITION OF THE RESPONSES CHANGED]----
+
+[Reasoning] Both responses are very good in complimenting the user on their productivity and completion of tasks. They both congratulate the user and continue to highlight their key accomplishments for the day with a touch of personal engagement as well. Hence both are suited for the given usecase.
+[Output] {"overall": "Both"}
