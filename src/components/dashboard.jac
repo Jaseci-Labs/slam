@@ -21,7 +21,7 @@ can bar_chart;
 can line_chart;
 can altair_chart;
 can plotly_figure;
-can heat_map;
+can heat_map(workers_data_dir:str = None, eval_type:str = None);
 can stacked_bar_chart;
 can plotly_histogram;
 
@@ -50,6 +50,10 @@ can dashboard {
     if os.path.exists(os.path.join(".human_eval_config", "config.json")) {
         st.session_state.current_hv_config = json.load(open(os.path.join(".human_eval_config", "config.json")));
         with open(os.path.join(".human_eval_config", "worker_count.txt"), "r") as f {st.session_state.current_worker_count = int(f.read());}
+        with open(os.path.abspath(".human_eval_config/models_responses.json"), "r") as f{
+        data=json.load(f);
+        st.session_state.active_list_of_models = data[next(iter(data))].keys();
+        }
     } else {st.error("Human Evaluation config was not found. Initialize a Human Evaluation first.");}
 
     if os.path.exists("results") and len(os.listdir("results")) > 0 {st.session_state.hv_results_files = os.listdir("results");}
@@ -118,10 +122,6 @@ can dashboard {
     response_file = os.path.abspath(".human_eval_config/responses.json");
     prompt_data_dir = os.path.abspath("data");
     prompt_info_file = os.path.abspath(".human_eval_config/prompt_info.json");
-    with open(os.path.abspath(".human_eval_config/models_responses.json"), "r") as f{
-        data=json.load(f);
-        list_of_models = data[next(iter(data))].keys();
-    }
     with open(os.path.abspath(".human_eval_config/config.json"), "r") as f{
         eval_type = json.load(f)["hv_method"];
     }
@@ -164,10 +164,6 @@ can dashboard {
     response_file = os.path.abspath(".human_eval_config/responses.json");
     prompt_data_dir = os.path.abspath("data");
     prompt_info_file = os.path.abspath(".human_eval_config/prompt_info.json");
-    with open(os.path.abspath(".human_eval_config/models_responses.json"), "r") as f{
-        data=json.load(f);
-        list_of_models = data[next(iter(data))].keys();
-    }
     with open(os.path.abspath(".human_eval_config/config.json"), "r") as f{
         eval_type = json.load(f)["hv_method"];
     }
@@ -203,23 +199,22 @@ can dashboard {
 
 }
 
-:can:heat_map {
+:can:heat_map(workers_data_dir:str = None, eval_type:str = None) {
     criteria = None;
-    workers_data_dir = os.path.abspath("results");
+    if not workers_data_dir {workers_data_dir = os.path.abspath("results");}
     distribution_file = os.path.abspath(".human_eval_config/distribution.json");
     response_file = os.path.abspath(".human_eval_config/responses.json");
     prompt_data_dir = os.path.abspath("data");
     prompt_info_file = os.path.abspath(".human_eval_config/prompt_info.json");
-    with open(os.path.abspath(".human_eval_config/models_responses.json"), "r") as f{
-        data=json.load(f);
-        list_of_models = data[next(iter(data))].keys();
-    }
-    with open(os.path.abspath(".human_eval_config/config.json"), "r") as f{
-        eval_type = json.load(f)["hv_method"];
+    if not eval_type {
+        with open(os.path.abspath(".human_eval_config/config.json"), "r") as f{
+            eval_type = json.load(f)["hv_method"];
+        }
     }
     if (eval_type == "A/B Testing") {
         criteria = ["overall"];
     }
+    
     formatted_data = format_responses_by_prompt(workers_data_dir, distribution_file, response_file);
     prompt_info = get_unique_prompt_ids(prompt_data_dir,prompt_info_file);
     prompt_ids = list(prompt_info.keys());
@@ -230,9 +225,9 @@ can dashboard {
         generate_heatmap_time(formatted_data);
         
     } elif selected_prompt_id != "all_combined" {
-        generate_heatmaps(formatted_data, list_of_models,prompt_info[selected_prompt_id], criteria);
+        generate_heatmaps(formatted_data, st.session_state.active_list_of_models,prompt_info[selected_prompt_id], criteria);
     } else {
-        generate_heatmaps(formatted_data, list_of_models,selected_prompt_id, criteria);
+        generate_heatmaps(formatted_data, st.session_state.active_list_of_models,selected_prompt_id, criteria);
     }
     # # formatted_data = format_responses(workers_data_dir, distribution_file,response_file=response_file,criteria_set = criteria);
     # formatted_data = parse_worker_data(workers_data_dir,distribution_file,response_file);
@@ -246,10 +241,6 @@ can dashboard {
     response_file = os.path.abspath(".human_eval_config/responses.json");
     prompt_data_dir = os.path.abspath("data");
     prompt_info_file = os.path.abspath(".human_eval_config/prompt_info.json");
-    with open(os.path.abspath(".human_eval_config/models_responses.json"), "r") as f{
-        data=json.load(f);
-        list_of_models = data[next(iter(data))].keys();
-    }
     with open(os.path.abspath(".human_eval_config/config.json"), "r") as f{
         eval_type = json.load(f)["hv_method"];
     }
@@ -262,8 +253,8 @@ can dashboard {
     prompt_ids.insert(0, "all_combined");
     selected_prompt_id = st.selectbox("Select Prompt:", prompt_ids);
     if selected_prompt_id != "all_combined"{
-        generate_stacked_bar_chart(formatted_data, list_of_models,prompt_info[selected_prompt_id], criteria);
+        generate_stacked_bar_chart(formatted_data, st.session_state.active_list_of_models,prompt_info[selected_prompt_id], criteria);
     } else{
-        generate_stacked_bar_chart(formatted_data, list_of_models,selected_prompt_id, criteria);
+        generate_stacked_bar_chart(formatted_data, st.session_state.active_list_of_models,selected_prompt_id, criteria);
     }
 }
