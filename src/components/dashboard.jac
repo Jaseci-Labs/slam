@@ -50,10 +50,17 @@ can dashboard {
     if os.path.exists(os.path.join(".human_eval_config", "config.json")) {
         st.session_state.current_hv_config = json.load(open(os.path.join(".human_eval_config", "config.json")));
         with open(os.path.join(".human_eval_config", "worker_count.txt"), "r") as f {st.session_state.current_worker_count = int(f.read());}
-        with open(os.path.abspath(".human_eval_config/models_responses.json"), "r") as f{
-        data=json.load(f);
-        st.session_state.active_list_of_models = list(data[next(iter(data))].keys());
+        st.session_state.workers_data_dir = os.path.abspath("results");
+        st.session_state.distribution_file = os.path.abspath(os.path.join(".human_eval_config", "distribution.json"));
+        st.session_state.response_file = os.path.abspath(os.path.join(".human_eval_config", "responses.json"));
+        st.session_state.prompt_data_dir = os.path.abspath("data");
+        st.session_state.prompt_info_file = os.path.abspath(os.path.join(".human_eval_config", "prompt_info.json"));
+        st.session_state.models_responses = os.path.abspath(os.path.join(".human_eval_config", "models_responses.json"));
+        with open(st.session_state.models_responses, "r") as f{
+            data=json.load(f);
+            st.session_state.active_list_of_models = list(data[next(iter(data))].keys());
         }
+        if SELECTED_PROMPT_KEY not in st.session_state{st.session_state[SELECTED_PROMPT_KEY] = 'all_combined';}
     } else {st.error("Human Evaluation config was not found. Initialize a Human Evaluation first.");}
 
     if os.path.exists("results") and len(os.listdir("results")) > 0 {st.session_state.hv_results_files = os.listdir("results");}
@@ -110,27 +117,14 @@ can dashboard {
 }
 
 :can:plotly_figure {
-    # x1 = np.random.randn(200) - 2;
-    # x2 = np.random.randn(200);
-    # x3 = np.random.randn(200) + 2;
-
-    # hist_data = [x1, x2, x3];
-    # group_labels = ['Group 1', 'Group 2', 'Group 3'];
     criteria = None;
-    workers_data_dir = os.path.abspath("results");
-    distribution_file = os.path.abspath(".human_eval_config/distribution.json");
-    response_file = os.path.abspath(".human_eval_config/responses.json");
-    prompt_data_dir = os.path.abspath("data");
-    prompt_info_file = os.path.abspath(".human_eval_config/prompt_info.json");
-    with open(os.path.abspath(".human_eval_config/config.json"), "r") as f{
-        eval_type = json.load(f)["hv_method"];
-    }
+    eval_type = st.session_state.current_hv_config["hv_method"];
     if (eval_type == "A/B Testing") {
         criteria = ["overall"];
     }
-    formatted_data = format_responses_by_prompt(workers_data_dir, distribution_file, response_file);
+    formatted_data = format_responses_by_prompt(st.session_state.workers_data_dir, st.session_state.distribution_file, st.session_state.response_file);
     normalize_df = pd.json_normalize(formatted_data, record_path=['responses'], meta=['prompt_id']);
-    prompt_info = get_unique_prompt_ids(prompt_data_dir,prompt_info_file);
+    prompt_info = get_unique_prompt_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
     prompt_id_to_name = dict(zip(prompt_info.values(), prompt_info.keys()));
     # Plotting with Plotly
     normalize_df['prompt_name'] = normalize_df['prompt_id'].replace(prompt_id_to_name);
@@ -159,22 +153,15 @@ can dashboard {
 
 :can:plotly_histogram {
     criteria = None;
-    workers_data_dir = os.path.abspath("results");
-    distribution_file = os.path.abspath(".human_eval_config/distribution.json");
-    response_file = os.path.abspath(".human_eval_config/responses.json");
-    prompt_data_dir = os.path.abspath("data");
-    prompt_info_file = os.path.abspath(".human_eval_config/prompt_info.json");
-    with open(os.path.abspath(".human_eval_config/config.json"), "r") as f{
-        eval_type = json.load(f)["hv_method"];
-    }
+    eval_type = st.session_state.current_hv_config["hv_method"];
     if (eval_type == "A/B Testing") {
         criteria = ["overall"];
     }
-    formatted_data = format_responses_by_prompt(workers_data_dir, distribution_file, response_file);
+    formatted_data = format_responses_by_prompt(st.session_state.workers_data_dir, st.session_state.distribution_file, st.session_state.response_file);
     normalize_df = pd.json_normalize(formatted_data, record_path=['responses'], meta=['prompt_id']);
-    prompt_info = get_unique_prompt_ids(prompt_data_dir,prompt_info_file);
+    prompt_info = get_unique_prompt_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
     prompt_id_to_name = dict(zip(prompt_info.values(), prompt_info.keys()));
-    # Plotting with Plotly
+
     normalize_df['prompt_name'] = normalize_df['prompt_id'].replace(prompt_id_to_name);
     normalize_df = normalize_df[normalize_df['time_taken'] <= 1000];
     fig = px.histogram(
@@ -186,7 +173,6 @@ can dashboard {
         histnorm='probability density'
     );
 
-    # Update the layout for a better look
     fig.update_layout(
         title_text='Histogram of Seconds-per-Comparison by Prompt', 
         xaxis_title_text='Time Taken (seconds)',
@@ -201,45 +187,38 @@ can dashboard {
 
 :can:heat_map(workers_data_dir:str = None, eval_type:str = None, placeholder:str = None, selected_prompt:str = None) {
     criteria = None;
-    if SELECTED_PROMPT_KEY not in st.session_state{st.session_state[SELECTED_PROMPT_KEY] = 'all_combined';}
     selected_prompt_id = st.session_state[SELECTED_PROMPT_KEY];
-    if not workers_data_dir {workers_data_dir = os.path.abspath("results");}
-    distribution_file = os.path.abspath(".human_eval_config/distribution.json");
-    response_file = os.path.abspath(".human_eval_config/responses.json");
-    prompt_data_dir = os.path.abspath("data");
-    prompt_info_file = os.path.abspath(".human_eval_config/prompt_info.json");
+    if not workers_data_dir {workers_data_dir = st.session_state.workers_data_dir;}
     if not eval_type {
-        with open(os.path.abspath(".human_eval_config/config.json"), "r") as f{
-            eval_type = json.load(f)["hv_method"];
-        }
+        eval_type = st.session_state.current_hv_config["hv_method"];
     }
     if (eval_type == "A/B Testing") {
         criteria = ["overall"];
     }
-    
-    formatted_data = format_responses_by_prompt(workers_data_dir, distribution_file, response_file);
-    prompt_info = get_unique_prompt_ids(prompt_data_dir,prompt_info_file);
+
+    st.session_state['eval_type_counter'] += 1;
+    formatted_data = format_responses_by_prompt(workers_data_dir, st.session_state.distribution_file, st.session_state.response_file);
+    prompt_info = get_unique_prompt_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
     prompt_ids = list(prompt_info.keys());
     prompt_ids.insert(0, "all_combined");
     prompt_ids.insert(1, "time_vs_pair");
     if not selected_prompt{
-        new_prompt  = st.selectbox("Select Prompt:", prompt_ids,index=prompt_ids.index(selected_prompt_id),
-            key=SELECTED_PROMPT_KEY);
-        if st.session_state[SELECTED_PROMPT_KEY] != new_prompt{
-            st.session_state[SELECTED_PROMPT_KEY] = new_prompt;
-            placeholder.empty();
+        new_prompt_index = prompt_ids.index(selected_prompt_id);
+        user_selected_prompt = st.selectbox("Select Prompt:", prompt_ids, index=new_prompt_index);
+        if st.session_state[SELECTED_PROMPT_KEY] != user_selected_prompt{st.session_state[SELECTED_PROMPT_KEY] = user_selected_prompt;}
+       }
+    else{ 
+        st.session_state[SELECTED_PROMPT_KEY] = selected_prompt;
+        user_selected_prompt  = selected_prompt;
         }
-    }
-    else{
-       new_prompt = selected_prompt;
-    }
-    if new_prompt == "time_vs_pair"{
+
+    if user_selected_prompt == "time_vs_pair"{
         generate_heatmap_time(formatted_data);
         
-    } elif new_prompt != "all_combined" {
-        generate_heatmaps(placeholder, formatted_data, st.session_state.active_list_of_models,prompt_info[selected_prompt_id], criteria);
+    } elif user_selected_prompt != "all_combined" {
+        generate_heatmaps(placeholder, formatted_data, st.session_state.active_list_of_models,prompt_info[user_selected_prompt], criteria);
     } else {
-        generate_heatmaps(placeholder, formatted_data, st.session_state.active_list_of_models,new_prompt, criteria);
+        generate_heatmaps(placeholder, formatted_data, st.session_state.active_list_of_models,user_selected_prompt, criteria);
     }
     # # formatted_data = format_responses(workers_data_dir, distribution_file,response_file=response_file,criteria_set = criteria);
     # formatted_data = parse_worker_data(workers_data_dir,distribution_file,response_file);
@@ -248,19 +227,12 @@ can dashboard {
 
 :can:stacked_bar_chart {
     criteria = None;
-    workers_data_dir = os.path.abspath("results");
-    distribution_file = os.path.abspath(".human_eval_config/distribution.json");
-    response_file = os.path.abspath(".human_eval_config/responses.json");
-    prompt_data_dir = os.path.abspath("data");
-    prompt_info_file = os.path.abspath(".human_eval_config/prompt_info.json");
-    with open(os.path.abspath(".human_eval_config/config.json"), "r") as f{
-        eval_type = json.load(f)["hv_method"];
-    }
+    eval_type = st.session_state.current_hv_config["hv_method"];
     if (eval_type == "A/B Testing") {
         criteria = ["overall"];
     }
-    formatted_data = format_responses_by_prompt(workers_data_dir, distribution_file, response_file);
-    prompt_info = get_unique_prompt_ids(prompt_data_dir,prompt_info_file);
+    formatted_data = format_responses_by_prompt(st.session_state.workers_data_dir, st.session_state.distribution_file, st.session_state.response_file);
+    prompt_info = get_unique_prompt_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
     prompt_ids = list(prompt_info.keys());
     prompt_ids.insert(0, "all_combined");
     selected_prompt_id = st.selectbox("Select Prompt:", prompt_ids);

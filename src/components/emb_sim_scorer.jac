@@ -27,8 +27,6 @@ glob EMBEDDER_KEY = 'embedder';
 glob SCORER_KEY = 'scorer';
 
 can ui_components {
-    if "selected_prompt" in st.session_state{process_user_selections(st.session_state["selected_prompt"]);}
-
     if ANCHOR_MODEL_KEY not in st.session_state{
         st.session_state[ANCHOR_MODEL_KEY] = 'gpt-4';
     }
@@ -38,6 +36,8 @@ can ui_components {
     if SCORER_KEY not in st.session_state{
         st.session_state[SCORER_KEY] = 'cos_sim';
     }
+    
+    if "selected_prompt" in st.session_state{process_user_selections(st.session_state["selected_prompt"]);}   
 
     model_list=st.session_state.active_list_of_models;
 
