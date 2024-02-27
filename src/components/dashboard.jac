@@ -21,10 +21,10 @@ can bar_chart;
 can line_chart;
 can altair_chart;
 can plotly_figure;
-can heat_map(workers_data_dir:str = None, eval_type:str = None);
+can heat_map(workers_data_dir:str = None, eval_type:str = None, placeholder:str = None, selected_prompt:str = None);
 can stacked_bar_chart;
 can plotly_histogram;
-
+glob SELECTED_PROMPT_KEY = 'selected_prompt';
 
 can dashboard {
     if st.session_state.get("current_hv_config", None) {
@@ -52,7 +52,7 @@ can dashboard {
         with open(os.path.join(".human_eval_config", "worker_count.txt"), "r") as f {st.session_state.current_worker_count = int(f.read());}
         with open(os.path.abspath(".human_eval_config/models_responses.json"), "r") as f{
         data=json.load(f);
-        st.session_state.active_list_of_models = data[next(iter(data))].keys();
+        st.session_state.active_list_of_models = list(data[next(iter(data))].keys());
         }
     } else {st.error("Human Evaluation config was not found. Initialize a Human Evaluation first.");}
 
@@ -199,8 +199,10 @@ can dashboard {
 
 }
 
-:can:heat_map(workers_data_dir:str = None, eval_type:str = None) {
+:can:heat_map(workers_data_dir:str = None, eval_type:str = None, placeholder:str = None, selected_prompt:str = None) {
     criteria = None;
+    if SELECTED_PROMPT_KEY not in st.session_state{st.session_state[SELECTED_PROMPT_KEY] = 'all_combined';}
+    selected_prompt_id = st.session_state[SELECTED_PROMPT_KEY];
     if not workers_data_dir {workers_data_dir = os.path.abspath("results");}
     distribution_file = os.path.abspath(".human_eval_config/distribution.json");
     response_file = os.path.abspath(".human_eval_config/responses.json");
@@ -220,14 +222,24 @@ can dashboard {
     prompt_ids = list(prompt_info.keys());
     prompt_ids.insert(0, "all_combined");
     prompt_ids.insert(1, "time_vs_pair");
-    selected_prompt_id = st.selectbox("Select Prompt:", prompt_ids);
-    if selected_prompt_id == "time_vs_pair"{
+    if not selected_prompt{
+        new_prompt  = st.selectbox("Select Prompt:", prompt_ids,index=prompt_ids.index(selected_prompt_id),
+            key=SELECTED_PROMPT_KEY);
+        if st.session_state[SELECTED_PROMPT_KEY] != new_prompt{
+            st.session_state[SELECTED_PROMPT_KEY] = new_prompt;
+            placeholder.empty();
+        }
+    }
+    else{
+       new_prompt = selected_prompt;
+    }
+    if new_prompt == "time_vs_pair"{
         generate_heatmap_time(formatted_data);
         
-    } elif selected_prompt_id != "all_combined" {
-        generate_heatmaps(formatted_data, st.session_state.active_list_of_models,prompt_info[selected_prompt_id], criteria);
+    } elif new_prompt != "all_combined" {
+        generate_heatmaps(placeholder, formatted_data, st.session_state.active_list_of_models,prompt_info[selected_prompt_id], criteria);
     } else {
-        generate_heatmaps(formatted_data, st.session_state.active_list_of_models,selected_prompt_id, criteria);
+        generate_heatmaps(placeholder, formatted_data, st.session_state.active_list_of_models,new_prompt, criteria);
     }
     # # formatted_data = format_responses(workers_data_dir, distribution_file,response_file=response_file,criteria_set = criteria);
     # formatted_data = parse_worker_data(workers_data_dir,distribution_file,response_file);
