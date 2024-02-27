@@ -196,7 +196,6 @@ can dashboard {
         criteria = ["overall"];
     }
 
-    st.session_state['eval_type_counter'] += 1;
     formatted_data = format_responses_by_prompt(workers_data_dir, st.session_state.distribution_file, st.session_state.response_file);
     prompt_info = get_unique_prompt_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
     prompt_ids = list(prompt_info.keys());

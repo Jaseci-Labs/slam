@@ -36,7 +36,7 @@ can ui_components {
     if SCORER_KEY not in st.session_state{
         st.session_state[SCORER_KEY] = 'cos_sim';
     }
-    
+
     if "selected_prompt" in st.session_state{process_user_selections(st.session_state["selected_prompt"]);}   
 
     model_list=st.session_state.active_list_of_models;
@@ -127,7 +127,7 @@ can ui_components {
 
 
 :can:process_user_selections(selected_prompt:str = None){
-    with open(os.path.abspath(".human_eval_config/distribution.json"),"r") as fp{distribution = json.load(fp);}
+    with open(st.session_state.distribution_file,"r") as fp{distribution = json.load(fp);}
     with open(os.path.abspath(".human_eval_config/responses.json"),"r") as fp{responses_dict = json.load(fp);}
     with open(os.path.abspath(".human_eval_config/models_responses.json"),"r") as fp{models_responses_dict = json.load(fp);}
     config_name = f"{st.session_state['anchor_model']}_{st.session_state['embedder']}_{st.session_state['scorer']}";
@@ -163,7 +163,7 @@ can ui_components {
                 worker_set["question_index"]+=1;
             }
             worker_set["end_time"] = time.time();
-            with open(f"{basedir}/{id}.json", "w") as output {
+            with open(f"{os.path.join(basedir, id)}.json", "w") as output {
                 json.dump(worker_set, output,indent=4);
             }
             id+=1;
