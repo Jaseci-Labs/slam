@@ -6,12 +6,21 @@ import:py from sklearn.metrics.pairwise, cosine_similarity;
 import:py numpy as np;
 import:jac from dashboard, heat_map;
 import:py from pathlib, Path;
+import:py from sentence_transformers, SentenceTransformer;
+import:py from nltk.tokenize, word_tokenize;
+import:py from nltk.translate.bleu_score, sentence_bleu;
+import:py from nltk.translate.bleu_score, SmoothingFunction;
+import:py from torch, tensor;
+import:py from nltk, ngrams;
 
 can generate_embeddings(anchor_responses_text:str, response_texts:list, embedder:str);
-# can calculate_similarity_score;
+can calculate_similarity_score (anchor_embeddings:list, response_embeddings:list, scorer:str);
 can display_results(basedir:str, heatmap_placeholder:st,selected_prompt:str=None);
 can process_user_selections(selected_prompt:str=None);
 can calculate_embedding_score(responses: list, anchor_reponses_id: dict, responses_dict: dict);
+can embed_sentence (sentence:str, model:SentenceTransformer);
+can compute_bleu_score (reference:list, candidate:list);
+can semantic_bleu_score (anchor_responses_text:list, response_texts:list, model: SentenceTransformer , ngram_size:int=4, scaling_factor:float=1, bleu_weight:float=0.5);
 
 glob ANCHOR_MODEL_KEY = 'anchor_model';
 glob EMBEDDER_KEY = 'embedder';
@@ -37,7 +46,7 @@ can ui_components {
         with col1{
             anchor_model_selection = st.selectbox(
                 "Select Anchor Model",
-                options=st.session_state.active_list_of_models,
+                options=model_list,
                 key=ANCHOR_MODEL_KEY,index=model_list.index(st.session_state[ANCHOR_MODEL_KEY])
             );
         }
@@ -51,7 +60,7 @@ can ui_components {
         with col3{
             scorer_selection = st.selectbox(
                 "Select Scorer",
-                options=['cos_sim', 'sem-bleu'],
+                options=['cos_sim', 'sem_bleu'],
                 key=SCORER_KEY, index=['cos_sim', 'sem_bleu'].index(st.session_state[SCORER_KEY])
             );
         }
@@ -65,25 +74,26 @@ can ui_components {
 }
 
 
-:can:generate_embeddings (anchor_responses_text:str, response_texts:list, embedder:str) {
+:can:generate_embeddings (anchor_responses_text:list, response_texts:list, embedder:str) {
     anchor_embeddings = [];
     response_embeddings = [];
-    
-    # SBERT embedding
+
     if embedder == "SBERT" {
-        import:py from sentence_transformers, SentenceTransformer;
         model = SentenceTransformer('all-MiniLM-L6-v2');
         anchor_embeddings = model.encode(anchor_responses_text, convert_to_tensor=True).cpu();
         response_embeddings = model.encode(response_texts, convert_to_tensor=True).cpu();
     } elif embedder == "USE" {
         import:py tensorflow_hub as hub;
         model = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4");
-        anchor_embeddings = model(anchor_responses_text)['outputs'];
-        response_embeddings = model(response_texts)['outputs'];
+        if not isinstance(anchor_responses_text, list){
+            anchor_responses_text = [anchor_responses_text];
+        }
+        response_texts = [text for text in response_texts if isinstance(text, str)];
+        anchor_embeddings = model(anchor_responses_text).numpy().tolist();
+        response_embeddings = model(response_texts).numpy().tolist();
     } elif embedder == "USE_QA" {
         import:py tensorflow_hub as hub;
         model = hub.load("https://tfhub.dev/google/universal-sentence-encoder-qa/3");
-        # For USE QA, assuming anchor_responses_text is a question and response_texts are answers
         anchor_embeddings = model.signatures['question_encoder'](tf.constant([anchor_responses_text]))['outputs'];
         response_embeddings = model.signatures['response_encoder'](input=tf.constant(response_texts), context=tf.constant(response_texts))['outputs'];
     }
@@ -99,21 +109,16 @@ can ui_components {
 
     if scorer == "cos_sim" {
         for anchor_embedding in anchor_embeddings {
-            # Reshape anchor embedding for cosine_similarity function
             anchor_embedding_reshaped = anchor_embedding.reshape(1, -1);
-            # Compute similarity scores between the current anchor and all response embeddings
             similarities = cosine_similarity(anchor_embedding_reshaped, response_embeddings).flatten();
             scores.append(similarities);
         }
         return scores;
-    }
-    # Add more scoring methods here
-    else {
+    } else {
         st.error(f"Scorer '{scorer}' is not supported.");
         return None;
     }
 }
-
 
 
 :can:display_results(basedir:str,heatmap_placeholder:st, selected_prompt:str=None) {
@@ -176,10 +181,62 @@ can ui_components {
 :can:calculate_embedding_score(responses: list, anchor_reponses_id: dict, responses_dict: dict) -> None {
     anchor_reponses_text = [responses_dict[resp_id] for resp_id in anchor_reponses_id];
     response_texts = [responses_dict[resp_id] for resp_id in responses.values()];
-    (anchor_embeddings, response_embeddings) = generate_embeddings(anchor_reponses_text,response_texts, st.session_state['embedder']);
-    scores = calculate_similarity_score(anchor_embeddings, response_embeddings, st.session_state['scorer']);
-    average_scores = np.mean(scores, axis=0);
+    if not st.session_state['scorer'] == "sem_bleu" {
+        (anchor_embeddings, response_embeddings) = generate_embeddings(anchor_reponses_text,response_texts, st.session_state['embedder']);
+        scores = calculate_similarity_score(anchor_embeddings, response_embeddings, st.session_state['scorer']);
+        average_scores = np.mean(scores, axis=0);
+    } else {
+        model = SentenceTransformer('all-MiniLM-L6-v2');
+        average_scores = semantic_bleu_score(anchor_reponses_text,response_texts, model);
+    }
     best_response_idx = np.argmax(average_scores);
     return best_response_idx;
 }
 
+:can:embed_sentence (sentence:str, model:SentenceTransformer) {
+    return model.encode(sentence, convert_to_tensor=True);
+}
+
+
+:can:compute_bleu_score (reference:str, candidate:str) {
+    reference_tokens = word_tokenize(reference);
+    candidate_tokens = word_tokenize(candidate);
+    smoothie = SmoothingFunction().method4;
+    bleu_score = sentence_bleu(reference_tokens, candidate_tokens, smoothing_function=smoothie);
+    return bleu_score;
+}
+
+
+:can:semantic_bleu_score (anchor_responses_text:list, response_texts:list, model: SentenceTransformer , ngram_size:int=4, scaling_factor:float=1, bleu_weight:float=0.5) {
+    scores = [];
+    for candidate in response_texts {
+        anchor_score=[];
+        for references in anchor_responses_text{
+            ref_ngrams = list(ngrams(references.split(), n=ngram_size));
+            cand_ngrams = list(ngrams(candidate.split(), n=ngram_size));
+
+            if not ref_ngrams or not cand_ngrams {
+                print("Empty n-grams detected. Skipping this candidate.");
+                continue;
+            }
+            ref_embeddings = [embed_sentence(' '.join(ngram), model).cpu().numpy() for ngram in ref_ngrams];
+            cand_embeddings = [embed_sentence(' '.join(ngram), model).cpu().numpy() for ngram in cand_ngrams];
+            ref_tensor = tensor(ref_embeddings);
+            cand_tensor = tensor(cand_embeddings);
+            if ref_tensor.size(0) == 0 or cand_tensor.size(0) == 0 {
+                print("Empty embeddings detected. Skipping this candidate.");
+                continue;
+            }
+            cosine_scores = cosine_similarity(ref_tensor, cand_tensor).flatten();
+            sem_scores = cosine_scores * scaling_factor;
+            bleu_score = compute_bleu_score(references, candidate);
+            if isinstance(bleu_score, (list, np.ndarray)) {
+                bleu_score = np.mean(bleu_score);
+            }
+            adjusted_bleu = np.mean(sem_scores) + bleu_weight * bleu_score;
+            anchor_score.append(adjusted_bleu);
+        }
+        scores.append(np.nanmean(adjusted_bleu));
+    }
+    return scores;
+}
