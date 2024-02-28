@@ -2,6 +2,7 @@
 runs/
 data/
 results/
+sim_results/
 test.ipynb
 test.py
 .human_eval_config

@@ -8,6 +8,7 @@ import:jac from components.dashboard, dashboard;
 import:jac from components.llm_eval, evaluator;
 import:jac from components.about, about;
 import:jac from components.theme, footer;
+import:jac from components.emb_sim_scorer, ui_components;
 
 can main {
     if "admin_privileges" not in st.session_state {st.session_state.admin_privileges = False;} 
@@ -18,10 +19,15 @@ can main {
         if not st.session_state.admin_privileges {login();}
         else {
             (dashboard_tab, generator_tab, evaluation_tab, setup_tab) = st.tabs(["Dashboard",
-                                        "Response Generator", "GPT Evaluator", "Human Eval Setup"]);
+                                        "Response Generator", "Auto Evaluator", "Human Eval Setup"]);
             with dashboard_tab {dashboard();}
             with generator_tab {generator();}
-            with evaluation_tab {evaluator();}
+            with evaluation_tab {
+                (gpt_evaluator, sim_scorer_tab) = st.tabs(["GPT Evaluator","Similarity Scorer"]);
+                with gpt_evaluator {evaluator();}
+                with sim_scorer_tab {ui_components();}
+                
+            }
             with setup_tab {setup();}
         }
     }
