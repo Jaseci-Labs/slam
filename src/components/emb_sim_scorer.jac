@@ -37,11 +37,10 @@ can ui_components {
         st.session_state[SCORER_KEY] = 'cos_sim';
     }
 
-    if "selected_prompt" in st.session_state{process_user_selections(st.session_state["selected_prompt"]);}   
-
-    model_list=st.session_state.active_list_of_models;
-
     if st.session_state.get("current_hv_config", None) {
+        if "selected_prompt" in st.session_state{process_user_selections(st.session_state["selected_prompt"]);}   
+
+        model_list=st.session_state.active_list_of_models;
         (col1, col2, col3) = st.columns(3);
         with col1{
             anchor_model_selection = st.selectbox(
