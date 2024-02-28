@@ -37,7 +37,10 @@ can dashboard {
         elif chart_type == "Line Chart"{line_chart();}
         elif chart_type == "Altair Chart"{altair_chart();}
         elif chart_type == "Plotly Figure"{plotly_figure();}
-        elif chart_type == "Heat Map"{heat_map();}
+        elif chart_type == "Heat Map"{
+            st.session_state.button_clicked = False;
+            heat_map();
+            }
         elif chart_type == "Stacked Bar Chart"{stacked_bar_chart();}
         elif chart_type == "Histogram"{plotly_histogram();}
     } else {

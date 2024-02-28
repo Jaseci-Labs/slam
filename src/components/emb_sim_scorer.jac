@@ -37,11 +37,15 @@ can ui_components {
         st.session_state[SCORER_KEY] = 'cos_sim';
     }
 
-    if "selected_prompt" in st.session_state{process_user_selections(st.session_state["selected_prompt"]);}   
-
-    model_list=st.session_state.active_list_of_models;
-
     if st.session_state.get("current_hv_config", None) {
+        if 'button_clicked' not in st.session_state{st.session_state.button_clicked = False;} 
+        if st.session_state.button_clicked{
+            if "selected_prompt" in st.session_state{
+                process_user_selections(st.session_state["selected_prompt"]);
+            }
+            # st.session_state.button_clicked = False;
+        }
+        model_list=st.session_state.active_list_of_models;
         (col1, col2, col3) = st.columns(3);
         with col1{
             anchor_model_selection = st.selectbox(
@@ -66,7 +70,9 @@ can ui_components {
         }
         
         if st.button('Calculate Embedding Scores'){
-            process_user_selections();
+           st.session_state.button_clicked = True;
+           process_user_selections();
+            
         }
     } else {
         st.error("Human Evaluation config was not found. Initialize a Human Evaluation first.");
