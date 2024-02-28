@@ -1,8 +1,7 @@
 # Personal
 runs/
 data/
-results/
-sim_results/
+*results/
 test.ipynb
 test.py
 .human_eval_config
