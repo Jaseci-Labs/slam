@@ -52,7 +52,7 @@ can ui_components {
         with col2{
             embedder_selection = st.selectbox(
                 "Select Type of Embedder",
-                options=['USE', 'USE_QA', 'SBERT', 'OPEN_AI_Embedder'],
+                options=['USE', 'USE_QA', 'SBERT',],
                 key=EMBEDDER_KEY, index=['USE', 'USE_QA', 'SBERT', 'OPEN_AI_Embedder'].index(st.session_state[EMBEDDER_KEY])
             );
         }
@@ -162,7 +162,7 @@ can ui_components {
                 worker_set["question_index"]+=1;
             }
             worker_set["end_time"] = time.time();
-            with open(f"{os.path.join(basedir, id)}.json", "w") as output {
+            with open(f"{os.path.join(basedir, str(id))}.json", "w") as output {
                 json.dump(worker_set, output,indent=4);
             }
             id+=1;
