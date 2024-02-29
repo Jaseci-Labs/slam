@@ -9,6 +9,7 @@ import:jac from components.llm_eval, evaluator;
 import:jac from components.about, about;
 import:jac from components.theme, footer;
 import:jac from components.emb_sim_scorer, ui_components;
+import:jac from components.model_ranking, model_win_percentage_table;
 
 can main {
     if "admin_privileges" not in st.session_state {st.session_state.admin_privileges = False;} 
@@ -23,9 +24,10 @@ can main {
             with dashboard_tab {dashboard();}
             with generator_tab {generator();}
             with evaluation_tab {
-                (gpt_evaluator, sim_scorer_tab) = st.tabs(["GPT Evaluator","Similarity Scorer"]);
+                (gpt_evaluator, sim_scorer_tab,model_ranking) = st.tabs(["GPT Evaluator","Similarity Scorer","Model Ranking"]);
                 with gpt_evaluator {evaluator();}
                 with sim_scorer_tab {ui_components();}
+                with model_ranking {model_win_percentage_table();}
                 
             }
             with setup_tab {setup();}
