@@ -1,6 +1,6 @@
-# LaME Tool : *La*nguage *M*odel *E*valuation Tool
+# SLaM Tool : *S*mall *La*nguage *M*odel Evaluation Tool
 
-LaME tool is a helper tool to evaluate the performance of LLMs for your personal usecases with the help of Human Evaluation and Automatic
+SLaM tool is a helper tool to evaluate the performance of LLMs for your personal usecases with the help of Human Evaluation and Automatic
  Evaluation through LLMs (Coming Soon). You can deploy the application on your local machine to first generate the necessary
 responses for a given prompt with different LLMs (Propietary or OpenSource) and then evaluate the responses with the help of human evaluators.
  You can setup the human evaluation UI through the admin panel. Realtime Insights and Analytics are also provided to help
@@ -133,9 +133,12 @@ Step 2: Go to the Dashboard page and Drag and Drop your Zip file
 Step 3: Click Upload and Unzip
 Step 4: Click Refresh to see the Diagrams and Visualizations
 
-## Walkthrough
+## Tutorials
 
-TBA
+- [How to use SLaM for Human Evaluation](docs/tutorials/human_eval.md)
+- [How to Generate Responses using SLaM](docs/tutorials/response_generator.md)
+- [How to use SLaM for Automatic Evaluation](docs/tutorials/automatic_eval.md)
+- [How to Get Realtime Insights and Analytics from your Evaluations](docs/tutorials/insights_analytics.md)
 
 ## Contributing
 
