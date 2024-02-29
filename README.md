@@ -65,9 +65,8 @@ pip install -r requirements.txt
 Step 4: Setup the environment variables
 
 ```bash
-export SLAM_ADMIN_USERNAME=<user_name>
+export SLAM_ADMIN_USERNAME=<username>
 export SLAM_ADMIN_PASSWORD=<password>
-export SLAM_PROJECT_ID=<project_id>
 ```
 
 Step 5: Run the application
@@ -108,6 +107,13 @@ export ACTION_SERVER_URL=http://localhost:8000/
 export OLLAMA_SERVER_URL=http://localhost:11434/
 ```
 
+## Tutorials
+
+- [How to use SLaM for Human Evaluation](docs/tutorials/human_eval.md)
+- [How to Generate Responses using SLaM](docs/tutorials/response_generator.md)
+- [How to use SLaM for Automatic Evaluation](docs/tutorials/automatic_eval.md)
+- [How to Get Realtime Insights and Analytics from your Evaluations](docs/tutorials/insights_analytics.md)
+
 ## Tips and Tricks
 
 ### Continuos Backup of Results
@@ -121,6 +127,7 @@ export GDRIVE_FOLDER_ID=<folder_id>
 
 Step 2: Initiate a CRON Job to run the `scripts/backup.jac` every 5 minutes. Make sure to have a oauth files (`setting.yaml` and `credentials.json`) in the folder you initiate the cron job.
 ```bash
+# activate the virtual environment where jaclang is installed
 */5 * * * * jac run scripts/backup.jac
 ```
 
@@ -132,13 +139,6 @@ Step 1: Open the App and Login with the admin credentials
 Step 2: Go to the Dashboard page and Drag and Drop your Zip file
 Step 3: Click Upload and Unzip
 Step 4: Click Refresh to see the Diagrams and Visualizations
-
-## Tutorials
-
-- [How to use SLaM for Human Evaluation](docs/tutorials/human_eval.md)
-- [How to Generate Responses using SLaM](docs/tutorials/response_generator.md)
-- [How to use SLaM for Automatic Evaluation](docs/tutorials/automatic_eval.md)
-- [How to Get Realtime Insights and Analytics from your Evaluations](docs/tutorials/insights_analytics.md)
 
 ## Contributing
 
