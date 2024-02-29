@@ -1,0 +1,7 @@
+jaseci
+ollama
+langchain==0.0.354
+openai
+yaspin
+# sentence_transformers
+# nltk

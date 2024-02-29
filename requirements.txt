@@ -1,14 +1,12 @@
-# jaseci
 jaclang==0.4.7
 streamlit
-yaspin
 captcha
-# altair
 plotly
 scikit-learn
 seaborn
-# ollama
-# langchain==0.0.354
-# openai
 pydrive
 matplotlib
+
+# Auto Evaluator
+sentence_transformers
+nltk
