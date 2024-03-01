@@ -1,7 +1,5 @@
 import:py streamlit as st;
 
-import:jac from emb_sim_scorer, emb_sim_scorer;
-import:jac from model_ranking, model_win_percentage_table;
 import:jac from utils, llms, check_engine_status, load_engine, run_inference;
 
 :can:llm_as_evaluator {
