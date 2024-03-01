@@ -147,3 +147,17 @@ can parse_worker_data(workers_data_dir:str, distribution_file:str, response_file
     }
     return out_dataset;
 }
+
+can check_engine_status {
+    query_engine_status = check_query_engine();
+    ollama_server_status = check_ollama_server();
+    (query_engine_status_col, ollama_server_status_col) = st.columns(2);
+
+    if query_engine_status {query_engine_status_col.success('Query Engine is Running');}
+    else {query_engine_status_col.error('Query Engine is not Running');}
+
+    if ollama_server_status {ollama_server_status_col.success('Ollama Server is Running');}
+    else {ollama_server_status_col.error('Ollama Server is not Running');}
+
+    return query_engine_status;
+}

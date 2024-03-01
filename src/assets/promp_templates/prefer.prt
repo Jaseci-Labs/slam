@@ -1,0 +1,13 @@
+[Use case]
+{usecase}
+
+[Response A]
+{response_a}
+
+[Response B]
+{response_b}
+
+For the given use case, out of Response A and Response B, Select the most suitable output for the given usecase. Provide Reasoning for the choice and Output as a dictionary with a key "overall". valueout of("Response A", "Response B", "About the Same"). Follow the following template.
+
+[Reasoning] <Reason>
+[Output] <Output>
