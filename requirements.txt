@@ -1,4 +1,4 @@
-jaclang==0.4.7
+jaclang >= 0.5.6
 streamlit
 captcha
 plotly
