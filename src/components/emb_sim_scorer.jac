@@ -26,7 +26,7 @@ glob ANCHOR_MODEL_KEY = 'anchor_model';
 glob EMBEDDER_KEY = 'embedder';
 glob SCORER_KEY = 'scorer';
 
-can ui_components {
+can emb_sim_scorer {
     if ANCHOR_MODEL_KEY not in st.session_state{
         st.session_state[ANCHOR_MODEL_KEY] = 'gpt-4';
     }
