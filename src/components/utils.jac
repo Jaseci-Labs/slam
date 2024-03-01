@@ -81,6 +81,7 @@ glob llms = [
     "ollama/orca2:7b",
     "ollama/openchat:7b-v3.5",
     "ollama/vicuna:7b"
+    # Add your ollama models here
 ];
 
 can login {
