@@ -136,7 +136,7 @@ def generate_stacked_bar_chart(formatted_output, all_models, prompt_id, criteria
     st.pyplot(plt)
 
 
-def generate_heatmaps(formatted_output, all_models, prompt_id, criteria=None):
+def generate_heatmaps(placeholder, formatted_output, all_models, prompt_id, criteria=None):
     if not criteria:
         criteria = [
             "overall",
@@ -244,7 +244,11 @@ def generate_heatmaps(formatted_output, all_models, prompt_id, criteria=None):
         axes_flat[i].set_title(f"Heatmap of Wins for {criterion}")
 
     plt.tight_layout()
-    st.pyplot(plt)
+    if placeholder:
+        with placeholder.container():
+            st.pyplot(fig)
+    else:
+        st.pyplot(plt)
 
 
 def format_responses_by_prompt(workers_data_dir, distribution_file, response_file):

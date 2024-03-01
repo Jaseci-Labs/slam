@@ -4,7 +4,6 @@ import:py os;
 import:py shutil;
 import:py time;
 import:py streamlit as st;
-import:py from yaspin, yaspin;
 import:py from datetime, datetime;
 
 glob ACTION_SERVER_URL = os.environ.get("ACTION_SERVER_URL","http://localhost:8000/");
@@ -49,17 +48,15 @@ can run_inference(model_name:str, num_samples:int, payload:dict) -> dict {
     outputs = [];
     full_prompt = None;
     for i in range(num_samples) {
-        with yaspin(text=f"Running experiment for {model_name} ({i+1}/{num_samples})...", color="yellow") {
-            try {
-                start_time = time.time();
-                ret = call_action(action="query", payload= payload);
-                outputs.append({"response": ret["response"], "time": time.time() - start_time});
-                if not full_prompt {
-                    full_prompt = ret["full_prompt"];
-                }
-            } except Exception as e {
-                outputs.append({"response": str(e), "time": -1});
+        try {
+            start_time = time.time();
+            ret = call_action(action="query", payload= payload);
+            outputs.append({"response": ret["response"], "time": time.time() - start_time});
+            if not full_prompt {
+                full_prompt = ret["full_prompt"];
             }
+        } except Exception as e {
+            outputs.append({"response": str(e), "time": -1});
         }
     }
     avg_time = sum([o["time"] for o in outputs]) / len(outputs);
@@ -84,6 +81,7 @@ glob llms = [
     "ollama/orca2:7b",
     "ollama/openchat:7b-v3.5",
     "ollama/vicuna:7b"
+    # Add your ollama models here
 ];
 
 can login {
