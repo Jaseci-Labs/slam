@@ -109,43 +109,23 @@ can login {
     }
 }
 
-can parse_worker_data(workers_data_dir:str, distribution_file:str, response_file:str) {
-    with open(distribution_file, "r") as fp{distribution = json.load(fp);}
-    with open(response_file, "r") as fp{all_responses = json.load(fp);}
-    out_dataset=[];
-
-    for filename in os.listdir(workers_data_dir) {
-        file_path = os.path.join(workers_data_dir, filename);
-        if os.path.isfile(file_path){
-            with open(file_path, "r") as fp{worker_data = json.load(fp);}
-            if "question_index" in worker_data and worker_data["question_index"] == 10 {
-                curr_distribution_set = distribution.get(worker_data["question_set_id"], None);
-                if curr_distribution_set is not None {
-                    curr_worker_data_set = [];
-                    for (i, curr_worker_data) in enumerate(worker_data["evals"]) {
-                        curr_set = curr_worker_data.get("question");
-                        model_names = list(curr_set[1].keys());
-                        (model_a, response_a_id) = (model_names[0], curr_set[1][model_names[0]]);
-                        (model_b, response_b_id) = (model_names[1], curr_set[1][model_names[1]]);
-                        response_a = all_responses.get(response_a_id, None);
-                        response_b = all_responses.get(response_b_id, None);
-                        curr_resp_contruct = {"model_a": model_a, "response_a": response_a, "model_b": model_b, "response_b": response_b};
-                        curr_resp_contruct.update(curr_worker_data["result"]);
-                        curr_resp_contruct.update({"prompt_id": curr_set[0]});
-                        if i == 0 {
-                            start_time = datetime.fromtimestamp(worker_data["start_time"]);
-                        }
-                        end_time = datetime.fromtimestamp(curr_worker_data["time"]);
-                        curr_resp_contruct.update(
-                            {"time_taken": (end_time - start_time).total_seconds()}
-                        );
-                        start_time = end_time;
-                        curr_worker_data_set.append(curr_resp_contruct);
-                    }
-                    out_dataset.append({worker_data["worker_id"]: curr_worker_data_set});
+can map_prompt_names_to_ids(prompt_data_dir:str, prompt_info_file:str) {
+    with open(prompt_info_file, "r") as file {
+        prompt_info = json.load(file);
+    }
+    prompt_info = [{prompt["prompt_id"]: prompt["prompt"]} for prompt in prompt_info];
+    prompt_ids = {};
+    for filename in os.listdir(prompt_data_dir) {
+        use_case_name = "_".join(filename.split(".")[0].split("_")[:-1]);
+        file_path = os.path.join(prompt_data_dir, filename);
+        with open(file_path, "r") as file {
+            prompt_data = json.load(file)["prompt"];
+            for inv_prompt in prompt_info {
+                if (prompt_data == list(inv_prompt.values())[0]) {
+                    prompt_ids[use_case_name] = list(inv_prompt.keys())[0];
                 }
             }
         }
     }
-    return out_dataset;
+    return prompt_ids;
 }
