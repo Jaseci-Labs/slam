@@ -52,7 +52,7 @@ can ui_components {
         with col2{
             embedder_selection = st.selectbox(
                 "Select Type of Embedder",
-                options=['USE', 'USE_QA', 'SBERT',],
+                options=['USE', 'USE_QA', 'SBERT'],
                 key=EMBEDDER_KEY, index=['USE', 'USE_QA', 'SBERT', 'OPEN_AI_Embedder'].index(st.session_state[EMBEDDER_KEY])
             );
         }
