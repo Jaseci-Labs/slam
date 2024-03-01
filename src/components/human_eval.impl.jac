@@ -6,7 +6,7 @@ import:py from captcha.image, ImageCaptcha;
 import:py random;
 import:py string;
 
-:can:<>init {
+:can:init {
     if os.path.exists(os.path.join(".human_eval_config", "config.json")) {
         if "hv_config" not in st.session_state {
             st.session_state.hv_config = None;
