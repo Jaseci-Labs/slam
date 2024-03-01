@@ -1,6 +1,6 @@
 import:py streamlit as st;
 
-can init;
+can <>init;
 can model_settings;
 can prompt_settings;
 can check_engine_status;

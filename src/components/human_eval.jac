@@ -3,7 +3,7 @@ import:py os;
 import:py json;
 import:py time;
 
-can init;
+can <>init;
 can evaluation;
 can captcha_gen;
 can worker_id;

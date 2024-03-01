@@ -6,7 +6,7 @@ import:py json;
 
 import:jac from utils, load_engine, run_inference, llms, check_query_engine, check_ollama_server;
 
-:can:init {
+:can:<>init {
     os.makedirs('runs', exist_ok=True);
     if "run_id" not in st.session_state {
         st.session_state["run_id"] = uuid.uuid4();
