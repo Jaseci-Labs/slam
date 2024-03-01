@@ -8,12 +8,12 @@ import:py from jaseci.utils.utils, logger;
 import:py ollama;
 
 obj ChatPromptHandler:BaseCallbackHandler: {
-    can <init>;
+    can init;
     can on_chat_model_start(serialized: dict, messages: list, **kwargs: dict) -> None;
 }
 
-:obj:ChatPromptHandler:can:<init> {
-    <super>.<init>();
+:obj:ChatPromptHandler:can:init {
+    super.init();
     self.prompt = "";
 }
 
@@ -21,7 +21,7 @@ obj ChatPromptHandler:BaseCallbackHandler: {
     self.prompt = messages;
 }
 
-:obj:QueryEngine:can:<init>(provider_name: str = "openai", model_name: str = "gpt-4", temperature: float = 0.9) {
+:obj:QueryEngine:can:init(provider_name: str = "openai", model_name: str = "gpt-4", temperature: float = 0.9) {
     self.provider_name = provider_name;
     self.model_name = model_name;
     self.temperature = temperature;
