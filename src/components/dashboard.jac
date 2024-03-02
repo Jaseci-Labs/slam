@@ -28,7 +28,7 @@ can dashboard {
         elif chart_type == "Stacked Bar Chart"{stacked_bar_chart();}
         elif chart_type == "Histogram"{plotly_histogram();}
     } else {
-        init();
+        <>init();
     }
     if st.button("Refresh") {st.rerun();}
 }

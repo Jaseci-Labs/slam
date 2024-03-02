@@ -18,7 +18,7 @@ you understand the performance of the LLMs.
 
 ### Prerequisites
 
-- Python 3.11 or higher
+- Python 3.12 or higher
 - Docker (Optional)
 
 ### Docker Installation

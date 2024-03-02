@@ -9,7 +9,7 @@ can captcha_gen;
 can worker_id;
 
 can human_eval {
-    if "hv_config" not in st.session_state {init();}
+    if "hv_config" not in st.session_state {<>init();}
     if st.session_state.get("hv_config", None) {
         if not st.session_state.worker_id or not st.session_state.is_human {
             (captcha_col, worker_id_col) = st.columns(2);

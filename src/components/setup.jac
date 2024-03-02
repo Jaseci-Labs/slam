@@ -15,7 +15,7 @@ can add_data_sources;
 can create_neccessary_file (data_sources: list);
 
 can setup {
-    init();
+    <>init();
     st.header("Human Evaluation Setup");
     st.caption("This is the setup page for the human eval. You can change the configuration and then click save to save the configuration.");
 

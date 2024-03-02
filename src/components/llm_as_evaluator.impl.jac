@@ -5,7 +5,7 @@ import:jac from utils, llms, check_engine_status, load_engine, run_inference;
 :can:llm_as_evaluator {
     st.title("LLM as a Evaluator");
     st.caption("LLM as a Evaluator simulates an human evaluator");
-    if "llm_as_eval_config" not in st.session_state {init();}
+    if "llm_as_eval_config" not in st.session_state {<>init();}
     if st.session_state.get("llm_as_eval_coofig", None) {
         engine_status = check_engine_status();
         eval_model = st.selectbox("Select the Model which will Act as an Evaluator", llms);

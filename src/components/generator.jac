@@ -7,7 +7,7 @@ can check_engine_status;
 can generate_responses(selected_models: list, n_samples: int, temp: float, prompt_template: str, arguments: dict);
 
 can generator {
-    init();
+    <>init();
     st.header('Response Generator');
     st.caption("This helps you to generate the necessary response for the given prompttemplate with given values for all the selected SLMs and propierity LLMs.");
 
