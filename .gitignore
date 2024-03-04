@@ -10,8 +10,7 @@ credentials.json
 settings.yaml
 .backup
 .new_backup
-notebooks/*.csv
-notebooks/*.xlsx
+notebooks/
 *.zip
 
 # Byte-compiled / optimized / DLL files
