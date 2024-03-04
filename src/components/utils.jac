@@ -4,7 +4,6 @@ import:py os;
 import:py shutil;
 import:py time;
 import:py streamlit as st;
-import:py from yaspin, yaspin;
 import:py from datetime, datetime;
 
 glob ACTION_SERVER_URL = os.environ.get("ACTION_SERVER_URL","http://localhost:8000/");
@@ -49,17 +48,15 @@ can run_inference(model_name:str, num_samples:int, payload:dict) -> dict {
     outputs = [];
     full_prompt = None;
     for i in range(num_samples) {
-        with yaspin(text=f"Running experiment for {model_name} ({i+1}/{num_samples})...", color="yellow") {
-            try {
-                start_time = time.time();
-                ret = call_action(action="query", payload= payload);
-                outputs.append({"response": ret["response"], "time": time.time() - start_time});
-                if not full_prompt {
-                    full_prompt = ret["full_prompt"];
-                }
-            } except Exception as e {
-                outputs.append({"response": str(e), "time": -1});
+        try {
+            start_time = time.time();
+            ret = call_action(action="query", payload= payload);
+            outputs.append({"response": ret["response"], "time": time.time() - start_time});
+            if not full_prompt {
+                full_prompt = ret["full_prompt"];
             }
+        } except Exception as e {
+            outputs.append({"response": str(e), "time": -1});
         }
     }
     avg_time = sum([o["time"] for o in outputs]) / len(outputs);
@@ -84,6 +81,7 @@ glob llms = [
     "ollama/orca2:7b",
     "ollama/openchat:7b-v3.5",
     "ollama/vicuna:7b"
+    # Add your ollama models here
 ];
 
 can login {
@@ -128,4 +126,18 @@ can map_prompt_names_to_ids(prompt_data_dir:str, prompt_info_file:str) {
         }
     }
     return prompt_ids;
+}
+
+can check_engine_status {
+    query_engine_status = check_query_engine();
+    ollama_server_status = check_ollama_server();
+    (query_engine_status_col, ollama_server_status_col) = st.columns(2);
+
+    if query_engine_status {query_engine_status_col.success('Query Engine is Running');}
+    else {query_engine_status_col.error('Query Engine is not Running');}
+
+    if ollama_server_status {ollama_server_status_col.success('Ollama Server is Running');}
+    else {ollama_server_status_col.error('Ollama Server is not Running');}
+
+    return query_engine_status;
 }

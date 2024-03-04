@@ -1,10 +1,17 @@
+# Artifacts
 results
 data
 .jaseci_logs
 .human_eval_config
+.conda
+# Unnecessary files/folders
 runs
-__jac_gen__
 notebooks
+docs
+.github
+# Cache
+__jac_gen__
 __pycache__
+# Add your own files/folders here
 test.ipynb
 .backup
