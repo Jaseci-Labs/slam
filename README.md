@@ -112,6 +112,8 @@ export OLLAMA_SERVER_URL=http://localhost:11434/
 - [How to use SLaM for Human Evaluation](docs/tutorials/human_eval.md)
 - [How to Generate Responses using SLaM](docs/tutorials/response_generator.md)
 - [How to use SLaM for Automatic Evaluation](docs/tutorials/automatic_eval.md)
+    - [LLM as an Evaluator](docs/tutorials/automatic_eval.md#llm-as-an-evaluator)
+    - [Using Semantic Similarity to Evaluate Responses](docs/tutorials/automatic_eval.md#using-semantic-similarity-to-evaluate-responses)
 - [How to Get Realtime Insights and Analytics from your Evaluations](docs/tutorials/insights_analytics.md)
 
 ## Tips and Tricks
