@@ -11,25 +11,31 @@ can worker_id;
 can human_eval {
     if "hv_config" not in st.session_state {<>init();}
     if st.session_state.get("hv_config", None) {
+        if "worker_count" in st.session_state {
+            if st.session_state.worker_count is None {
+                if os.path.exists(os.path.join(".human_eval_config", "worker_count.txt")) {
+                    with open(os.path.join(".human_eval_config", "worker_count.txt"), "r") as f {st.session_state.worker_count= int(f.read());}
+                } else {
+                    with open(os.path.join(".human_eval_config", "worker_count.txt"), "w") as f {f.write("-1");}
+                    st.session_state.worker_count = -1;
+                }
+            }
+            if "increase_worker_count" in st.session_state and st.session_state.increase_worker_count {
+                st.session_state.worker_count = st.session_state.worker_count + 1;
+                with open(os.path.join(".human_eval_config", "worker_count.txt"), "w") as f {f.write(str(st.session_state.worker_count));}
+                st.session_state.increase_worker_count = False;
+            }
+            if st.session_state.worker_count >= st.session_state.hv_config["config"]["n_workers"] {
+            st.info("Thank you for your interest in participating! However, we have currently reached our capacity for workers. Please check back later for availability. We appreciate your understanding.");
+                return;
+            }
+        }
         if not st.session_state.worker_id or not st.session_state.is_human {
             (captcha_col, worker_id_col) = st.columns(2);
             with captcha_col {captcha_gen();}
             with worker_id_col {worker_id();}
+            
         } else {
-            if st.session_state.worker_count is None {
-                if os.path.exists(os.path.join(".human_eval_config", "worker_count.txt")) {
-                    with open(os.path.join(".human_eval_config", "worker_count.txt"), "r") as f {current_count = int(f.read());}
-                } else {
-                    with open(os.path.join(".human_eval_config", "worker_count.txt"), "w") as f {f.write("-1");}
-                    current_count = -1;
-                }
-                if current_count >= st.session_state.hv_config["config"]["n_workers"] {
-                    st.error("Something seems to be Wrong. Dev team is notified. Please Try Again Later. Thank You!");
-                    return;
-                }
-                st.session_state.worker_count = current_count + 1;
-                with open(os.path.join(".human_eval_config", "worker_count.txt"), "w") as f {f.write(str(st.session_state.worker_count));}
-            }
             if not st.session_state.question_set_id {
                 with open(os.path.join(".human_eval_config", "distribution.json"), "r") as f {all_questions = json.load(f);}
                 st.session_state.question_set_id = list(all_questions.keys())[st.session_state.worker_count];

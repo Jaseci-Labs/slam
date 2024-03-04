@@ -32,7 +32,7 @@ import:py string;
 :can:worker_id {
     with st.container(border=True) {
         st.session_state.worker_id = st.text_input("Worker ID");
-        if st.session_state.worker_id {st.rerun();}
+        if st.session_state.worker_id {st.session_state.increase_worker_count = True; st.rerun();}
         st.caption("Please enter your worker ID to start the survey. Make sure to use the correct worker ID, otherwise you will not be paid.");
     }
 }
