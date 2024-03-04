@@ -1,7 +1,39 @@
-# Similarity Scorer Tutorial
+# How to use SLaM for Automatic Evaluation
 
-## Introduction
-Welcome to the Similarity Scorer tutorial for the SLAM Tool. This guide will walk you through the process of using the Similarity Scorer feature, that allows you to conduct detailed comparisons of language models based on their response similarity to a given anchor model's response. This tutorial will guide you through using the Similarity Scorer to evaluate and understand the nuances of different language models.
+# LLM as an Evaluator
+
+Other than using LLMs for generating responses, you can also use them as evaluators in the SLAM Tool. This guide will walk you through the process of using LLMs as evaluators in the SLAM Tool.
+
+## Glossary
+- **SLaM**: SLaM is a framework for human evaluation of language models for different tasks. It is designed to be flexible and easy to use, and it is built using [jaclang]().
+- **Task**: The task is the specific problem that the language model is trying to solve. For example, the task could be to generate a summary of a given text, or to generate a response to a given prompt.
+- **Language Model**: A language model is a model that is trained to generate text. It is trained on a large corpus of text and is used to generate text that is similar to the text in the training corpus.
+- **Question**: One comparison between two outputs from different models. For example, the question could be "Which of the following outputs is more coherent?" and the two outputs could be "Output 1 from model 1" and "Output 2 from model 2".
+
+## Prerequisites
+Follow the steps given in the [README](../README.md) to install SLaM and its dependencies. Also make sure that a Human Evaluation is setupped in the SLAM Tool. Follow the [Human Evaluation](human_eval.md) tutorial to setup the Human Evaluation.
+
+## Steps
+
+### Check whetehr all the neccesary services are up and running
+Makes sure the Query Engine is running. If not, run the following command to start the Query Engine.
+```bash
+uvicorn query_engine:serv_action --reload
+```
+If using Models from Ollama, make sure the Ollama server is running. If not, run the following command to start the Ollama server.
+```bash
+ollama serve
+```
+
+### Go to the Admin Panel >> Auto Evaluator >> LLM as an Evaluator
+### Select the LLM to be used as an Evaluator
+### Click `Run Auto Evaluation` to start the Auto Evaluation
+### Have a cup of coffee and wait for the Auto Evaluation to complete
+### Use the Dashboard to view the results
+
+# Using Semantic Similarity to Evaluate Responses
+
+This guide will walk you through the process of using the Similarity Scorer feature, that allows you to conduct detailed comparisons of language models based on their response similarity to a given anchor model's response. This tutorial will guide you through using the Similarity Scorer to evaluate and understand the nuances of different language models.
 
 ### Prerequisites
 
