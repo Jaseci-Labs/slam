@@ -1,13 +1,13 @@
 import:py pandas as pd;
 import:py streamlit as st;
-import:py from py_utils, format_responses_by_prompt, get_unique_prompt_ids;
+import:jac from utils, map_prompt_names_to_ids,format_responses_by_prompt;
 
 can model_win_percentage_table {
     if st.session_state.get("current_hv_config", None) {
         criteria = ["overall"];
         model_performance = {model: {"wins": 0, "total": 0} for model in st.session_state.active_list_of_models};
         formatted_data = format_responses_by_prompt(st.session_state.workers_data_dir, st.session_state.distribution_file, st.session_state.response_file);
-        prompt_info = get_unique_prompt_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
+        prompt_info = map_prompt_names_to_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
         prompt_ids = list(prompt_info.keys());
         prompt_ids.insert(0, "all_combined");
         user_selected_prompt = st.selectbox("Select Prompt:", prompt_ids, key="select_box_win");

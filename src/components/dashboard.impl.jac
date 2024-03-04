@@ -7,12 +7,10 @@ import:py plotly.figure_factory as ff;
 import:py plotly.express as px;
 import:py json;
 import:py datetime as dt;
-import:py from py_utils, format_responses_by_prompt, generate_heatmap_time;
-import:py from py_utils, generate_heatmaps, generate_stacked_bar_chart, get_unique_prompt_ids;
-import:jac from utils, parse_worker_data;
+import:jac from utils,  map_prompt_names_to_ids, generate_performance_data, format_responses_by_prompt;
+import:jac from plot_utils, generate_stacked_bar_chart, generate_heatmaps;
 import:py zipfile;
 import:py shutil;
-# import:jac from utils, parse_worker_data;
 
 :can:<>init {
     if os.path.exists(os.path.join(".human_eval_config", "config.json")) {
@@ -92,9 +90,9 @@ import:py shutil;
     }
     formatted_data = format_responses_by_prompt(st.session_state.workers_data_dir, st.session_state.distribution_file, st.session_state.response_file);
     normalize_df = pd.json_normalize(formatted_data, record_path=['responses'], meta=['prompt_id']);
-    prompt_info = get_unique_prompt_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
+    prompt_info = map_prompt_names_to_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
     prompt_id_to_name = dict(zip(prompt_info.values(), prompt_info.keys()));
-    # Plotting with Plotly
+
     normalize_df['prompt_name'] = normalize_df['prompt_id'].replace(prompt_id_to_name);
     normalize_df = normalize_df[normalize_df['time_taken'] <= 1000];
     data=[];
@@ -105,11 +103,10 @@ import:py shutil;
     }
     fig = ff.create_distplot(
         data, labels, 
-        bin_size=.2,  # Adjust bin size as needed
+        bin_size=.2,
         show_hist=True, show_rug=False,
         histnorm='probability density'
     );
-    # fig = ff.create_distplot(hist_data, group_labels, bin_size=[.1, .25, .5]);
     fig.update_layout(
         title_text='Distribution of Seconds-per-Comparison by Prompt',
         xaxis_title_text='Time Taken (seconds)',
@@ -127,7 +124,7 @@ import:py shutil;
     }
     formatted_data = format_responses_by_prompt(st.session_state.workers_data_dir, st.session_state.distribution_file, st.session_state.response_file);
     normalize_df = pd.json_normalize(formatted_data, record_path=['responses'], meta=['prompt_id']);
-    prompt_info = get_unique_prompt_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
+    prompt_info = map_prompt_names_to_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
     prompt_id_to_name = dict(zip(prompt_info.values(), prompt_info.keys()));
 
     normalize_df['prompt_name'] = normalize_df['prompt_id'].replace(prompt_id_to_name);
@@ -165,7 +162,7 @@ import:py shutil;
     }
 
     formatted_data = format_responses_by_prompt(workers_data_dir, st.session_state.distribution_file, st.session_state.response_file);
-    prompt_info = get_unique_prompt_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
+    prompt_info = map_prompt_names_to_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
     prompt_ids = list(prompt_info.keys());
     prompt_ids.insert(0, "all_combined");
     prompt_ids.insert(1, "time_vs_pair");
@@ -173,23 +170,19 @@ import:py shutil;
         new_prompt_index = prompt_ids.index(selected_prompt_id);
         user_selected_prompt = st.selectbox("Select Prompt:", prompt_ids, index=new_prompt_index);
         if st.session_state[SELECTED_PROMPT_KEY] != user_selected_prompt{st.session_state[SELECTED_PROMPT_KEY] = user_selected_prompt;}
-       }
-    else{ 
+    } else { 
         st.session_state[SELECTED_PROMPT_KEY] = selected_prompt;
         user_selected_prompt  = selected_prompt;
-        }
-
-    if user_selected_prompt == "time_vs_pair"{
-        generate_heatmap_time(formatted_data);
-        
-    } elif user_selected_prompt != "all_combined" {
-        generate_heatmaps(placeholder, formatted_data, st.session_state.active_list_of_models,prompt_info[user_selected_prompt], criteria);
-    } else {
-        generate_heatmaps(placeholder, formatted_data, st.session_state.active_list_of_models,user_selected_prompt, criteria);
     }
-    # # formatted_data = format_responses(workers_data_dir, distribution_file,response_file=response_file,criteria_set = criteria);
-    # formatted_data = parse_worker_data(workers_data_dir,distribution_file,response_file);
-    # generate_heatmaps(formatted_data,list_of_models, criteria);
+
+    if user_selected_prompt != "all_combined" {
+
+        (model_performance, preference_matrix, criteria)=generate_performance_data(formatted_data,st.session_state.active_list_of_models, prompt_info[user_selected_prompt],criteria);
+        generate_heatmaps(placeholder, model_performance, preference_matrix, st.session_state.active_list_of_models, criteria);
+    } else {
+        (model_performance, preference_matrix, criteria)=generate_performance_data(formatted_data,st.session_state.active_list_of_models, user_selected_prompt, criteria);
+        generate_heatmaps(placeholder, model_performance, preference_matrix,st.session_state.active_list_of_models, criteria);
+    }
 }
 
 :can:stacked_bar_chart {
@@ -198,14 +191,17 @@ import:py shutil;
     if (eval_type == "A/B Testing") {
         criteria = ["overall"];
     }
+    
     formatted_data = format_responses_by_prompt(st.session_state.workers_data_dir, st.session_state.distribution_file, st.session_state.response_file);
-    prompt_info = get_unique_prompt_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
+    prompt_info = map_prompt_names_to_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
     prompt_ids = list(prompt_info.keys());
     prompt_ids.insert(0, "all_combined");
     selected_prompt_id = st.selectbox("Select Prompt:", prompt_ids);
-    if selected_prompt_id != "all_combined"{
-        generate_stacked_bar_chart(formatted_data, st.session_state.active_list_of_models,prompt_info[selected_prompt_id], criteria);
-    } else{
-        generate_stacked_bar_chart(formatted_data, st.session_state.active_list_of_models,selected_prompt_id, criteria);
+    if selected_prompt_id != "all_combined" {
+        (model_performance, preference_matrix, criteria)=generate_performance_data(formatted_data, st.session_state.active_list_of_models,prompt_info[selected_prompt_id], criteria);
+        generate_stacked_bar_chart(model_performance, criteria);
+    } else {
+        (model_performance, preference_matrix, criteria)=generate_performance_data(formatted_data,st.session_state.active_list_of_models, selected_prompt_id, criteria);
+        generate_stacked_bar_chart(model_performance, criteria);
     }
 }
