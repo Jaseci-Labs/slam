@@ -1,7 +1,6 @@
 import:py pandas as pd;
 import:py streamlit as st;
-import:jac from data_manipulation, format_responses_by_prompt;
-import:jac from utils, map_prompt_names_to_ids;
+import:jac from utils, map_prompt_names_to_ids,format_responses_by_prompt;
 
 can model_win_percentage_table {
     if st.session_state.get("current_hv_config", None) {

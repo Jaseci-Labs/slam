@@ -7,9 +7,8 @@ import:py plotly.figure_factory as ff;
 import:py plotly.express as px;
 import:py json;
 import:py datetime as dt;
-import:jac from utils,  map_prompt_names_to_ids;
-import:jac from data_plotting, generate_stacked_bar_chart, generate_heatmaps;
-import:jac from data_manipulation, generate_performance_data, format_responses_by_prompt;
+import:jac from utils,  map_prompt_names_to_ids, generate_performance_data, format_responses_by_prompt;
+import:jac from plot_utils, generate_stacked_bar_chart, generate_heatmaps;
 import:py zipfile;
 import:py shutil;
 
