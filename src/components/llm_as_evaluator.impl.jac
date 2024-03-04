@@ -53,7 +53,7 @@ import:jac from utils, llms, check_engine_status, load_engine, run_inference;
                     try {
                         inference_result = run_inference(provider_name, model_name, arguments);
                         question_result = process_inference_result(inference_result);
-                        evals.append({"result": question_result, "time": time.time(), "question": question});
+                        evals.append({"result": question_result, "time": time.time(), "question": question, "inference_result": inference_result});
                     } except Exception as e {
                         evals.append({"result": e, "time": time.time(), "question": question});
                     }
@@ -76,8 +76,9 @@ import:jac from utils, llms, check_engine_status, load_engine, run_inference;
 
 :can:process_inference_result(inference_result: dict) -> dict {
     try {
-        answers = None;
-        feedback = None;
+        answers = re.search(r"\[OUTPUT\](.*)", inference_result['response'], re.DOTALL).group(1).strip();
+        answers = eval(answers)
+        feedback =  re.search(r"\[REASON\](.*)\[OUTPUT\]", inference_result['response'], re.DOTALL).group(1).strip();
         answers["feedback"] = feedback;
     } except Exception as e {answers = {"error": str(e)};}
     return answers;
