@@ -21,7 +21,7 @@ can setup {
     st.header("Human Evaluation Setup");
     st.caption("This is the setup page for the human eval. You can change the configuration and then click save to save the configuration.");
 
-    with st.container(border=True) {hv_method = hv_evaluation_method_selector();}
+    with st.container(border=True) {(hv_method, criterias) = hv_evaluation_method_selector();}
     with st.container(border=True) {
         (n_options, n_workers, ability_to_tie, data_sources, n_questions_per_worker, evenly_distributed, show_captcha) = hv_configurator();
         add_data_sources();
@@ -43,6 +43,7 @@ can setup {
                     "show_captcha": show_captcha,
                     "completion_code": str(uuid.uuid4())
                 },
+                "criterias": criterias,
                 "time_created": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             };
             st.session_state.config = config;

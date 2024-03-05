@@ -81,22 +81,43 @@ import:py string;
 
     if st.session_state.hv_config["hv_method"] == "A/B Testing" {
         st.markdown("You are given two responses below, Select which one you prefer.");
+        result = {"overall": None, "feedback": None};
         (col_a, col_result, col_b) = st.columns(3);
         with col_result {
             st.caption("Questions");
             with st.container(border=True) {
-                overall = st.radio("Which one is better?", ["Response A", "Response B", "About the Same"], index=None,
+                result["overall"] = st.radio("Which one is better?", ["Response A", "Response B", "About the Same"], index=None,
                                     captions=["A is better", "B is better", "Both are equally good"], key=f"better_{question_index}");
             }
-            feedback = st.text_area("Reasoning behind your choice", height=100, key=f"feedback_{question_index}");
-            if overall and feedback {result = {"overall": overall, "feedback": feedback};}
-            else {result = None;}
+            result["feedback"] = st.text_area("Reasoning behind your choice", height=100, key=f"feedback_{question_index}");
         }
     } else {
         st.markdown("You are given two responses below, evaluate them based on the criterias below.");
         (col_a, col_b) = st.columns(2);
     }
     
+
+    if st.session_state.hv_config["hv_method"] == "A/B Testing with Criterions" {
+        st.caption("Questions");
+        result = {x["Criteria"]: None for x in st.session_state.hv_config["criterias"]};
+        result["feedback"] = None;
+        n_criterias = len(st.session_state.hv_config["criterias"]);
+        for i in range(int(n_criterias/4) + 1) {
+            cols = st.columns(4);
+            for j in range(4) {
+                if i*4+j >= n_criterias {break;}
+                with cols[j] {
+                    with st.container(border=True) {
+                        criteria = st.session_state.hv_config["criterias"][i*4+j];
+                        result[criteria["Criteria"]] = st.radio(criteria["Description"], ["Response A", "Response B", "About the Same"], index=None,
+                                                               key=f"{criteria['Criteria']}_{question_index}");
+                    }
+                }
+            }
+        }
+        result["feedback"] = st.text_area("Reasoning behind your choice", height=100, key=f"feedback_{question_index}");
+    }
+
     with col_a {
         st.caption("Response A");
         with st.container(border=True) {
@@ -109,32 +130,9 @@ import:py string;
             st.markdown(model_b_respones);
         }
     }
-
-    if st.session_state.hv_config["hv_method"] == "A/B Testing with Criterions" {
-        st.caption("Questions");
-        (col_clarity, col_intelligence, col_likability, col_trustworthiness) = st.columns(4);
-        with col_clarity {with st.container(border=True) {clarity = st.radio("Which has more clarity?", ["Response A", "Response B", "About the Same"], index=None,captions=["A is clearer", "B is clearer", "Both are equally clear"], key=f"clarity_{question_index}");}}
-        with col_intelligence {with st.container(border=True) {intelligence = st.radio("Which is more intelligent?", ["Response A", "Response B", "About the Same"], index=None,captions=["A is more intelligent", "B is more intelligent", "Both are equally intelligent"], key=f"intelligence_{question_index}");}}
-        with col_likability {with st.container(border=True) {likability = st.radio("Which is more likable?", ["Response A", "Response B", "About the Same"], index=None,captions=["A is more likable", "B is more likable", "Both are equally likable"], key=f"likability_{question_index}");}}
-        with col_trustworthiness {with st.container(border=True) {trustworthiness = st.radio("Which is more trustworthy?", ["Response A", "Response B", "About the Same"], index=None,captions=["A is more trustworthy", "B is more trustworthy", "Both are equally trustworthy"], key=f"trustworthiness_{question_index}");}}
-        (col_overall, col_feedback) = st.columns(2);
-        with col_overall {with st.container(border=True) {overall = st.radio("Which is better overall?", ["Response A", "Response B", "About the Same"], index=None,captions=["A is better overall", "B is better overall", "Both are equally good overall"], key=f"overall_{question_index}");}}
-        with col_feedback {with st.container(border=True) {feedback = st.text_area("Reasoning behind your choice", key=f"feedback_{question_index}");}}
-        if clarity and intelligence and likability and trustworthiness and overall and feedback {
-            result = {
-                "clarity": clarity,
-                "intelligence": intelligence,
-                "likability": likability,
-                "trustworthiness": trustworthiness,
-                "overall": overall,
-                "feedback": feedback
-            };
-        }
-        else {result = None;}
-    }
     
     if st.button("Next Question", <>type="primary", key=f"next_{question_index}") {
-        if result {
+        if all(result.values()) {
             st.session_state.evals.append({"result": result, "time": time.time(), "question": question});
             st.session_state.question_index += 1;
             with open(os.path.join("results", f"{st.session_state.worker_id}_{st.session_state.question_set_id}.json"), "w") as f {
