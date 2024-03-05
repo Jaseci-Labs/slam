@@ -33,5 +33,8 @@ can dashboard {
     } else {
         <>init();
     }
-    if st.button("Refresh") {st.rerun();}
+    if st.button("Refresh") {
+        <>init();
+        st.rerun();
+    }
 }
