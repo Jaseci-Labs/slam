@@ -5,6 +5,7 @@ import:py uuid;
 import:py math;
 import:py itertools;
 import:py random;
+import:py pandas as pd;
 
 :can:<>init {
     if "config" not in st.session_state {
@@ -33,18 +34,30 @@ import:py random;
         "A/B Testing": {"desc":"A/B Testing is a method where the user is shown two options and they have to choose the better one. This is repeated for a number of times and the option with the most votes wins.", "image": "https://i.imgur.com/5ZQJX6i.png"},
         "A/B Testing with Criterions": {"desc":"A/B Testing with Criterions is a method where the user is shown two options and they have to choose the better one for each criterion (clarity, fluency, etc.).", "image": "https://i.imgur.com/5ZQJX6i.png"}
     };
-
+    criterias = None;
     st.subheader("Human Evaluation Method");
     (hv_method_col, hv_method_view_col) = st.columns(2);
     with hv_method_col {
         hv_method = st.selectbox("Select the human evaluation method", list(eval_methods.keys()), index=list(eval_methods.keys()).index(st.session_state.config["hv_method"]));
         st.caption(eval_methods[hv_method]["desc"]);
+        if hv_method == "A/B Testing with Criterions" {
+            criteria_df = pd.DataFrame([
+                {"Criteria": "clarity", "Description" : "Which has better clarity?"},
+                {"Criteria": "intelligence", "Description" : "Which is more intelligent?"},
+                {"Criteria": "likability", "Description" : "Which is more likable?"},
+                {"Criteria": "trustworthy", "Description" : "Which is more trustworthy?"},
+                {"Criteria": "overall", "Description" : "Which is better overall?"}
+            ]);
+            edited_df = st.data_editor(criteria_df, num_rows="dynamic");
+            criterias = edited_df.to_dict(orient="records");
+            print(criterias);
+        }
     }
     with hv_method_view_col {
         st.caption("The following is a preview of the human evaluation method.");
         st.image(eval_methods[hv_method]["image"], use_column_width=True);
     }
-    return hv_method;
+    return (hv_method, criterias);
 }
 :can:sanity_check (n_models: int, n_usecases: int, n_workers: int, n_questions_per_worker: int) {
     n_model_pairs = n_models * (n_models - 1) / 2;
