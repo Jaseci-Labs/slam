@@ -28,7 +28,6 @@ import:py random;
         st.session_state.config = config;
     }
 }
-
 :can:hv_evaluation_method_selector {
     eval_methods = {
         "A/B Testing": {"desc":"A/B Testing is a method where the user is shown two options and they have to choose the better one. This is repeated for a number of times and the option with the most votes wins.", "image": "https://i.imgur.com/5ZQJX6i.png"},
@@ -47,13 +46,11 @@ import:py random;
     }
     return hv_method;
 }
-
 :can:sanity_check (n_models: int, n_usecases: int, n_workers: int, n_questions_per_worker: int) {
     n_model_pairs = n_models * (n_models - 1) / 2;
     min_n_responses_needed_per_model = int(math.ceil(math.sqrt(n_workers * n_questions_per_worker / n_usecases / float(n_model_pairs))));
     return (min_n_responses_needed_per_model, n_model_pairs);
 }
-
 :can:hv_configurator {
     st.subheader("Human Evaluation Configuration");
     (hv_config_1_col, hv_config_2_col, hv_config_3_col) = st.columns(3);
@@ -92,7 +89,6 @@ import:py random;
     }
     return (n_options, n_workers, ability_to_tie, data_sources, n_questions_per_worker, evenly_distributed, show_captcha);
 }
-
 :can:add_data_sources {
     with st.form("upload_datasources", clear_on_submit=True) {
         uploaded_json_files = st.file_uploader("Upload data sources", accept_multiple_files=True, <>type="json");
@@ -107,7 +103,6 @@ import:py random;
         }
     }
 }
-
 :can:get_question_pairs (models_responses_all: dict) {
     n_usecases = len(models_responses_all);
     models = list(list(models_responses_all.values())[0].keys());
@@ -135,7 +130,6 @@ import:py random;
     with open(os.path.join(".human_eval_config", "unique_question_pairs.json"), "w") as f {json.dump(question_pairs, f, indent=2);}
     return question_pairs;
 }
-
 :can:get_distribution (question_pairs:list, n_workers: int, n_questions_per_worker: int) {
     need_to_be_evenly_distributed = st.session_state.config["config"]["evenly_distributed"];
     if not need_to_be_evenly_distributed {
@@ -167,7 +161,6 @@ import:py random;
     }
     with open(os.path.join(".human_eval_config", "distribution.json"), "w") as f {json.dump(distribution, f, indent=2);}
 }
-
 :can:create_neccessary_file (data_sources: list) {
     with st.spinner("Creating Necessary Files...") {
         uid_responses = {};
@@ -201,4 +194,25 @@ import:py random;
     }
 
     return models_responses_all;
+}
+:can:get_prompt_info(data_sources: list) {
+    prompt_infos = {data_source: {} for data_source in data_sources};
+    with st.container(border=True) {
+        for data_source in data_sources {
+            with st.expander(f"Usecase {data_source}"){
+                with open(os.path.join("data", data_source)) as f {data = json.load(f);}
+                (tab_input, tab_preview) = st.tabs(["Prompt Information", "Preview"]);
+                with tab_input {
+                    prompt_infos[data_source]["usecase_id"] = st.text_input("Usecase Identifier", key=f"{data_source}_usecase_id", value=str(uuid.uuid4()), help="Unique ID for the usecase.");
+                    prompt_infos[data_source]["prompt_disc"] = st.text_area("Prompt Description", key=f"{data_source}_prompt_disc", value=data.get("prompt_disc", ""), help="Display description of the prompt. Use markdown/html for Nice looks.");
+                    prompt_infos[data_source]["prompt_simple_disc"] = st.text_area("Simple Description", key=f"{data_source}_prompt_simple_disc", value="", help="Simple text description of the usecase. Note: This will be used in the Auto Evaluation.");
+                }
+                with tab_preview {
+                    st.caption("Preview of the prompt description. Note: Following is a representation of what evaluators will see.");
+                    st.markdown(prompt_infos[data_source]["prompt_disc"]);
+                }
+            }
+        }
+    }
+    return prompt_infos;
 }

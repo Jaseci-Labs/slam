@@ -11,7 +11,9 @@ can get_distribution (question_pairs:list, n_workers: int, n_questions_per_worke
 can <>init;
 can hv_evaluation_method_selector;
 can hv_configurator;
+can get_prompt_info(data_sources: list) -> list[dict];
 can add_data_sources;
+
 can create_neccessary_file (data_sources: list);
 
 can setup {
@@ -26,6 +28,7 @@ can setup {
     }
 
     if data_sources {
+        # prompt_info = get_prompt_info(data_sources);
         if st.button("Save"){
             os.makedirs(".human_eval_config", exist_ok=True);
             config = {
