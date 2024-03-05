@@ -161,20 +161,20 @@ import:py random;
     }
     with open(os.path.join(".human_eval_config", "distribution.json"), "w") as f {json.dump(distribution, f, indent=2);}
 }
-:can:create_neccessary_file (data_sources: list) {
+:can:create_neccessary_file (data_sources: list, _prompt_infos: dict) {
     with st.spinner("Creating Necessary Files...") {
         uid_responses = {};
         models_responses_all = {};
         prompt_infos = [];
         for data_source in data_sources {
-            prompt_id = str(uuid.uuid4());
             prompt_info = {};
             models_responses = {};
             with open(os.path.join("data", data_source)) as f {
                 data = json.load(f);
                 prompt_info["prompt"] = data["prompt"];
-                prompt_info["prompt_disc"] = data["prompt_disc"];
-                prompt_info["prompt_id"] = prompt_id;
+                prompt_info["prompt_disc"] = _prompt_infos[data_source]["prompt_disc"];
+                prompt_info["prompt_id"] = _prompt_infos[data_source]["usecase_id"];
+                prompt_info["prompt_simple_disc"] = _prompt_infos[data_source]["prompt_simple_disc"];
                 for (model_name, responses) in data["outputs"].items() {
                     model_responses = [];
                     for response in responses {
@@ -186,7 +186,7 @@ import:py random;
                 }
             }
             prompt_infos.append(prompt_info);
-            models_responses_all[prompt_id] = models_responses;
+            models_responses_all[_prompt_infos[data_source]["usecase_id"]] = models_responses;
         }
         json.dump(uid_responses, open(os.path.join(".human_eval_config", "responses.json"), "w"), indent=2);
         json.dump(models_responses_all, open(os.path.join(".human_eval_config", "models_responses.json"), "w"), indent=2);
@@ -196,6 +196,7 @@ import:py random;
     return models_responses_all;
 }
 :can:get_prompt_info(data_sources: list) {
+    st.subheader("Prompt Information");
     prompt_infos = {data_source: {} for data_source in data_sources};
     with st.container(border=True) {
         for data_source in data_sources {
@@ -209,7 +210,7 @@ import:py random;
                 }
                 with tab_preview {
                     st.caption("Preview of the prompt description. Note: Following is a representation of what evaluators will see.");
-                    st.markdown(prompt_infos[data_source]["prompt_disc"]);
+                    st.markdown(prompt_infos[data_source]["prompt_disc"], unsafe_allow_html=True);
                 }
             }
         }
