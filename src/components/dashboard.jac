@@ -14,7 +14,7 @@ can plotly_histogram;
 glob SELECTED_PROMPT_KEY = 'selected_prompt';
 
 can dashboard {
-    if st.session_state.get("current_hv_config", None) {
+    if st.session_state.get("current_hv_config", None){
         status_indicator();
         # chart_type = st.selectbox("Select a chart type:", ("Area Chart", "Bar Chart", "Line Chart", "Altair Chart", "Plotly Figure", "Heat Map","Stacked Bar Chart","Histogram"));
         chart_type = st.selectbox("Select a chart type:", ("Plotly Figure", "Heat Map","Stacked Bar Chart","Histogram"));
@@ -33,5 +33,8 @@ can dashboard {
     } else {
         <>init();
     }
-    if st.button("Refresh") {st.rerun();}
+    if st.button("Refresh") {
+        <>init();
+        st.rerun();
+    }
 }

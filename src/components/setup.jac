@@ -11,8 +11,10 @@ can get_distribution (question_pairs:list, n_workers: int, n_questions_per_worke
 can <>init;
 can hv_evaluation_method_selector;
 can hv_configurator;
+can get_prompt_info(data_sources: list) -> dict;
 can add_data_sources;
-can create_neccessary_file (data_sources: list);
+
+can create_neccessary_file (data_sources: list, _prompt_infos: dict);
 
 can setup {
     <>init();
@@ -26,6 +28,7 @@ can setup {
     }
 
     if data_sources {
+        prompt_infos = get_prompt_info(data_sources);
         if st.button("Save"){
             os.makedirs(".human_eval_config", exist_ok=True);
             config = {
@@ -46,7 +49,7 @@ can setup {
             
             json.dump(config, open(os.path.join(".human_eval_config", "config.json"), "w"));
 
-            models_responses_all = create_neccessary_file(data_sources);
+            models_responses_all = create_neccessary_file(data_sources, prompt_infos);
             question_pairs = get_question_pairs(models_responses_all);
             get_distribution(question_pairs, n_workers, n_questions_per_worker);
             st.toast("Created necessary files!");

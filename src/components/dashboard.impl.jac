@@ -15,7 +15,9 @@ import:py shutil;
 :can:<>init {
     if os.path.exists(os.path.join(".human_eval_config", "config.json")) {
         st.session_state.current_hv_config = json.load(open(os.path.join(".human_eval_config", "config.json")));
-        with open(os.path.join(".human_eval_config", "worker_count.txt"), "r") as f {st.session_state.current_worker_count = int(f.read());}
+        if os.path.exists(os.path.join(".human_eval_config", "worker_count.txt")) {
+            with open(os.path.join(".human_eval_config", "worker_count.txt"), "r") as f {st.session_state.current_worker_count = int(f.read());}
+        } else {st.session_state.current_worker_count = 0;}
         st.session_state.workers_data_dir = os.path.abspath("results");
         st.session_state.distribution_file = os.path.abspath(os.path.join(".human_eval_config", "distribution.json"));
         st.session_state.response_file = os.path.abspath(os.path.join(".human_eval_config", "responses.json"));

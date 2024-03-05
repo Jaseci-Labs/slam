@@ -43,7 +43,7 @@ import:jac from utils, llms, check_engine_status, load_engine, run_inference;
                 evals = [];
                 for question in question_set {
                     prompt_id = question[0];
-                    prompt_disc = [x["prompt_disc_simple"] for x in st.session_state.prompt_info if x["prompt_id"] == prompt_id][0];
+                    prompt_disc = [x["prompt_simple_disc"] for x in st.session_state.prompt_info if x["prompt_id"] == prompt_id][0];
                     (model_a, model_a_respones_id) = list(question[1].items())[0];
                     (model_b, model_b_respones_id) = list(question[1].items())[1];
                     model_a_respones = st.session_state.responses[model_a_respones_id];
