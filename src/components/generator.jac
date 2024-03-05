@@ -1,9 +1,10 @@
 import:py streamlit as st;
 
+import:jac from utils, check_engine_status;
+
 can <>init;
 can model_settings;
 can prompt_settings;
-can check_engine_status;
 can generate_responses(selected_models: list, n_samples: int, temp: float, prompt_template: str, arguments: dict);
 
 can generator {

@@ -4,7 +4,7 @@ import:py re;
 import:py uuid;
 import:py json;
 
-import:jac from utils, load_engine, run_inference, llms, check_query_engine, check_ollama_server;
+import:jac from utils, load_engine, run_inference, check_engine_status, LLMS;
 
 :can:<>init {
     os.makedirs('runs', exist_ok=True);
@@ -13,23 +13,9 @@ import:jac from utils, load_engine, run_inference, llms, check_query_engine, che
     }
 }
 
-:can:check_engine_status {
-    query_engine_status = check_query_engine();
-    ollama_server_status = check_ollama_server();
-    (query_engine_status_col, ollama_server_status_col) = st.columns(2);
-
-    if query_engine_status {query_engine_status_col.success('Query Engine is Running');}
-    else {query_engine_status_col.error('Query Engine is not Running');}
-
-    if ollama_server_status {ollama_server_status_col.success('Ollama Server is Running');}
-    else {ollama_server_status_col.error('Ollama Server is not Running');}
-
-    return query_engine_status;
-}
-
 :can:model_settings {
     st.subheader('Model Settings');
-    selected_models = st.multiselect('Select Models', llms);
+    selected_models = st.multiselect('Select Models', LLMS);
     (n_samples_temp_col, run_id_col) = st.columns(2);
     with n_samples_temp_col {
         (n_samples_col, temp_col) = st.columns(2);

@@ -5,35 +5,34 @@ import:py shutil;
 import:py time;
 import:py streamlit as st;
 import:py from datetime, datetime;
+import:py from PIL, Image;
 
 
 glob ACTION_SERVER_URL = os.environ.get("ACTION_SERVER_URL","http://localhost:8000/");
 glob OLLAMA_SERVER_URL = os.environ.get("OLLAMA_SERVER_URL","http://localhost:11434/");
+glob LLMS = [
+    "openai/gpt-4",
+    "ollama/starling-lm:7b",
+    "ollama/mistral:7b-instruct",
+    "ollama/zephyr:7b-beta",
+    "ollama/neural-chat:7b",
+    "ollama/orca-mini:3b",
+    "ollama/llama2:7b-chat",
+    "ollama/stablelm-zephyr:3b",
+    "ollama/falcon:7b-instruct",
+    "ollama/orca2:7b",
+    "ollama/openchat:7b-v3.5",
+    "ollama/vicuna:7b"
+    # Add your ollama models here
+];
+
+## LLM RELATED
 
 can call_action(action:str, **kwargs: dict) -> dict {
     url = f"{ACTION_SERVER_URL}{action}";
     response = requests.post(url, json=kwargs);
     return response.json();
 }
-
-can check_query_engine -> bool {
-    try {
-        ret = requests.get(ACTION_SERVER_URL);
-        return ret.status_code == 200;
-    } except Exception as e {
-        return False;
-    }
-}
-
-can check_ollama_server -> bool {
-    try {
-        ret = requests.get(OLLAMA_SERVER_URL);
-        return ret.status_code == 200;
-    } except Exception as e {
-        return False;
-    }
-}
-
 can load_engine(provider_name:str, model_name:str, temperature:float, prompt_template:str) -> bool {
     config = {
         "provider_name": provider_name,
@@ -44,7 +43,6 @@ can load_engine(provider_name:str, model_name:str, temperature:float, prompt_tem
     ret = call_action(action="load_engine", config = config);
     return True;
 }
-
 can run_inference(model_name:str, num_samples:int, payload:dict) -> dict {
     outputs = [];
     full_prompt = None;
@@ -69,44 +67,7 @@ can run_inference(model_name:str, num_samples:int, payload:dict) -> dict {
     };
 }
 
-glob llms = [
-    "openai/gpt-4",
-    "ollama/starling-lm:7b",
-    "ollama/mistral:7b-instruct",
-    "ollama/zephyr:7b-beta",
-    "ollama/neural-chat:7b",
-    "ollama/orca-mini:3b",
-    "ollama/llama2:7b-chat",
-    "ollama/stablelm-zephyr:3b",
-    "ollama/falcon:7b-instruct",
-    "ollama/orca2:7b",
-    "ollama/openchat:7b-v3.5",
-    "ollama/vicuna:7b"
-    # Add your ollama models here
-];
-
-can login {
-    (logo_col, login_col) = st.columns(2);
-    with logo_col {
-        st.header("Welcome to SLaM Tool!");
-        st.info("SLaM Tool allows you to run human evaluations and llm evaluations on various propietary and open-source language models.");
-        st.info("Please login to access the dashboard, evaluation and other features.");
-    }
-    with login_col {
-        with st.form(key='my_form') {
-            username = st.text_input('Username');
-            password = st.text_input('Password');
-            if st.form_submit_button('Login') {
-                try {
-                    if username == os.environ.get("SLAM_ADMIN_USERNAME") and password == os.environ.get("SLAM_ADMIN_PASSWORD"){
-                        st.session_state.admin_privileges = True;
-                        st.rerun();
-                    } else {st.error("Invalid username or password");}
-                } except Exception as e {st.error("Admin Account not configured. Please contact the administrator.");}
-            }
-        }
-    }
-}
+## DATA PREPARATION/FORMATIING
 
 can map_prompt_names_to_ids(prompt_data_dir:str, prompt_info_file:str) {
     with open(prompt_info_file, "r") as file {
@@ -128,21 +89,6 @@ can map_prompt_names_to_ids(prompt_data_dir:str, prompt_info_file:str) {
     }
     return prompt_ids;
 }
-
-can check_engine_status {
-    query_engine_status = check_query_engine();
-    ollama_server_status = check_ollama_server();
-    (query_engine_status_col, ollama_server_status_col) = st.columns(2);
-
-    if query_engine_status {query_engine_status_col.success('Query Engine is Running');}
-    else {query_engine_status_col.error('Query Engine is not Running');}
-
-    if ollama_server_status {ollama_server_status_col.success('Ollama Server is Running');}
-    else {ollama_server_status_col.error('Ollama Server is not Running');}
-
-    return query_engine_status;
-}
-
 can generate_performance_data(
     formatted_output:dict, 
     all_models:list, 
@@ -196,7 +142,6 @@ can generate_performance_data(
 
     return (model_performance, preference_matrix, criteria);
 }
-
 can format_responses_by_prompt(workers_data_dir:str, distribution_file:str, response_file:str) {
     out_dataset = {};
 
@@ -268,3 +213,86 @@ can format_responses_by_prompt(workers_data_dir:str, distribution_file:str, resp
     return formatted_output;
 }
 
+## UTILITY COMPONENTS
+
+can check_query_engine -> bool {
+    try {
+        ret = requests.get(ACTION_SERVER_URL);
+        return ret.status_code == 200;
+    } except Exception as e {
+        return False;
+    }
+}
+can check_ollama_server -> bool {
+    try {
+        ret = requests.get(OLLAMA_SERVER_URL);
+        return ret.status_code == 200;
+    } except Exception as e {
+        return False;
+    }
+}
+can check_engine_status {
+    query_engine_status = check_query_engine();
+    ollama_server_status = check_ollama_server();
+    (query_engine_status_col, ollama_server_status_col) = st.columns(2);
+
+    if query_engine_status {query_engine_status_col.success('Query Engine is Running');}
+    else {query_engine_status_col.error('Query Engine is not Running');}
+
+    if ollama_server_status {ollama_server_status_col.success('Ollama Server is Running');}
+    else {ollama_server_status_col.error('Ollama Server is not Running');}
+
+    return query_engine_status;
+}
+
+can login {
+    (logo_col, login_col) = st.columns(2);
+    with logo_col {
+        st.header("Welcome to SLaM Tool!");
+        st.info("SLaM Tool allows you to run human evaluations and llm evaluations on various propietary and open-source language models.");
+        st.info("Please login to access the dashboard, evaluation and other features.");
+    }
+    with login_col {
+        with st.form(key='my_form') {
+            username = st.text_input('Username');
+            password = st.text_input('Password');
+            if st.form_submit_button('Login') {
+                try {
+                    if username == os.environ.get("SLAM_ADMIN_USERNAME") and password == os.environ.get("SLAM_ADMIN_PASSWORD"){
+                        st.session_state.admin_privileges = True;
+                        st.rerun();
+                    } else {st.error("Invalid username or password");}
+                } except Exception as e {st.error("Admin Account not configured. Please contact the administrator.");}
+            }
+        }
+    }
+}
+
+## THEME RELATED
+
+can local_css(file_name: str) -> None {
+    with open(file_name, "r") as f {
+        css = f.read();
+        st.markdown(f"<style>{css}</style>", unsafe_allow_html=True);
+    }
+}
+can icon(icon_name: str) -> None {
+    st.markdown(f"<i class='material-icons'>{icon_name}</i>", unsafe_allow_html=True);
+}
+can initPage(page_title: str) -> None {
+    dir_root = os.path.dirname(os.path.abspath(__file__));
+    favicon = Image.open(os.path.join(dir_root, "../assets/favicon.png"));
+    st.set_page_config(page_title=page_title, page_icon=favicon);
+    local_css(os.path.join(dir_root, "../assets/style.css"));
+
+    with open(os.path.join(dir_root, "../assets/theme.html")) as f {
+        st.components.v1.html(f.read(), height=80);
+    }
+    st.header(page_title);
+}
+can footer {
+    dir_root = os.path.dirname(os.path.abspath(__file__));
+    local_css(os.path.join(dir_root, "../assets/footer.css"));
+    footer= "<div class='footer'><p>Developed by <a href='https://www.jaseci.org/'' target='_blank'><img src='https://www.jaseci.org/wp-content/uploads/2022/02/jaseki-logo-inverted-rgb.svg' alt='Jaseci Logo' height='40'></a></p></div>";
+    st.markdown(footer, unsafe_allow_html=True);
+}

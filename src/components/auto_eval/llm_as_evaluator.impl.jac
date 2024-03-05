@@ -3,7 +3,7 @@ import:py os;
 import:py json;
 import:py time;
 
-import:jac from utils, llms, check_engine_status, load_engine, run_inference;
+import:jac from ..utils, llms, check_engine_status, load_engine, run_inference;
 
 :can:llm_as_evaluator {
     st.title("LLM as a Evaluator");
@@ -76,9 +76,9 @@ import:jac from utils, llms, check_engine_status, load_engine, run_inference;
 
 :can:process_inference_result(inference_result: dict) -> dict {
     try {
-        answers = re.search(r"\[OUTPUT\](.*)", inference_result['response'], re.DOTALL).group(1).strip();
+        answers = re.search(r"\[Output\](.*)", inference_result['response'], re.DOTALL).group(1).strip();
         answers = eval(answers);
-        feedback =  re.search(r"\[REASON\](.*)\[OUTPUT\]", inference_result['response'], re.DOTALL).group(1).strip();
+        feedback =  re.search(r"\[Reasoning\](.*)\[Output\]", inference_result['response'], re.DOTALL).group(1).strip();
         answers["feedback"] = feedback;
     } except Exception as e {answers = {"error": str(e)};}
     return answers;
