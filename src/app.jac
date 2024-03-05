@@ -1,13 +1,12 @@
 import:py streamlit as st;
 
-import:jac from components.utils, login;
+import:jac from components.utils, login, footer;
 import:jac from components.generator, generator;
 import:jac from components.setup, setup;
 import:jac from components.human_eval, human_eval;
 import:jac from components.dashboard, dashboard;
 import:jac from components.auto_eval, auto_eval;
 import:jac from components.about, about;
-import:jac from components.theme, footer;
 
 can main {
     if "admin_privileges" not in st.session_state {st.session_state.admin_privileges = False;} 
