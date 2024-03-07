@@ -1,4 +1,5 @@
 import unittest
+import os
 from streamlit.testing.v1 import AppTest
 
 
@@ -16,6 +17,9 @@ class TestSuite(unittest.TestCase):
         admin_tab.get("button")[0].set_value(True).run()
         assert self.at.get("error")[1].value == "Invalid username or password"
         assert not self.at.session_state.admin_privileges
+
+        os.environ["SLAM_ADMIN_USERNAME"] = "username"
+        os.environ["SLAM_ADMIN_PASSWORD"] = "password"
 
         admin_tab.text_input("username").input("username")
         admin_tab.text_input("password").input("password")
