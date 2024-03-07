@@ -94,8 +94,8 @@ can login {
     }
     with login_col {
         with st.form(key='my_form') {
-            username = st.text_input('Username');
-            password = st.text_input('Password', <>type='password');
+            username = st.text_input('Username', key="username");
+            password = st.text_input('Password', <>type='password', key="password");
             if st.form_submit_button('Login') {
                 try {
                     if username == os.environ.get("SLAM_ADMIN_USERNAME") and password == os.environ.get("SLAM_ADMIN_PASSWORD"){
