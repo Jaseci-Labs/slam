@@ -1,4 +1,4 @@
-name: Run Tests
+name: Streamlit App Tests
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
       - main
 
 jobs:
-  test:
+  app_test:
     runs-on: ubuntu-latest
     steps:
     - name: Check out code
