@@ -2,6 +2,7 @@ import:py from streamlit.testing.v1, AppTest;
 import:py os;
 import:py json;
 import:py shutil;
+import:jac from utils, get_item_by_label;
 
 glob app = AppTest.from_file("app.py").run(timeout=20);
 
@@ -66,7 +67,7 @@ test setup_with_existing_config {
     app = AppTest.from_file("app.py").run(timeout=20);
     app.session_state.admin_privileges = True;
     app.run();
-    setup_tab = [tab for tab in app.get("tab") if tab.label == "Human Eval Setup"][0];
+    setup_tab = get_item_by_label(app, "tab", "Human Eval Setup");
     assert not setup_tab.exception;
     assert not setup_tab.error;
     shutil.rmtree(".human_eval_config");
