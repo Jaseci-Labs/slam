@@ -9,7 +9,7 @@ import:jac from utils, llms, check_engine_status, load_engine, run_inference;
     st.title("LLM as a Evaluator");
     st.caption("LLM as a Evaluator simulates an human evaluator");
     if "llm_as_eval_config" not in st.session_state {<>init();}
-    if st.session_state.get("llm_as_eval_coofig", None) {
+    if st.session_state.get("llm_as_eval_config", None) {
         engine_status = check_engine_status();
         eval_model = st.selectbox("Select the Model which will Act as an Evaluator", llms);
         with open(os.path.join(".human_eval_config", "distribution.json"), "r") as f {all_questions = json.load(f);}
