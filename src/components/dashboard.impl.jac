@@ -167,7 +167,6 @@ import:py shutil;
     prompt_info = map_prompt_names_to_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
     prompt_ids = list(prompt_info.keys());
     prompt_ids.insert(0, "all_combined");
-    prompt_ids.insert(1, "time_vs_pair");
     if not selected_prompt{
         new_prompt_index = prompt_ids.index(selected_prompt_id);
         user_selected_prompt = st.selectbox("Select Prompt:", prompt_ids, index=new_prompt_index);
