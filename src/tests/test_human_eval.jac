@@ -31,5 +31,19 @@ test human_eval_config_ab_testing {
     get_item_by_label(app, "text_input", "Worker ID").set_value("test_worker_id").run();
 
     assert os.path.exists(os.path.join(".human_eval_config", "worker_count.txt"));
+    assert not app.exception;
+    assert app.session_state.worker_id == "test_worker_id";
+    shutil.rmtree(".human_eval_config");
+}
+
+test human_eval_config_criteria {
+    shutil.unpack_archive(os.path.join(os.path.dirname(__file__),"fixtures", "criteria_config.zip"), ".human_eval_config");
+    :g: app;
+    app = AppTest.from_file("app.py").run(timeout=20);
+    get_item_by_label(app, "text_input", "Worker ID").set_value("test_worker_id").run();
+
+    assert os.path.exists(os.path.join(".human_eval_config", "worker_count.txt"));
+    assert not app.exception;
+    assert app.session_state.worker_id == "test_worker_id";
     shutil.rmtree(".human_eval_config");
 }
