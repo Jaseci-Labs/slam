@@ -268,3 +268,27 @@ can format_responses_by_prompt(workers_data_dir:str, distribution_file:str, resp
     return formatted_output;
 }
 
+
+can convert_run(run: str) {
+    responses_files = [f for f in os.listdir(os.path.join(os.path.abspath("runs"), run)) if f.endswith(".json")];
+    data = {
+        "run": run,
+        "prompt_disc": None,
+        "outputs": {}
+    };
+
+    for responses_file in responses_files {
+        with open(os.path.join(os.path.abspath("runs"), run, responses_file), "r") as f {
+            model_data = json.load(f);
+            model_name = model_data["model_name"];
+            prompt = model_data["full_prompt"];
+            responses = [r["response"] for r in model_data["outputs"]];
+            data["outputs"][model_name] = responses;
+            data["prompt"] = prompt if "prompt" not in data else data["prompt"];
+        }
+    }
+
+    with open(os.path.join(os.path.abspath("data"), f'{run}_responses.json'), "w") as f {
+        json.dump(data, f, indent=4);
+    }
+}
