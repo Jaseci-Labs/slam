@@ -4,7 +4,7 @@ import:py from langchain.prompts, ChatPromptTemplate;
 import:py from langchain.schema.output_parser, StrOutputParser;
 import:py from langchain.callbacks, get_openai_callback;
 import:py from langchain.callbacks.base, BaseCallbackHandler;
-import:py from jaseci.utils.utils, logger;
+import:py logging;
 import:py ollama;
 
 obj ChatPromptHandler:BaseCallbackHandler: {
@@ -74,17 +74,19 @@ obj ChatPromptHandler:BaseCallbackHandler: {
 }
 
 :can:load_engine(config: dict) -> None {
+    config = config["config"];
     provider_name = config["provider_name"];
     model_name = config["model_name"];
     temperature = config["temperature"];
-    logger.info(f"Loading query engine with {provider_name}'s {model_name} model");
+    logging.info(f"Loading query engine with {provider_name}'s {model_name} model");
 
     engine["engine"] = QueryEngine(provider_name, model_name, temperature);
     engine["engine"].init_engine(config["prompt_template"]);
 }
 
 :can:query(payload:dict) -> dict {
-    logger.info(f"Querying engine with payload: {payload}");
+    payload = payload["payload"];
+    logging.info(f"Querying engine with payload: {payload}");
     if engine["engine"] is None{
         raise Exception("Query engine not loaded");
     }

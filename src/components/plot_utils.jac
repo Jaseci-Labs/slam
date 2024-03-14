@@ -122,7 +122,7 @@ can generate_heatmaps(placeholder:str, model_performance:dict, preference_matrix
                 texttemplate="%{text}",
                 colorbar=dict(
                     title="Individual Wins",
-                    len=0.25,
+                    len=0.7,
                     y=(0.85 * (1 - (i / len(criteria)))),
                     yanchor="bottom",
                     x=1.1
@@ -145,7 +145,7 @@ can generate_heatmaps(placeholder:str, model_performance:dict, preference_matrix
                 texttemplate="%{text}",
                 colorbar=dict(
                     title="Total Wins",
-                    len=0.25,
+                    len=0.7,
                     y=(0.85 * (1 - (i / len(criteria)))), 
                     yanchor="bottom",
                     x=1.2
@@ -160,7 +160,7 @@ can generate_heatmaps(placeholder:str, model_performance:dict, preference_matrix
     fig.update_layout(
         title_text="Model Performance by Criterion",
         height=350 * len(criteria),
-        width=1200
+        width=1500
     );
 
     if placeholder {

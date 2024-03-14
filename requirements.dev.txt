@@ -1,7 +1,9 @@
-jaseci
+jaclang>=0.5.6
 ollama
 langchain==0.0.354
 openai
 yaspin
+uvicorn[standard]
+fastapi
 # sentence_transformers
 # nltk

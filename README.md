@@ -97,7 +97,7 @@ ollama serve
 Step 2: Run the Query Engine
 
 ```bash
-uvicorn query_engine:serv_action --reload
+jac run src/query_engine.jac
 ```
 
 Step 3: Environment Variables (Optional)
