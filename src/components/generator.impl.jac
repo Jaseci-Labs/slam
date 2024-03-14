@@ -4,7 +4,7 @@ import:py re;
 import:py uuid;
 import:py json;
 
-import:jac from utils, load_engine, run_inference, llms, check_query_engine, check_ollama_server;
+import:jac from utils, load_engine, run_inference, llms, check_query_engine, check_ollama_server, convert_run;
 
 :can:<>init {
     os.makedirs('runs', exist_ok=True);
