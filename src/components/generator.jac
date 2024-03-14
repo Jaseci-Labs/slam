@@ -19,6 +19,8 @@ can generator {
         st.caption('Click the button below to generate the responses. This may take a while.');
         if st.button('Generate Responses') {
             generate_responses(selected_models, n_samples, temp, prompt_template, arguments);
+            convert_run(st.session_state['run_id']);
+            st.success('Responses generated and data is ready for human evaluation!');
         }
     } else {
         st.error('Please select at least one model, fill all the arguments in the prompt template and make sure the query engine is running.');
