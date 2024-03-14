@@ -1,5 +1,9 @@
-import:py from jaseci.jsorc.live_actions, jaseci_action;
+import:py from fastapi, FastAPI;
+import:py uvicorn;
 import:py from langchain.globals, set_verbose, set_debug;
+
+
+glob app = FastAPI();
 
 with entry {
     set_verbose(True);
@@ -15,8 +19,13 @@ obj QueryEngine {
 }
 
 glob engine = {"engine": None};
-
-@jaseci_action(act_group=["query_engine"], allow_remote=True)
+@app.get("/")
+can status -> dict {return {"status": "ok"};}
+@app.post("/load_engine")
 can load_engine(config: dict) -> None; # Loads the query engine
-@jaseci_action(act_group=["query_engine"], allow_remote=True)
+@app.post("/query")
 can query(payload:dict) -> dict; # Queries the query engine
+
+with entry: __main__ {
+    uvicorn.run(app, host="0.0.0.0", port=8000);
+}
