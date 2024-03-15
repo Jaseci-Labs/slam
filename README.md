@@ -144,5 +144,10 @@ Step 4: Click Refresh to see the Diagrams and Visualizations
 
 ## Contributing
 
-We are open to contributions. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct,
-and the process for submitting pull requests to us.
+We are open to contributions. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+To run the tests, run the following command
+
+```bash
+./src/run_tests.sh
+```

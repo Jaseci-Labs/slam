@@ -12,7 +12,9 @@ can zipdir(folders:list[str], out:str) {
         for folder in folders {
             for (root, _, files) in os.walk(folder) {
                 for file in files {
-                    zipf.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), os.path.join(folder, '..')));
+                    zipf.write(os.path.join(root, file), 
+                        os.path.relpath(os.path.join(root, file), 
+                        os.path.join(folder, '..')));
                 }
             }
         }
