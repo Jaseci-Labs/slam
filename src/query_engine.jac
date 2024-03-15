@@ -33,15 +33,19 @@ with entry: __main__ {
     uvicorn.run(app, host="0.0.0.0", port=8000);
 }
 
-test run_server {
+test run_query_engine {
     query_engine = subprocess.Popen(["jac", "run", "src/query_engine.jac"]);
-    ollama_server = subprocess.Popen(["ollama", "serve"]);
     time.sleep(10);
     response = requests.get("http://localhost:8000");
     assert response.status_code == 200;
     assert response.json() == {"status": "ok"};
-    ollama_response = requests.get("http://localhost:11434");
-    assert ollama_response.status_code == 200;
+}
+
+test run_ollama_server {
+    ollama_server = subprocess.Popen(["ollama", "serve"]);
+    time.sleep(10);
+    response = requests.get("http://localhost:11434");
+    assert response.status_code == 200;
 }
 
 test load_engine_ollama {

@@ -8,9 +8,8 @@ import:jac from utils, load_engine, run_inference, llms, check_query_engine, che
 
 :can:<>init {
     os.makedirs('runs', exist_ok=True);
-    if "run_id" not in st.session_state {
-        st.session_state["run_id"] = uuid.uuid4();
-    }
+    if "run_id" not in st.session_state {st.session_state["run_id"] = uuid.uuid4();}
+    st.session_state.engine_status = check_engine_status();
 }
 
 :can:check_engine_status {
@@ -47,6 +46,7 @@ import:jac from utils, load_engine, run_inference, llms, check_query_engine, che
     with prompt_values_col {
         st.caption('Input Prompt Values');
         arguments = {x:None for x in re.findall(r'\{([A-Za-z0-9_]+)\}', prompt_template)};
+        print(arguments);
         if len(arguments) == 0 {
             st.info('No arguments found in the prompt template');
         }
