@@ -1,17 +1,16 @@
 # SLaM Tool : *S*mall *La*nguage *M*odel Evaluation Tool
 
-SLaM tool is a helper tool to evaluate the performance of LLMs for your personal use cases with the help of Human Evaluation and Automatic
- Evaluation through LLMs (Coming Soon). You can deploy the application on your local machine to first generate the necessary
-responses for a given prompt with different LLMs (Proprietary or OpenSource) and then evaluate the responses with the help of human evaluators.
- You can set up the human evaluation UI through the admin panel. Realtime Insights and Analytics are also provided to help
-you understand the performance of the LLMs.
+[![Query Engine Tests](https://github.com/Jaseci-Labs/slam/actions/workflows/query_engine_test.yml/badge.svg)](https://github.com/Jaseci-Labs/slam/actions/workflows/query_engine_test.yml)
+[![SLaM App Tests](https://github.com/Jaseci-Labs/slam/actions/workflows/app_test.yml/badge.svg)](https://github.com/Jaseci-Labs/slam/actions/workflows/app_test.yml)
 
+SLaM Tool is a helper tool to evaluate the performance of Large Language Models (LLMs) for your personal use cases with the help of Human Evaluation and Automatic Evaluation. You can deploy the application on your local machine or use Docker to generate responses for a given prompt with different LLMs (Proprietary or OpenSource), and then evaluate the responses with the help of human evaluators or automated methods.
+  
 ## Features
 
 - **Admin Panel**: Set up the Human Evaluation UI and manage the human evaluators.
 - **Realtime Insights and Analytics**: Get insights and analytics on the performance of the LLMs.
 - **Human Evaluation**: Evaluate the responses of the LLMs with the help of human evaluators.
-- **Automatic Evaluation**: Evaluate the responses of the LLMs with the help of LLMs (Coming Soon).
+- **Automatic Evaluation**: Evaluate the responses of the LLMs with the help of LLMs and using embedding similarity.
 - **Multiple Model Support**: Generate responses for a given prompt with different LLMs (Proprietary or OpenSource(Ollama)).
 
 ## Installation
@@ -23,89 +22,88 @@ you understand the performance of the LLMs.
 
 ### Docker Installation
 
-Step 1: Pull the docker image from the docker hub
+1. Build the Docker Image:
+   ```bash
+   docker build -t jaseci/slam-tool:latest .
+   ```
 
-```bash
-docker build -t jaseci/slam-tool:latest .
-```
+2. Run the container with environment variables:
+   ```bash
+   docker run -p 8501:8501 -e SLAM_ADMIN_USERNAME=<user_name> -e SLAM_ADMIN_PASSWORD=<password> jaseci/slam-tool:latest
+   ```
 
-Step 2: add the following environment variables to the container to setup the admin panel
-
-```bash
-docker run -p 8501:8501 -e SLAM_ADMIN_USERNAME=<user_name> -e SLAM_ADMIN_PASSWORD=<password> jaseci/slam-tool:latest
-```
-
-Step 3: Open the browser and go to the following link
-
-```bash
-http://localhost:8501
-```
+3. Open your browser and go to `http://localhost:8501`
 
 ### Local Installation
 
-Step 1: Clone the repository
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Jaseci-Labs/slam.git && cd slam
+   ```
 
-```bash
-git clone https://github.com/Jaseci-Labs/slam.git && cd slam
-```
+2. Create a virtual environment (optional):
+   ```bash
+   conda create -n slam-tool python=3.12 -y
+   conda activate slam-tool
+   ```
 
-Step 2: Create a virtual environment (Optional)
+3. Install the requirements:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-```bash
-conda create -n slam-tool python=3.11 -y
-conda activate slam-tool
-```
+4. Set environment variables:
+   ```bash
+   export SLAM_ADMIN_USERNAME=<username>
+   export SLAM_ADMIN_PASSWORD=<password>
+   ```
 
-Step 3: Install the requirements
+5. Run the application:
+   ```bash
+   streamlit run app.py
+   ```
 
-```bash
-pip install -r requirements.txt
-```
+### For Response Generation & Automatic Evaluation (Optional)
 
-Step 4: Setup the environment variables
+For a streamlined experience, SLAM offers the option to leverage LLMs and SLMs for response generation and automated evaluation.
 
-```bash
-export SLAM_ADMIN_USERNAME=<username>
-export SLAM_ADMIN_PASSWORD=<password>
-```
+1. **Configure Language Models**
 
-Step 5: Run the application
+   If you prefer utilizing OpenAI's GPT-4, you'll need to set up an API key:
+   
+   ```bash
+   export OPENAI_API_KEY=<your_api_key>
+   ```
 
-```bash
-streamlit run app.py
-```
+   Alternatively, if you choose to employ Ollama's cutting-edge language models, ensure that you have Ollama installed and the server running:
+   
+   ```bash
+   curl https://ollama.ai/install.sh | sh
+   ollama serve
+   ```
 
-### Response Generation (Optional)
+2. **Installing Dependencies & Launch the Query Engine**
 
-If you want to use the generate responses feature, you need to set up the LLMs.
+    Query Engine Requires more complex dependancies than the normal app. (Use of Sepeate Python Environment is Recommended)
+    
+    ```bash
+    pip install -r requirements.dev.txt
+    ```
 
-Step 1: Setup the LLMs
+    Once the language models are configured, initiate the Query Engine:
+    
+    ```bash
+    jac run src/query_engine.jac
+    ```
 
-If you are using OpenAI's GPT-4, you need to set up the API key.
+3. **Optional Environment Variables**
 
-```bash
-export OPENAI_API_KEY=<api_key>
-```
-
-If you are using Ollama's LLMs, You need to have the Ollama installed and Ollama server running.
-
-```bash
-curl https://ollama.ai/install.sh | sh
-ollama serve
-```
-
-Step 2: Run the Query Engine
-
-```bash
-jac run src/query_engine.jac
-```
-
-Step 3: Environment Variables (Optional)
-
-```bash
-export ACTION_SERVER_URL=http://localhost:8000/
-export OLLAMA_SERVER_URL=http://localhost:11434/
-```
+    For added flexibility, you can set the following environment variables:
+    
+    ```bash
+    export ACTION_SERVER_URL=http://localhost:8000/
+    export OLLAMA_SERVER_URL=http://localhost:11434/
+    ```
 
 ## Tutorials
 
@@ -118,36 +116,54 @@ export OLLAMA_SERVER_URL=http://localhost:11434/
 
 ## Tips and Tricks
 
-### Continuos Backup of Results
+### Continuous Backup of Results
 
-if you want to have a continuous backup of the results to a Google Drive folder. You can do the following.
+SLAM offers a convenient option to maintain a continuous backup of your results to a Google Drive folder, ensuring your data is securely stored and easily accessible.
 
-Step 1: Set the Google Drive folder id as an environment variable
-```bash
-export GDRIVE_FOLDER_ID=<folder_id>
-```
+1. **Set the Google Drive Folder ID**
 
-Step 2: Initiate a CRON Job to run the `scripts/backup.jac` every 5 minutes. Make sure to have an oauth file (`setting.yaml` and `credentials.json`) in the folder you initiate the cron job.
-```bash
-# activate the virtual environment where jaclang is installed
-*/5 * * * * jac run scripts/backup.jac
-```
+   First, set the Google Drive folder ID as an environment variable:
+   
+   ```bash
+   export GDRIVE_FOLDER_ID=<your_folder_id>
+   ```
 
-Follow the [PyDrive OAuth](https://pythonhosted.org/PyDrive/oauth.html) to set up the oauth files.
+2. **Initiate a CRON Job**
 
-### Loading BackUps
+   Next, initiate a CRON job to run the `scripts/backup.jac` script every 5 minutes. Ensure that you have an OAuth file (`settings.yaml` and `credentials.json`) in the folder from which you initiate the CRON job.
+   
+   ```bash
+   # Activate the virtual environment where JacLang is installed
+   */5 * * * * jac run scripts/backup.jac
+   ```
 
-Step 1: Open the App and Login with the admin credentials
-Step 2: Go to the Dashboard page and Drag and Drop your Zip file
-Step 3: Click Upload and Unzip
-Step 4: Click Refresh to see the Diagrams and Visualizations
+Follow the [PyDrive OAuth](https://pythonhosted.org/PyDrive/oauth.html) instructions to set up the OAuth files.
+
+### Loading Backups
+
+To load your backups, follow these simple steps:
+
+1. **Open the App and Log In**
+   - Launch the SLAM application and log in with your admin credentials.
+
+2. **Navigate to the Dashboard**
+   - Once logged in, navigate to the Dashboard page.
+
+3. **Upload and Unzip**
+   - Drag and drop your ZIP file onto the designated area.
+   - Click the "Upload and Unzip" button.
+
+4. **Refresh and View**
+   - After the upload process is complete, click the "Refresh" button to see the updated diagrams and visualizations.
 
 ## Contributing
 
-We are open to contributions. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+We welcome contributions to enhance SLAM's capabilities. Please review the [CONTRIBUTING.md](CONTRIBUTING.md) file for our code of conduct and the process for submitting pull requests.
 
-To run the tests, run the following command
+To run the test suite, execute the following command:
 
 ```bash
-./src/run_tests.sh
+sh scripts/run_tests.sh
 ```
+
+We appreciate your interest in contributing to SLAM and look forward to your valuable contributions.
