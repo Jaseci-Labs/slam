@@ -10,4 +10,3 @@ for file in $files; do
         exit $exit_code
     fi
 done
-

@@ -1,4 +1,4 @@
-name: Tests
+name: Query Engine Tests
 on:
     pull_request:
         paths:
@@ -14,7 +14,7 @@ on:
             - 'requirements.dev.txt'
 
 jobs:
-  app_test:
+  query_engine_test:
     runs-on: ubuntu-latest
     steps:
     - name: Check out code

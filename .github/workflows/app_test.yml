@@ -1,4 +1,4 @@
-name: Tests
+name: SLaM App Tests
 
 on:
   pull_request:
@@ -24,4 +24,4 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run tests
-      run: sh src/run_tests.sh
+      run: sh scripts/run_tests.sh
