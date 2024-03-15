@@ -7,6 +7,10 @@ import:jac from utils, get_item_by_label;
 
 glob app = AppTest.from_file("app.py").run(timeout=20);
 
+test app_running {
+    assert not app.exception;
+}
+
 test run_query_engine {
     query_engine = subprocess.Popen(["jac", "run", "src/query_engine.jac"]);
     time.sleep(10);

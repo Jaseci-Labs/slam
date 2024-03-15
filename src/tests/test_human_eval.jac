@@ -33,6 +33,8 @@ test human_eval_config_ab_testing {
     assert os.path.exists(os.path.join(".human_eval_config", "worker_count.txt"));
     assert not app.exception;
     assert app.session_state.worker_id == "test_worker_id";
+
+    # TODO: Perform one evaluation
     shutil.rmtree(".human_eval_config");
 }
 
@@ -45,5 +47,6 @@ test human_eval_config_criteria {
     assert os.path.exists(os.path.join(".human_eval_config", "worker_count.txt"));
     assert not app.exception;
     assert app.session_state.worker_id == "test_worker_id";
+    # TODO: Perform one evaluation
     shutil.rmtree(".human_eval_config");
 }
