@@ -31,9 +31,10 @@ can emb_sim_scorer {
             if "selected_prompt" in st.session_state{
                 process_user_selections(st.session_state["selected_prompt"]);
             }
-            # st.session_state.button_clicked = False;
+            st.session_state.button_clicked = False;
         }
         model_list=st.session_state.active_list_of_models;
+        if st.session_state[ANCHOR_MODEL_KEY] not in model_list{st.session_state[ANCHOR_MODEL_KEY] = model_list[0];}
         (col1, col2, col3) = st.columns(3);
         with col1{
             anchor_model_selection = st.selectbox(

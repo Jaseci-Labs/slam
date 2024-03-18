@@ -1,5 +1,5 @@
 import:py streamlit as st;
-
+import:py time;
 can <>init;
 can status_indicator;
 can area_chart;
@@ -10,10 +10,13 @@ can plotly_figure;
 can heat_map(workers_data_dir:str = None, eval_type:str = None, placeholder:str = None, selected_prompt:str = None);
 can stacked_bar_chart;
 can plotly_histogram;
+can upload_files(expanded:bool = False);
 
 glob SELECTED_PROMPT_KEY = 'selected_prompt';
+glob expand=True;
 
 can dashboard {
+    :g: expand;
     if st.session_state.get("current_hv_config", None){
         status_indicator();
         # chart_type = st.selectbox("Select a chart type:", ("Area Chart", "Bar Chart", "Line Chart", "Altair Chart", "Plotly Figure", "Heat Map","Stacked Bar Chart","Histogram"));
@@ -35,6 +38,14 @@ can dashboard {
     }
     if st.button("Refresh") {
         <>init();
+        upload_files(expand);
+        expand=False;
         st.rerun();
     }
+    else{
+        container = st.empty();
+        container.success("Welcome to the SLAM Tool Dashboard, the command center for your evaluations.");
+        time.sleep(5); 
+        container.empty();
+        upload_files(expand);}
 }
