@@ -34,16 +34,21 @@ import:py shutil;
     if os.path.exists("results") and len(os.listdir("results")) > 0 {st.session_state.hv_results_files = os.listdir("results");}
     else {st.error("Results were not found. Initialize a Human Evaluation first. If Initiated already, wait until the results are ready.");}
 
-    with st.form("upload_files_form", clear_on_submit=True) {
-        uploaded_file = st.file_uploader("Upload the Output File");
-        submitted = st.form_submit_button("Upload & Unzip");
-        st.caption("CAUTION: This will overwrite the existing files. Please Makesure to have a backup.");
-        if submitted and uploaded_file {
-            shutil.rmtree("results", ignore_errors=True);
-            shutil.rmtree(".human_eval_config", ignore_errors=True);
-            shutil.rmtree("data", ignore_errors=True);
-            with zipfile.ZipFile(uploaded_file, "r") as zip_ref {zip_ref.extractall(".");}
-            st.rerun();
+
+}
+:can:upload_files (expanded:bool=False){
+    with st.expander("Upload",expanded = expanded){
+        with st.form("upload_files_form", clear_on_submit=True) {
+            uploaded_file = st.file_uploader("Upload the Output File");
+            submitted = st.form_submit_button("Upload & Unzip");
+            st.caption("CAUTION: This will overwrite the existing files. Please Makesure to have a backup.");
+            if submitted and uploaded_file {
+                shutil.rmtree("results", ignore_errors=True);
+                shutil.rmtree(".human_eval_config", ignore_errors=True);
+                shutil.rmtree("data", ignore_errors=True);
+                with zipfile.ZipFile(uploaded_file, "r") as zip_ref {zip_ref.extractall(".");}
+                st.rerun();
+            }
         }
     }
 }
@@ -85,36 +90,39 @@ import:py shutil;
 }
 
 :can:plotly_figure {
-    criteria = None;
-    eval_type = st.session_state.current_hv_config["hv_method"];
-    if (eval_type == "A/B Testing") {
-        criteria = ["overall"];
+    try{
+        criteria = None;
+        eval_type = st.session_state.current_hv_config["hv_method"];
+        if (eval_type == "A/B Testing") {
+            criteria = ["overall"];
+        }
+        formatted_data = format_responses_by_prompt(st.session_state.workers_data_dir, st.session_state.distribution_file, st.session_state.response_file);
+        normalize_df = pd.json_normalize(formatted_data, record_path=['responses'], meta=['prompt_id']);
+        prompt_info = map_prompt_names_to_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
+        prompt_id_to_name = dict(zip(prompt_info.values(), prompt_info.keys()));
+        normalize_df['prompt_name'] = normalize_df['prompt_id'].replace(prompt_id_to_name);
+        normalize_df = normalize_df[normalize_df['time_taken'] <= 1000];
+        data=[];
+        labels=[];
+        for (name, group) in normalize_df.groupby('prompt_name'){
+            data.append(group['time_taken'].tolist());
+            labels.append(name);
+        }
+        fig = ff.create_distplot(
+            data, labels, 
+            bin_size=.2,
+            show_hist=True, show_rug=False,
+            histnorm='probability density'
+        );
+        fig.update_layout(
+            title_text='Distribution of Seconds-per-Comparison by Prompt',
+            xaxis_title_text='Time Taken (seconds)',
+            yaxis_title_text='Density'
+        );
+        st.plotly_chart(fig, use_container_width=True);
+    } except Exception as e{
+        print(e);
     }
-    formatted_data = format_responses_by_prompt(st.session_state.workers_data_dir, st.session_state.distribution_file, st.session_state.response_file);
-    normalize_df = pd.json_normalize(formatted_data, record_path=['responses'], meta=['prompt_id']);
-    prompt_info = map_prompt_names_to_ids(st.session_state.prompt_data_dir,st.session_state.prompt_info_file);
-    prompt_id_to_name = dict(zip(prompt_info.values(), prompt_info.keys()));
-
-    normalize_df['prompt_name'] = normalize_df['prompt_id'].replace(prompt_id_to_name);
-    normalize_df = normalize_df[normalize_df['time_taken'] <= 1000];
-    data=[];
-    labels=[];
-    for (name, group) in normalize_df.groupby('prompt_name'){
-        data.append(group['time_taken'].tolist());
-        labels.append(name);
-    }
-    fig = ff.create_distplot(
-        data, labels, 
-        bin_size=.2,
-        show_hist=True, show_rug=False,
-        histnorm='probability density'
-    );
-    fig.update_layout(
-        title_text='Distribution of Seconds-per-Comparison by Prompt',
-        xaxis_title_text='Time Taken (seconds)',
-        yaxis_title_text='Density'
-    );
-    st.plotly_chart(fig, use_container_width=True);
 }
 
 

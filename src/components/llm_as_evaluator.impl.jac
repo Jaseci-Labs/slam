@@ -2,12 +2,12 @@ import:py streamlit as st;
 import:py os;
 import:py json;
 import:py time;
-
+import:py re;
 import:jac from utils, llms, check_engine_status, load_engine, run_inference;
 
 :can:llm_as_evaluator {
-    st.title("LLM as a Evaluator");
-    st.caption("LLM as a Evaluator simulates an human evaluator");
+    st.title("LLM as an Evaluator");
+    st.caption("LLM as an Evaluator simulates an human evaluator");
     if "llm_as_eval_config" not in st.session_state {<>init();}
     if st.session_state.get("llm_as_eval_config", None) {
         engine_status = check_engine_status();
@@ -33,8 +33,8 @@ import:jac from utils, llms, check_engine_status, load_engine, run_inference;
     with st.spinner(f"Running LLM as Evaluator with {eval_model}... Please Wait") {
         (provider_name, model_name) = eval_model.split('/');
         engine_loaded = False;
-        prompt_template_file = "prefer.prt" if st.session_state.llm_as_eval_config["config"]["hv_method"] == "A/B Testing" else "criteria.prt";
-        with open(os.path.join("src", "assets", "prompt_templates", prompt_template_file), "r") as f {prompt_template = f.read();}
+        prompt_template_file = "prefer.prt" if st.session_state.llm_as_eval_config["hv_method"] == "A/B Testing" else "criteria.prt";
+        with open(os.path.join("src", "assets", "promp_templates", prompt_template_file), "r") as f {prompt_template = f.read();}
         with st.spinner(f"Loading model {model_name}...") {
             engine_loaded = load_engine(provider_name, model_name, 0.0, prompt_template);
         }
@@ -51,14 +51,14 @@ import:jac from utils, llms, check_engine_status, load_engine, run_inference;
 
                     arguments = {"usecase": prompt_disc, "response_a": model_a_respones, "response_b": model_b_respones};
                     try {
-                        inference_result = run_inference(provider_name, model_name, arguments);
-                        question_result = process_inference_result(inference_result);
+                        inference_result = run_inference(model_name,1, arguments);
+                        question_result = process_inference_result(inference_result['outputs'][0]['response']);
                         evals.append({"result": question_result, "time": time.time(), "question": question, "inference_result": inference_result});
                     } except Exception as e {
-                        evals.append({"result": e, "time": time.time(), "question": question});
+                        evals.append({"result": str(e), "time": time.time(), "question": question});
                     }
                 }
-                with open(os.path.join("results", f"llm_as_evaluator_{st.session_state.question_set_id}.json"), "w") as f {
+                with open(os.path.join("results", f"llm_as_evaluator_{question_set_id}.json"), "w") as f {
                     json.dump({
                         "worker_id": "llm_as_evaluator",
                         "question_set_id": question_set_id,
@@ -72,14 +72,13 @@ import:jac from utils, llms, check_engine_status, load_engine, run_inference;
             st.error(f"Failed to load model {model_name}");
         }
     }
+    st.success(f"Evaluation completed successfully!");
 }
 
 :can:process_inference_result(inference_result: dict) -> dict {
     try {
-        answers = re.search(r"\[OUTPUT\](.*)", inference_result['response'], re.DOTALL).group(1).strip();
-        answers = eval(answers);
-        feedback =  re.search(r"\[REASON\](.*)\[OUTPUT\]", inference_result['response'], re.DOTALL).group(1).strip();
-        answers["feedback"] = feedback;
+        answers = eval(re.search(r"\[Output\](.*)", inference_result, re.DOTALL).group(1).strip());
+        answers["feedback"] = re.search(r"\[Reasoning\](.*)\[Output\]", inference_result, re.DOTALL).group(1).strip();
     } except Exception as e {answers = {"error": str(e)};}
     return answers;
 }

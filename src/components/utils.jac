@@ -217,46 +217,49 @@ can format_responses_by_prompt(workers_data_dir:str, distribution_file:str, resp
                 print(f"Error reading {file_path}: {e}");
                 continue;
             }
-            if ("question_index" in worker_data and worker_data["question_index"] == 10) {
-                curr_distribution_set = distribution.get(worker_data["question_set_id"], None);
-                if (curr_distribution_set != None) {
-                    for (i, curr_worker_data) in enumerate(worker_data["evals"]) {
-                        curr_worker_data = worker_data["evals"][i];
-                        curr_set = curr_worker_data.get("question");
-                        prompt_id = curr_set[0];
-                        model_names = list(curr_set[1].keys());
-                        (model_a, response_a_id) = (
-                            model_names[0],
-                            curr_set[1][model_names[0]]
-                        );
-                        (model_b, response_b_id) = (
-                            model_names[1],
-                            curr_set[1][model_names[1]]
-                        );
-                        response_a = all_responses.get(response_a_id, None);
-                        response_b = all_responses.get(response_b_id, None);
+            if ("question_index" in worker_data){
+                if not (worker_data["question_index"] == st.session_state.current_hv_config['config']["n_questions_per_worker"]){
+                    continue;
+                }
+            }
+            curr_distribution_set = distribution.get(worker_data["question_set_id"], None);
+            if (curr_distribution_set != None) {
+                for (i, curr_worker_data) in enumerate(worker_data["evals"]) {
+                    curr_worker_data = worker_data["evals"][i];
+                    curr_set = curr_worker_data.get("question");
+                    prompt_id = curr_set[0];
+                    model_names = list(curr_set[1].keys());
+                    (model_a, response_a_id) = (
+                        model_names[0],
+                        curr_set[1][model_names[0]]
+                    );
+                    (model_b, response_b_id) = (
+                        model_names[1],
+                        curr_set[1][model_names[1]]
+                    );
+                    response_a = all_responses.get(response_a_id, None);
+                    response_b = all_responses.get(response_b_id, None);
 
-                        curr_resp_contruct = {
-                            "model_a": model_a,
-                            "response_a": response_a,
-                            "model_b": model_b,
-                            "response_b": response_b,
-                            "worker_id": worker_data["worker_id"]
-                        };
-                        curr_resp_contruct.update(curr_worker_data["result"]);
-                        if (i == 0) {
-                            start_time = datetime.fromtimestamp(worker_data["start_time"]);
-                        }
-                        end_time = datetime.fromtimestamp(curr_worker_data["time"]);
-                        curr_resp_contruct.update({
-                            "time_taken": (end_time - start_time).total_seconds()
-                        });
-                        start_time = end_time;
-                        if (prompt_id not in out_dataset) {
-                            out_dataset[prompt_id] = [];
-                        }
-                        out_dataset[prompt_id].append(curr_resp_contruct);
+                    curr_resp_contruct = {
+                        "model_a": model_a,
+                        "response_a": response_a,
+                        "model_b": model_b,
+                        "response_b": response_b,
+                        "worker_id": worker_data["worker_id"]
+                    };
+                    curr_resp_contruct.update(curr_worker_data["result"]);
+                    if (i == 0) {
+                        start_time = datetime.fromtimestamp(worker_data["start_time"]);
                     }
+                    end_time = datetime.fromtimestamp(curr_worker_data["time"]);
+                    curr_resp_contruct.update({
+                        "time_taken": (end_time - start_time).total_seconds()
+                    });
+                    start_time = end_time;
+                    if (prompt_id not in out_dataset) {
+                        out_dataset[prompt_id] = [];
+                    }
+                    out_dataset[prompt_id].append(curr_resp_contruct);
                 }
             }
         }

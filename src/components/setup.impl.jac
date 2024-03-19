@@ -31,8 +31,8 @@ import:py pandas as pd;
 }
 :can:hv_evaluation_method_selector {
     eval_methods = {
-        "A/B Testing": {"desc":"A/B Testing is a method where the user is shown two options and they have to choose the better one. This is repeated for a number of times and the option with the most votes wins.", "image": "https://i.imgur.com/5ZQJX6i.png"},
-        "A/B Testing with Criterions": {"desc":"A/B Testing with Criterions is a method where the user is shown two options and they have to choose the better one for each criterion (clarity, fluency, etc.).", "image": "https://i.imgur.com/5ZQJX6i.png"}
+        "A/B Testing": {"desc":"A/B Testing is a method where the user is shown two options and they have to choose the better one. This is repeated for a number of times and the option with the most votes wins.", "image": "https://i.ibb.co/kXwypbc/image.png"},
+        "A/B Testing with Criterions": {"desc":"A/B Testing with Criterions is a method where the user is shown two options and they have to choose the better one for each criterion (clarity, fluency, etc.).", "image": "https://i.ibb.co/JF6Q3F3/image.png"}
     };
     criterias = None;
     st.subheader("Human Evaluation Method");
