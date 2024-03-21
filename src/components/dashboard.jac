@@ -38,14 +38,8 @@ can dashboard {
     }
     if st.button("Refresh") {
         <>init();
-        upload_files(expand);
         expand=False;
         st.rerun();
     }
-    else{
-        container = st.empty();
-        container.success("Welcome to the SLAM Tool Dashboard, the command center for your evaluations.");
-        time.sleep(5); 
-        container.empty();
-        upload_files(expand);}
+    upload_files(expand);
 }

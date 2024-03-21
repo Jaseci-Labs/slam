@@ -16,7 +16,7 @@ test human_eval_without_config {
 }
 
 test human_eval_with_config {
-    shutil.unpack_archive(os.path.join(os.path.dirname(__file__),"fixtures", "config.zip"), ".human_eval_config");
+    shutil.unpack_archive(os.path.join(os.path.dirname(__file__),"fixtures", "config.zip"), ".");
     :g: app;
     app = AppTest.from_file("app.py").run(timeout=20);
     assert not app.exception;
@@ -25,7 +25,7 @@ test human_eval_with_config {
 }
 
 test human_eval_config_ab_testing {
-    shutil.unpack_archive(os.path.join(os.path.dirname(__file__),"fixtures", "config.zip"), ".human_eval_config");
+    shutil.unpack_archive(os.path.join(os.path.dirname(__file__),"fixtures", "config.zip"), "."); 
     :g: app;
     app = AppTest.from_file("app.py").run(timeout=20);
     get_item_by_label(app, "text_input", "Worker ID").set_value("test_worker_id").run();
@@ -39,7 +39,7 @@ test human_eval_config_ab_testing {
 }
 
 test human_eval_config_criteria {
-    shutil.unpack_archive(os.path.join(os.path.dirname(__file__),"fixtures", "criteria_config.zip"), ".human_eval_config");
+    shutil.unpack_archive(os.path.join(os.path.dirname(__file__),"fixtures", "criteria_config.zip"), ".");
     :g: app;
     app = AppTest.from_file("app.py").run(timeout=20);
     get_item_by_label(app, "text_input", "Worker ID").set_value("test_worker_id").run();
