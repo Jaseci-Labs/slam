@@ -4,44 +4,45 @@ import:py json;
 import:py shutil;
 import:jac from utils, get_item_by_label;
 
-glob app = AppTest.from_file("app.py").run(timeout=20);
-
 test app_running {
     :g: app;
+    app = AppTest.from_file("app.py").run(timeout=20);
     assert not app.exception;
 }
 
 test setup_without_config {
     app.session_state.admin_privileges = True;
     app.run();
-    setup_tab = app.get("tab")[-2];
+    setup_tab = get_item_by_label(app, "tab", "Human Eval Setup");
     assert setup_tab.label == "Human Eval Setup";
     assert not app.exception;
 }
 
 test setup_humnan_eval_ab_testing {
-    setup_tab = app.get("tab")[-2];
-    setup_tab.get("selectbox")[0].select("A/B Testing").run(); #Setting the Human Eval Method
-    setup_tab.get("number_input")[1].set_value(100); # Setting the number of workers
-    setup_tab.get("number_input")[2].set_value(3); # Setting the number of questions per worker
-    setup_tab.get("checkbox")[0].set_value(False); # Disabling the Captcha Verification
-    setup_tab.get("checkbox")[1].set_value(True); # Enabling the Even Distribution
+    shutil.unpack_archive(os.path.join(os.path.dirname(__file__),"fixtures", "data.zip"), ".");
+    app.run();
+    setup_tab = get_item_by_label(app, "tab", "Human Eval Setup");
+    get_item_by_label(setup_tab, "selectbox", "Select the human evaluation method").select("A/B Testing").run();
+    get_item_by_label(setup_tab, "number_input", "Number of workers").set_value(100);
+    get_item_by_label(setup_tab, "number_input", "Number of questions per worker").set_value(3);
+    get_item_by_label(setup_tab, "checkbox", "Show Captcha").set_value(False);
+    get_item_by_label(setup_tab, "checkbox", "Usecases are Evenly distributed among the workers").set_value(True).run();
 
-    setup_tab.get("button")[0].set_value(True).run();
     assert setup_tab.warning[0].value == "Please upload at least one data source. or select one from the list if available.";
-    # assert not len(setup_tab.get("multiselect")[0].options);
 
-    # Unzip the data folder
-    setup_tab.run();
-    assert len(setup_tab.get("multiselect")[0].options) == 5;
-    setup_tab.get("multiselect")[0].set_value(['peptalk_responses.json', 'first_task_responses.json', 'recommendation_responses.json']).run();
-    assert app.text_input("recommendation_responses.json_usecase_id");
-    assert app.text_area("recommendation_responses.json_prompt_disc");
-    assert app.text_area("recommendation_responses.json_prompt_simple_disc").run();
+    datasource_selector = get_item_by_label(setup_tab, "multiselect", "Data sources (Usecases)");
+    assert len(datasource_selector.options) == 5;
+    datasource_selector.set_value(['peptalk_responses.json', 'first_task_responses.json', 'recommendation_responses.json']).run();
+    setup_tab = get_item_by_label(app, "tab", "Human Eval Setup");
+    assert not setup_tab.warning;
+
+    assert setup_tab.text_input("recommendation_responses.json_usecase_id");
+    assert setup_tab.text_area("recommendation_responses.json_prompt_disc");
+    assert setup_tab.text_area("recommendation_responses.json_prompt_simple_disc");
     
-    app.text_area("recommendation_responses.json_prompt_disc").set_value("This is a new prompt description");
-    app.text_area("recommendation_responses.json_prompt_simple_disc").set_value("This is a new simple prompt description");
-    app.get("button")[-1].set_value(True).run();
+    setup_tab.text_area("recommendation_responses.json_prompt_disc").set_value("This is a new prompt description");
+    setup_tab.text_area("recommendation_responses.json_prompt_simple_disc").set_value("This is a new simple prompt description");
+    setup_tab.get("button")[-1].set_value(True).run();
 
     assert not app.exception;
     assert os.path.exists(".human_eval_config");
@@ -57,12 +58,9 @@ test setup_humnan_eval_ab_testing {
     }
     assert prompt_info[-1]["prompt_simple_disc"] == "This is a new simple prompt description";
     assert prompt_info[-1]["prompt_disc"] == "This is a new prompt description";
-    shutil.rmtree(".human_eval_config");
 }
 
 test setup_with_existing_config {
-    # extract the config.zip to .human_eval_config
-    shutil.unpack_archive(os.path.join(os.path.dirname(__file__),"fixtures", "config.zip"), ".human_eval_config");
     :g: app;
     app = AppTest.from_file("app.py").run(timeout=20);
     app.session_state.admin_privileges = True;
@@ -71,4 +69,5 @@ test setup_with_existing_config {
     assert not setup_tab.exception;
     assert not setup_tab.error;
     shutil.rmtree(".human_eval_config");
+    shutil.rmtree("data");
 }

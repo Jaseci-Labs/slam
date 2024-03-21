@@ -50,7 +50,6 @@ import:py pandas as pd;
             ]);
             edited_df = st.data_editor(criteria_df, num_rows="dynamic");
             criterias = edited_df.to_dict(orient="records");
-            print(criterias);
         }
     }
     with hv_method_view_col {
@@ -126,7 +125,6 @@ import:py pandas as pd;
 
 
     k = int(math.ceil(n_workers * n_questions_per_worker / n_usecases / float(len(unique_model_pairs))));
-    print(k);
 
     question_pairs = [];
     for (prompt_id, models_responses) in models_responses_all.items() {
