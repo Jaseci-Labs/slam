@@ -20,7 +20,9 @@ test test_model_selection {
     shutil.unpack_archive(
         os.path.join(os.path.dirname(__file__), "fixtures", "config.zip"), "."
     );
-
+    shutil.unpack_archive(
+        os.path.join(os.path.dirname(__file__), "fixtures", "data.zip"), "."
+    );
     app = AppTest.from_file("app.py").run(timeout=20);
     app.session_state.admin_privileges = True;
     app.run();
@@ -36,6 +38,7 @@ test test_model_selection {
 
     human_eval = Path(os.path.abspath(".human_eval_config"));
     if human_eval.exists(){shutil.rmtree(human_eval);}
+    shutil.rmtree("data");
 
 }
 
@@ -43,6 +46,9 @@ test test_model_selection {
 test test_embedder_type_selection {
     shutil.unpack_archive(
         os.path.join(os.path.dirname(__file__), "fixtures", "config.zip"), "."
+    );
+    shutil.unpack_archive(
+        os.path.join(os.path.dirname(__file__), "fixtures", "data.zip"), "."
     );
     app = AppTest.from_file("app.py").run(timeout=20);
     app.session_state.admin_privileges = True;
@@ -58,13 +64,16 @@ test test_embedder_type_selection {
     
     human_eval = Path(os.path.abspath(".human_eval_config"));
     if human_eval.exists(){shutil.rmtree(human_eval);}
+    shutil.rmtree("data");
 }
 
 test test_scorer_selection {
     shutil.unpack_archive(
         os.path.join(os.path.dirname(__file__), "fixtures", "config.zip"), "."
     );
-
+    shutil.unpack_archive(
+        os.path.join(os.path.dirname(__file__), "fixtures", "data.zip"), "."
+    );
     app = AppTest.from_file("app.py").run(timeout=20);
     app.session_state.admin_privileges = True;
     app.run();
@@ -80,11 +89,15 @@ test test_scorer_selection {
 
     human_eval = Path(os.path.abspath(".human_eval_config"));
     if human_eval.exists(){shutil.rmtree(human_eval);}
+    shutil.rmtree("data");
 }
 
 test test_embedding_score_calculation {
     shutil.unpack_archive(
         os.path.join(os.path.dirname(__file__), "fixtures", "config.zip"), "."
+    );
+    shutil.unpack_archive(
+        os.path.join(os.path.dirname(__file__), "fixtures", "data.zip"), "."
     );
     app = AppTest.from_file("app.py").run(timeout=20);
     app.session_state.admin_privileges = True;
@@ -98,4 +111,5 @@ test test_embedding_score_calculation {
 
     human_eval = Path(os.path.abspath(".human_eval_config"));
     if human_eval.exists(){shutil.rmtree(human_eval);}
+    # shutil.rmtree("data");
 }
