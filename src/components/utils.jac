@@ -41,8 +41,13 @@ can load_engine(provider_name:str, model_name:str, temperature:float, prompt_tem
         "temperature": temperature,
         "prompt_template": prompt_template
     };
-    ret = call_action(action="load_engine", config = config);
-    return True;
+    try {
+        call_action(action="load_engine", config = config);
+        return True;
+    } except Exception as e { 
+        print(e);
+        return False;
+    }
 }
 
 can run_inference(model_name:str, num_samples:int, payload:dict) -> dict {
@@ -273,6 +278,7 @@ can format_responses_by_prompt(workers_data_dir:str, distribution_file:str, resp
 
 
 can convert_run(run: str) {
+    os.makedirs("data", exist_ok=True);
     responses_files = [f for f in os.listdir(os.path.join(os.path.abspath("runs"), run)) if f.endswith(".json")];
     data = {
         "run": run,
@@ -291,7 +297,7 @@ can convert_run(run: str) {
         }
     }
 
-    with open(os.path.join(os.path.abspath("data"), f'{run}_responses.json'), "w") as f {
+    with open(os.path.join("data", f'{run}_responses.json'), "w") as f {
         json.dump(data, f, indent=4);
     }
 }

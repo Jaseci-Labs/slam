@@ -5,9 +5,9 @@ import:py requests;
 import:py subprocess;
 import:jac from utils, get_item_by_label;
 
-glob app = AppTest.from_file("app.py").run(timeout=20);
-
 test app_running {
+    :g: app;
+    app = AppTest.from_file("app.py").run(timeout=20);
     assert not app.exception;
 }
 
@@ -29,9 +29,15 @@ test generator {
     get_item_by_label(generator_tab, "multiselect", "Select Models").set_value(['openai/gpt-4']).run();
     get_item_by_label(generator_tab, "number_input", "Number of Samples").set_value(2).run();
     get_item_by_label(generator_tab, "number_input", "Temperature").set_value(0.0).run();
-    get_item_by_label(generator_tab, "text_area", "Input Prompt Template").set_value("What is the meaning of Life?").run();
+    get_item_by_label(generator_tab, "text_area", "Input Prompt Template").set_value("What is the meaning of {thing}?").run();
+    generator_tab = get_item_by_label(app, "tab", "Response Generator");
+    assert generator_tab.error[-1].value == "Make sure every field is filled properly";
+    get_item_by_label(generator_tab, "text_input", "thing").set_value("life").run();
+    generator_tab = get_item_by_label(app, "tab", "Response Generator");
+    assert not generator_tab.error;
     get_item_by_label(generator_tab, "button", "Generate Responses").set_value(True).run();
 
     assert os.path.exists(os.path.join("runs", app.session_state.run_id, "gpt-4.json"));
+    assert os.path.exists(os.path.join("data", f"{app.session_state.run_id}_responses.json"));
 }
 

@@ -6,9 +6,9 @@ import:py requests;
 import:py subprocess;
 import:jac from utils, get_item_by_label;
 
-glob app = AppTest.from_file("app.py").run(timeout=20);
-
 test app_running {
+    :g: app;
+    app = AppTest.from_file("app.py").run(timeout=20);
     assert not app.exception;
 }
 
