@@ -70,7 +70,7 @@ import:py from nltk, ngrams;
     with open(os.path.abspath(".human_eval_config/responses.json"),"r") as fp{responses_dict = json.load(fp);}
     with open(os.path.abspath(".human_eval_config/models_responses.json"),"r") as fp{models_responses_dict = json.load(fp);}
     config_name = f"{st.session_state['anchor_model']}_{st.session_state['embedder']}_{st.session_state['scorer']}";
-    path_string = os.path.join("sim_results", config_name);
+    path_string = os.path.join("results", config_name);
     basedir = Path(os.path.abspath(path_string));
     heatmap_placeholder = st.empty();
     if not basedir.exists() or not any(basedir.glob('*.json')) {
