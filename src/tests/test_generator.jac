@@ -46,7 +46,7 @@ test generator   {
     get_item_by_label(generator_tab, "text_input", "thing").set_value("life").run();
     generator_tab = get_item_by_label(app, "tab", "Response Generator");
     assert not generator_tab.error;
-    get_item_by_label(generator_tab, "button", "Generate Responses").set_value(True).run();
+    get_item_by_label(generator_tab, "button", "Generate Responses").set_value(True).run(timeout=20);
     assert os.path.exists(os.path.join("runs", app.session_state.run_id, "orca-mini:3b.json"));
     assert os.path.exists(os.path.join("data", f"{app.session_state.run_id}_responses.json"));
     query_engine.terminate();

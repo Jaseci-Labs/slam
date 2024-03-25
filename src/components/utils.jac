@@ -62,7 +62,7 @@ can run_inference(model_name: str, num_samples: int, payload: dict) -> dict {
                 full_prompt = ret["full_prompt"];
             }
         } except Exception as e  {
-            outputs.append({"response":str(e), "time":-1 });
+            outputs.append({"response":str(e), "time": -1 });
         }
     }
     avg_time = sum([o["time"]  for o in outputs]) / len(outputs);
