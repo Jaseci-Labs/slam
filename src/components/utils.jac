@@ -13,6 +13,7 @@ glob OLLAMA_SERVER_URL = os.environ.get("OLLAMA_SERVER_URL","http://localhost:11
 can call_action(action:str, **kwargs: dict) -> dict {
     url = f"{ACTION_SERVER_URL}{action}";
     response = requests.post(url, json=kwargs);
+    print(response);
     return response.json();
 }
 
