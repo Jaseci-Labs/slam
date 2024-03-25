@@ -3,12 +3,13 @@ import:py streamlit as st;
 import:py re;
 import:py uuid;
 import:py json;
-
 import:jac from utils, load_engine, run_inference, llms, check_query_engine, check_ollama_server, convert_run;
 
 :can:<>init {
     os.makedirs('runs', exist_ok=True);
-    if "run_id" not in st.session_state {st.session_state["run_id"] = uuid.uuid4();}
+    if "run_id" not in st.session_state {
+        st.session_state["run_id"] = uuid.uuid4();
+    }
     st.session_state.engine_status = check_engine_status();
 }
 
@@ -16,13 +17,16 @@ import:jac from utils, load_engine, run_inference, llms, check_query_engine, che
     query_engine_status = check_query_engine();
     ollama_server_status = check_ollama_server();
     (query_engine_status_col, ollama_server_status_col) = st.columns(2);
-
-    if query_engine_status {query_engine_status_col.success('Query Engine is Running');}
-    else {query_engine_status_col.error('Query Engine is not Running');}
-
-    if ollama_server_status {ollama_server_status_col.success('Ollama Server is Running');}
-    else {ollama_server_status_col.error('Ollama Server is not Running');}
-
+    if query_engine_status {
+        query_engine_status_col.success('Query Engine is Running');
+    } else {
+        query_engine_status_col.error('Query Engine is not Running');
+    }
+    if ollama_server_status {
+        ollama_server_status_col.success('Ollama Server is Running');
+    } else {
+        ollama_server_status_col.error('Ollama Server is not Running');
+    }
     return query_engine_status;
 }
 
@@ -45,19 +49,20 @@ import:jac from utils, load_engine, run_inference, llms, check_query_engine, che
     prompt_template = prompt_template_col.text_area('Input Prompt Template', placeholder='Paste your template here', height=250);
     with prompt_values_col {
         st.caption('Input Prompt Values');
-        arguments = {x:None for x in re.findall(r'\{([A-Za-z0-9_]+)\}', prompt_template)};
+        arguments = {x:None  for x in re.findall(r'\{([A-Za-z0-9_]+)\}', prompt_template)};
         print(arguments);
         if len(arguments) == 0 {
             st.info('No arguments found in the prompt template');
         }
-        for arg in arguments.keys(){
+        for arg in arguments.keys() {
             arguments[arg] = st.text_input(arg, key=arg);
         }
     }
     return (prompt_template, arguments);
 }
 
-:can:generate_responses(selected_models: list, n_samples: int, temp: float, prompt_template: str, arguments: dict) -> None {
+:can:generate_responses
+(selected_models: list, n_samples: int, temp: float, prompt_template: str, arguments: dict) -> None {
     os.makedirs(os.path.join("runs", st.session_state["run_id"]), exist_ok=True);
     for model in selected_models {
         (provider_name, model_name) = model.split('/');
