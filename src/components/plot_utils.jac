@@ -11,7 +11,7 @@ can generate_stacked_bar_chart(model_performance: dict, criteria: list) {
     
     for (model, crits) in model_performance.items() {
         for (crit, counts) in crits.items() {
-            df_data.append({"model":model, "criterion":crit, "wins":counts["wins"], "ties":counts["ties"], "losses":counts["losses"] });
+            df_data.append({"model": model, "criterion": crit, "wins": counts["wins"], "ties": counts["ties"], "losses": counts["losses"]});
         }
     }
     df = pd.DataFrame(df_data);
@@ -22,7 +22,7 @@ can generate_stacked_bar_chart(model_performance: dict, criteria: list) {
         fig_height_per_row = 220;
     }
     total_fig_height = fig_height_per_row * len(criteria);
-    colors = {"wins":"green", "ties":"orange", "losses":"red" };
+    colors = {"wins": "green", "ties": "orange", "losses": "red"};
     
     for (i, criterion) in enumerate(criteria) {
         criterion_data = df[df["criterion"] == criterion].sort_values("wins", ascending=False);
@@ -43,7 +43,7 @@ can generate_heatmaps(placeholder: str, model_performance: dict, preference_matr
     
     for (model, crit_dict) in model_performance.items() {
         for (crit, win_tie_loss) in crit_dict.items() {
-            rows_list.append({"model":model, "criterion":crit, "wins":win_tie_loss['wins'], "ties":win_tie_loss['ties'], "losses":win_tie_loss['losses'] });
+            rows_list.append({"model": model, "criterion": crit, "wins": win_tie_loss['wins'], "ties": win_tie_loss['ties'], "losses": win_tie_loss['losses']});
         }
     }
     df = pd.DataFrame(rows_list);

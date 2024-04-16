@@ -83,14 +83,14 @@ import:py from nltk, ngrams;
         results = [];
         id = 0;
         for (prompt_id, question_sets) in distribution.items() {
-            worker_set = {"worker_id":id, "question_set_id":list(distribution.keys())[id], "evals":[], "start_time":time.time(), "end_time":0, "question_index":0 };
+            worker_set = {"worker_id": id, "question_set_id": list(distribution.keys())[id], "evals": [], "start_time": time.time(), "end_time": 0, "question_index": 0};
             evals = [];
             for (ind, question_set) in enumerate(question_sets) {
                 prompt_id = question_set[0];
                 responses = question_set[1];
                 anchor_reponses_id = models_responses_dict[prompt_id][st.session_state.anchor_model];
                 best_model = calculate_embedding_score(responses=responses, anchor_reponses_id=anchor_reponses_id, responses_dict=responses_dict);
-                worker_set["evals"].append({"result":{"overall":"Response A" if best_model == 0 else "Response B", 'feedback':"" }, "time":time.time(), "question":question_set });
+                worker_set["evals"].append({"result": {"overall": "Response A" if best_model == 0 else "Response B", 'feedback': ""}, "time": time.time(), "question": question_set});
                 worker_set["question_index"]+=1;
             }
             worker_set["end_time"] = time.time();

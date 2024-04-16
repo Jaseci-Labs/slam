@@ -21,7 +21,7 @@ can zipdir(folders: list[str], out: str) {
 }
 
 can upload_file_to_drive(file: str, folder_id: str) {
-    file_drive = drive.CreateFile({'parents':[{'id':folder_id }] });
+    file_drive = drive.CreateFile({'parents': [{'id': folder_id}]});
     file_drive.SetContentFile(file);
     file_drive.Upload();
 }

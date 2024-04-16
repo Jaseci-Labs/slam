@@ -57,13 +57,13 @@ obj ChatPromptHandler :BaseCallbackHandler: {
     token_usage = None;
     if self.provider_name == "openai" {
         with get_openai_callback() as cb {
-            response = self.chain.invoke(payload, config={"callbacks":[self.handler] });
+            response = self.chain.invoke(payload, config={"callbacks": [self.handler]});
         }
-        token_usage = {"total_tokens":cb.total_tokens, "completion_tokens":cb.completion_tokens, "prompt_tokens":cb.prompt_tokens, "total_cost":cb.total_cost };
+        token_usage = {"total_tokens": cb.total_tokens, "completion_tokens": cb.completion_tokens, "prompt_tokens": cb.prompt_tokens, "total_cost": cb.total_cost};
     } else {
-        response = self.chain.invoke(payload, config={"callbacks":[self.handler] });
+        response = self.chain.invoke(payload, config={"callbacks": [self.handler]});
     }
-    return {"response":response, "full_prompt":self.handler.prompt[0][0].content, "token_usage":token_usage };
+    return {"response": response, "full_prompt": self.handler.prompt[0][0].content, "token_usage": token_usage};
 }
 
 :obj:QueryEngine:can:__repr__ -> str {

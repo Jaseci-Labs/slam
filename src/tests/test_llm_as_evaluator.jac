@@ -18,7 +18,7 @@ test run_query_engine   {
     time.sleep(10);
     response = requests.get("http://localhost:8000");
     assert response.status_code == 200;
-    assert response.json() == {"status":"ok" };
+    assert response.json() == {"status": "ok"};
 }
 
 test llm_as_evaluator_wo_config   {

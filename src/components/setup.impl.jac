@@ -12,14 +12,14 @@ import:py pandas as pd;
         if os.path.exists(os.path.join(".human_eval_config", "config.json")) {
             config = json.load(open(os.path.join(".human_eval_config", "config.json")));
         } else {
-            config = {"hv_method":"A/B Testing", "config":{"n_workers":100, "n_questions_per_worker":10, "n_options":2, "ability_to_tie":"Allow", "data_sources":None, "evenly_distributed":False, "show_captcha":True, "completion_code":str(uuid.uuid4()) } };
+            config = {"hv_method": "A/B Testing", "config": {"n_workers": 100, "n_questions_per_worker": 10, "n_options": 2, "ability_to_tie": "Allow", "data_sources": None, "evenly_distributed": False, "show_captcha": True, "completion_code": str(uuid.uuid4())}};
         }
         st.session_state.config = config;
     }
 }
 
 :can:hv_evaluation_method_selector {
-    eval_methods = {"A/B Testing":{"desc":"A/B Testing is a method where the user is shown two options and they have to choose the better one. This is repeated for a number of times and the option with the most votes wins.", "image":"https://i.ibb.co/kXwypbc/image.png" }, "A/B Testing with Criterions":{"desc":"A/B Testing with Criterions is a method where the user is shown two options and they have to choose the better one for each criterion (clarity, fluency, etc.).", "image":"https://i.ibb.co/JF6Q3F3/image.png" } };
+    eval_methods = {"A/B Testing": {"desc": "A/B Testing is a method where the user is shown two options and they have to choose the better one. This is repeated for a number of times and the option with the most votes wins.", "image": "https://i.ibb.co/kXwypbc/image.png"}, "A/B Testing with Criterions": {"desc": "A/B Testing with Criterions is a method where the user is shown two options and they have to choose the better one for each criterion (clarity, fluency, etc.).", "image": "https://i.ibb.co/JF6Q3F3/image.png"}};
     criterias = None;
     st.subheader("Human Evaluation Method");
     (hv_method_col, hv_method_view_col) = st.columns(2);
@@ -27,7 +27,7 @@ import:py pandas as pd;
         hv_method = st.selectbox("Select the human evaluation method", list(eval_methods.keys()), index=list(eval_methods.keys()).index(st.session_state.config["hv_method"]));
         st.caption(eval_methods[hv_method]["desc"]);
         if hv_method == "A/B Testing with Criterions" {
-            criteria_df = pd.DataFrame([{"Criteria":"clarity", "Description":"Which has better clarity?" }, {"Criteria":"intelligence", "Description":"Which is more intelligent?" }, {"Criteria":"likability", "Description":"Which is more likable?" }, {"Criteria":"trustworthy", "Description":"Which is more trustworthy?" }, {"Criteria":"overall", "Description":"Which is better overall?" }]);
+            criteria_df = pd.DataFrame([{"Criteria": "clarity", "Description": "Which has better clarity?"}, {"Criteria": "intelligence", "Description": "Which is more intelligent?"}, {"Criteria": "likability", "Description": "Which is more likable?"}, {"Criteria": "trustworthy", "Description": "Which is more trustworthy?"}, {"Criteria": "overall", "Description": "Which is better overall?"}]);
             edited_df = st.data_editor(criteria_df, num_rows="dynamic");
             criterias = edited_df.to_dict(orient="records");
         }
@@ -116,7 +116,7 @@ import:py pandas as pd;
             unique_question_pairs = list(itertools.product(model_a_responses, model_b_responses));
             unique_question_pairs = random.sample(unique_question_pairs, k);
             for question_pair in unique_question_pairs {
-                question_pairs.append((prompt_id, {model_pair[0]:question_pair[0], model_pair[1]:question_pair[1] }));
+                question_pairs.append((prompt_id, {model_pair[0]: question_pair[0], model_pair[1]: question_pair[1]}));
             }
         }
     }
@@ -133,12 +133,12 @@ import:py pandas as pd;
         selected_question_pairs = random.sample(question_pairs, n_workers * n_questions_per_worker);
         random.shuffle(selected_question_pairs);
         worker_ids = [str(uuid.uuid4())  for _ in range(n_workers)];
-        distribution = {worker_id:selected_question_pairs[i * n_questions_per_worker:(i + 1) * n_questions_per_worker]  for (i, worker_id) in enumerate(worker_ids)};
+        distribution = {worker_id: selected_question_pairs[i * n_questions_per_worker:(i + 1) * n_questions_per_worker]  for (i, worker_id) in enumerate(worker_ids)};
     } else {
         question_pairs_copy = question_pairs.copy();
         random.shuffle(question_pairs_copy);
         worker_ids = [str(uuid.uuid4())  for _ in range(n_workers)];
-        distribution = {worker_id:[]  for worker_id in worker_ids};
+        distribution = {worker_id: []  for worker_id in worker_ids};
         prompt_infos = json.load(open(os.path.join(".human_eval_config", "prompt_info.json")));
         prompt_ids = [prompt_info["prompt_id"]  for prompt_info in prompt_infos];
         questions_per_usecase_per_worker = int(n_questions_per_worker / len(prompt_ids));
@@ -201,7 +201,7 @@ import:py pandas as pd;
 :can:get_prompt_info
 (data_sources: list) {
     st.subheader("Prompt Information");
-    prompt_infos = {data_source:{}  for data_source in data_sources};
+    prompt_infos = {data_source: {}  for data_source in data_sources};
     with st.container(border=True) {
         for data_source in data_sources {
             with st.expander(f"Usecase {data_source}") {

@@ -9,7 +9,7 @@ test run_query_engine   {
     time.sleep(10);
     response = requests.get("http://localhost:8000");
     assert response.status_code == 200;
-    assert response.json() == {"status":"ok" };
+    assert response.json() == {"status": "ok"};
 }
 
 test run_ollama_server   {
@@ -22,13 +22,13 @@ test run_ollama_server   {
 }
 
 test load_engine_ollama   {
-    payload = {"config":{"provider_name":"ollama", "model_name":"orca-mini:3b", "temperature":0.0, "prompt_template":"{something}" } };
+    payload = {"config": {"provider_name": "ollama", "model_name": "orca-mini:3b", "temperature": 0.0, "prompt_template": "{something}"}};
     response = requests.post("http://localhost:8000/load_engine", json=payload);
     assert response.status_code == 200;
 }
 
 test query_ollama   {
-    payload = {"payload":{"something":"Hello" } };
+    payload = {"payload": {"something": "Hello"}};
     response = requests.post("http://localhost:8000/query", json=payload);
     assert response.status_code == 200;
     assert response.json()["full_prompt"] == "Hello";

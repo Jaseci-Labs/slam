@@ -4,7 +4,7 @@ import:py argparse;
 
 can convert_run(run: str, prompt_disc: str) {
     responses_files = [f  for f in os.listdir(os.path.join("runs", run)) if f.endswith(".json")];
-    data = {"run":run, "prompt_disc":prompt_disc, "outputs":{} };
+    data = {"run": run, "prompt_disc": prompt_disc, "outputs": {}};
     
     for responses_file in responses_files {
         with open(os.path.join("runs", run, responses_file), "r") as f {

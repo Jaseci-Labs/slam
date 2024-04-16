@@ -64,17 +64,17 @@ import:jac from utils, llms, check_engine_status, load_engine, run_inference;
                     (model_b, model_b_respones_id) = list(question[1].items())[1];
                     model_a_respones = st.session_state.responses[model_a_respones_id];
                     model_b_respones = st.session_state.responses[model_b_respones_id];
-                    arguments = {"usecase":prompt_disc, "response_a":model_a_respones, "response_b":model_b_respones };
+                    arguments = {"usecase": prompt_disc, "response_a": model_a_respones, "response_b": model_b_respones};
                     try  {
                         inference_result = run_inference(model_name, 1, arguments);
                         question_result = process_inference_result(inference_result['outputs'][0]['response']);
-                        evals.append({"result":question_result, "time":time.time(), "question":question, "inference_result":inference_result });
+                        evals.append({"result": question_result, "time": time.time(), "question": question, "inference_result": inference_result});
                     } except Exception as e  {
-                        evals.append({"result":str(e), "time":time.time(), "question":question });
+                        evals.append({"result": str(e), "time": time.time(), "question": question});
                     }
                 }
                 with open(os.path.join("results", f"llm_as_evaluator_{question_set_id}.json"), "w") as f {
-                    json.dump({"worker_id":"llm_as_evaluator", "question_set_id":question_set_id, "evals":evals, "start_time":time.time(), "end_time":time.time() }, f, indent=2);
+                    json.dump({"worker_id": "llm_as_evaluator", "question_set_id": question_set_id, "evals": evals, "start_time": time.time(), "end_time": time.time()}, f, indent=2);
                 }
             }
         } else {
@@ -90,7 +90,7 @@ import:jac from utils, llms, check_engine_status, load_engine, run_inference;
         answers = eval(re.search(r"\[Output\](.*)", inference_result, re.DOTALL).group(1).strip());
         answers["feedback"] = re.search(r"\[Reasoning\](.*)\[Output\]", inference_result, re.DOTALL).group(1).strip();
     } except Exception as e  {
-        answers = {"error":str(e) };
+        answers = {"error": str(e)};
     }
     return answers;
 }

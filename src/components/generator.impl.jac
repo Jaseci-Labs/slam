@@ -49,7 +49,7 @@ import:jac from utils, load_engine, run_inference, llms, check_query_engine, che
     prompt_template = prompt_template_col.text_area('Input Prompt Template', placeholder='Paste your template here', height=250);
     with prompt_values_col {
         st.caption('Input Prompt Values');
-        arguments = {x:None  for x in re.findall(r'\{([A-Za-z0-9_]+)\}', prompt_template)};
+        arguments = {x: None  for x in re.findall(r'\{([A-Za-z0-9_]+)\}', prompt_template)};
         print(arguments);
         if len(arguments) == 0 {
             st.info('No arguments found in the prompt template');

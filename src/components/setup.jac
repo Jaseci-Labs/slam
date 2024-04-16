@@ -37,7 +37,7 @@ can setup {
         prompt_infos = get_prompt_info(data_sources);
         if st.button("Save") {
             os.makedirs(".human_eval_config", exist_ok=True);
-            config = {"hv_method":hv_method, "config":{"n_workers":n_workers, "n_questions_per_worker":n_questions_per_worker, "n_options":n_options, "ability_to_tie":ability_to_tie, "data_sources":data_sources, "evenly_distributed":evenly_distributed, "show_captcha":show_captcha, "completion_code":str(uuid.uuid4()) }, "criterias":criterias, "time_created":datetime.now().strftime("%d/%m/%Y %H:%M:%S") };
+            config = {"hv_method": hv_method, "config": {"n_workers": n_workers, "n_questions_per_worker": n_questions_per_worker, "n_options": n_options, "ability_to_tie": ability_to_tie, "data_sources": data_sources, "evenly_distributed": evenly_distributed, "show_captcha": show_captcha, "completion_code": str(uuid.uuid4())}, "criterias": criterias, "time_created": datetime.now().strftime("%d/%m/%Y %H:%M:%S")};
             st.session_state.config = config;
             json.dump(config, open(os.path.join(".human_eval_config", "config.json"), "w"));
             models_responses_all = create_neccessary_file(data_sources, prompt_infos);

@@ -38,7 +38,7 @@ can check_ollama_server -> bool {
 }
 
 can load_engine(provider_name: str, model_name: str, temperature: float, prompt_template: str) -> bool {
-    config = {"provider_name":provider_name, "model_name":model_name, "temperature":temperature, "prompt_template":prompt_template };
+    config = {"provider_name": provider_name, "model_name": model_name, "temperature": temperature, "prompt_template": prompt_template};
     
     try  {
         call_action(action="load_engine", config=config);
@@ -57,16 +57,16 @@ can run_inference(model_name: str, num_samples: int, payload: dict) -> dict {
         try  {
             start_time = time.time();
             ret = call_action(action="query", payload=payload);
-            outputs.append({"response":ret["response"], "time":time.time() - start_time });
+            outputs.append({"response": ret["response"], "time": time.time() - start_time});
             if not full_prompt {
                 full_prompt = ret["full_prompt"];
             }
         } except Exception as e  {
-            outputs.append({"response":str(e), "time": -1 });
+            outputs.append({"response": str(e), "time": -1});
         }
     }
     avg_time = sum([o["time"]  for o in outputs]) / len(outputs);
-    return {"outputs":outputs, "full_prompt":full_prompt, "avg_time":avg_time, "model_name":model_name };
+    return {"outputs": outputs, "full_prompt": full_prompt, "avg_time": avg_time, "model_name": model_name};
 }
 
 glob llms = ["openai/gpt-4", "ollama/starling-lm:7b", "ollama/mistral:7b-instruct", "ollama/zephyr:7b-beta", "ollama/neural-chat:7b", "ollama/orca-mini:3b", "ollama/llama2:7b-chat", "ollama/stablelm-zephyr:3b", "ollama/falcon:7b-instruct", "ollama/orca2:7b", "ollama/openchat:7b-v3.5", "ollama/vicuna:7b"];
@@ -103,7 +103,7 @@ can map_prompt_names_to_ids(prompt_data_dir: str, prompt_info_file: str) {
     with open(prompt_info_file, "r") as file {
         prompt_info = json.load(file);
     }
-    prompt_info = [{prompt["prompt_id"]:prompt["prompt"] }  for prompt in prompt_info];
+    prompt_info = [{prompt["prompt_id"]: prompt["prompt"]}  for prompt in prompt_info];
     prompt_ids = {};
     
     for filename in os.listdir(prompt_data_dir) {
@@ -142,8 +142,8 @@ can generate_performance_data(formatted_output: dict, all_models: list, prompt_i
     if (not criteria) {
         criteria = ["overall", "clarity", "intelligence", "likability", "trustworthiness"];
     }
-    model_performance = {model:{criterion:{"wins":0, "ties":0, "losses":0 }  for criterion in criteria}  for model in all_models};
-    preference_matrix = {criterion:{model:{other_model:0  for other_model in all_models if other_model != model}  for model in all_models}  for criterion in criteria};
+    model_performance = {model: {criterion: {"wins": 0, "ties": 0, "losses": 0}  for criterion in criteria}  for model in all_models};
+    preference_matrix = {criterion: {model: {other_model: 0  for other_model in all_models if other_model != model}  for model in all_models}  for criterion in criteria};
     
     for outputs in formatted_output {
         if (prompt_id == "all_combined"
@@ -209,13 +209,13 @@ can format_responses_by_prompt(workers_data_dir: str, distribution_file: str, re
                     (model_b, response_b_id) = (model_names[1], curr_set[1][model_names[1]]);
                     response_a = all_responses.get(response_a_id, None);
                     response_b = all_responses.get(response_b_id, None);
-                    curr_resp_contruct = {"model_a":model_a, "response_a":response_a, "model_b":model_b, "response_b":response_b, "worker_id":worker_data["worker_id"] };
+                    curr_resp_contruct = {"model_a": model_a, "response_a": response_a, "model_b": model_b, "response_b": response_b, "worker_id": worker_data["worker_id"]};
                     curr_resp_contruct.update(curr_worker_data["result"]);
                     if (i == 0) {
                         start_time = datetime.fromtimestamp(worker_data["start_time"]);
                     }
                     end_time = datetime.fromtimestamp(curr_worker_data["time"]);
-                    curr_resp_contruct.update({"time_taken":(end_time - start_time).total_seconds() });
+                    curr_resp_contruct.update({"time_taken": (end_time - start_time).total_seconds()});
                     start_time = end_time;
                     if (prompt_id not in out_dataset) {
                         out_dataset[prompt_id] = [];
@@ -225,14 +225,14 @@ can format_responses_by_prompt(workers_data_dir: str, distribution_file: str, re
             }
         }
     }
-    formatted_output = [{"prompt_id":prompt_id, "responses":responses }  for (prompt_id, responses) in out_dataset.items()];
+    formatted_output = [{"prompt_id": prompt_id, "responses": responses}  for (prompt_id, responses) in out_dataset.items()];
     return formatted_output;
 }
 
 can convert_run(run: str) {
     os.makedirs("data", exist_ok=True);
     responses_files = [f  for f in os.listdir(os.path.join(os.path.abspath("runs"), run)) if f.endswith(".json")];
-    data = {"run":run, "prompt_disc":None, "outputs":{} };
+    data = {"run": run, "prompt_disc": None, "outputs": {}};
     
     for responses_file in responses_files {
         with open(os.path.join(os.path.abspath("runs"), run, responses_file), "r") as f {

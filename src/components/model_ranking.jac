@@ -5,7 +5,7 @@ import:jac from utils, map_prompt_names_to_ids, format_responses_by_prompt;
 can model_win_percentage_table {
     if st.session_state.get("current_hv_config", None) {
         criteria = ["overall"];
-        model_performance = {model:{"wins":0, "total":0 }  for model in st.session_state.active_list_of_models};
+        model_performance = {model: {"wins": 0, "total": 0}  for model in st.session_state.active_list_of_models};
         formatted_data = format_responses_by_prompt(st.session_state.workers_data_dir, st.session_state.distribution_file, st.session_state.response_file);
         prompt_info = map_prompt_names_to_ids(st.session_state.prompt_data_dir, st.session_state.prompt_info_file);
         prompt_ids = list(prompt_info.keys());
@@ -34,7 +34,7 @@ can model_win_percentage_table {
         data = [];
         for (model, counts) in model_performance.items() {
             win_percentage = (counts["wins"] / counts["total"]) if counts["total"] else 0;
-            data.append({"Model":model, "Win Percentage":win_percentage });
+            data.append({"Model": model, "Win Percentage": win_percentage});
         }
         df = pd.DataFrame(data);
         df = df.sort_values(by='Win Percentage', ascending=False);

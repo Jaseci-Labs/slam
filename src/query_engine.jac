@@ -17,11 +17,11 @@ obj QueryEngine {
     can __repr__ -> str;
 }
 
-glob engine = {"engine":None };
+glob engine = {"engine": None};
 
 @app.get("/")
 can status -> dict {
-    return {"status":"ok" };
+    return {"status": "ok"};
 }
 
 @app.post("/load_engine")

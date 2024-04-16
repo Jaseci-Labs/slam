@@ -81,7 +81,7 @@ import:py string;
     }
     if st.session_state.hv_config["hv_method"] == "A/B Testing" {
         st.markdown("You are given two responses below, Select which one you prefer.");
-        result = {"overall":None, "feedback":None };
+        result = {"overall": None, "feedback": None};
         (col_a, col_result, col_b) = st.columns(3);
         with col_result {
             st.caption("Questions");
@@ -96,7 +96,7 @@ import:py string;
     }
     if st.session_state.hv_config["hv_method"] == "A/B Testing with Criterions" {
         st.caption("Questions");
-        result = {x["Criteria"]:None  for x in st.session_state.hv_config["criterias"]};
+        result = {x["Criteria"]: None  for x in st.session_state.hv_config["criterias"]};
         result["feedback"] = None;
         n_criterias = len(st.session_state.hv_config["criterias"]);
         for i in range(int(n_criterias / 4) + 1) {
@@ -129,10 +129,10 @@ import:py string;
     }
     if st.button("Next Question", <>type="primary", key=f"next_{question_index}") {
         if all(result.values()) {
-            st.session_state.evals.append({"result":result, "time":time.time(), "question":question });
+            st.session_state.evals.append({"result": result, "time": time.time(), "question": question});
             st.session_state.question_index+=1;
             with open(os.path.join("results", f"{st.session_state.worker_id}_{st.session_state.question_set_id}.json"), "w") as f {
-                json.dump({"worker_id":st.session_state.worker_id, "question_set_id":st.session_state.question_set_id, "evals":st.session_state.evals, "start_time":st.session_state.start_time, "end_time":time.time(), "question_index":st.session_state.question_index }, f, indent=2);
+                json.dump({"worker_id": st.session_state.worker_id, "question_set_id": st.session_state.question_set_id, "evals": st.session_state.evals, "start_time": st.session_state.start_time, "end_time": time.time(), "question_index": st.session_state.question_index}, f, indent=2);
             }
             st.components.v1.html("<script>window.parent.document.querySelector('section.main').scrollTo(-1, -1);</script>", height=0);
             time.sleep(0.5);
