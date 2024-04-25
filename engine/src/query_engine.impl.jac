@@ -6,6 +6,7 @@ import:py from langchain.callbacks, get_openai_callback;
 import:py from langchain.callbacks.base, BaseCallbackHandler;
 import:py logging;
 import:py ollama;
+import:py os;
 
 obj ChatPromptHandler :BaseCallbackHandler: {
     can init;
@@ -44,7 +45,7 @@ obj ChatPromptHandler :BaseCallbackHandler: {
         if self.model_name not in ollama.list()['models'] {
             ollama.pull(self.model_name);
         }
-        return ChatOllama(model=self.model_name, temperature=self.temperature);
+        return ChatOllama(base_url=os.environ.get("OLLAMA_SERVER_URL", "http://localhost:11434"), model=self.model_name, temperature=self.temperature);
     } elif self.provider_name == "llama.cpp" {
         return LlamaCpp(model=self.model_name);
     } else {

@@ -4,7 +4,7 @@
 [![SLaM App Tests](https://github.com/Jaseci-Labs/slam/actions/workflows/app_test.yml/badge.svg)](https://github.com/Jaseci-Labs/slam/actions/workflows/app_test.yml)
 
 SLaM Tool is a helper tool to evaluate the performance of Large Language Models (LLMs) for your personal use cases with the help of Human Evaluation and Automatic Evaluation. You can deploy the application on your local machine or use Docker to generate responses for a given prompt with different LLMs (Proprietary or OpenSource), and then evaluate the responses with the help of human evaluators or automated methods.
-  
+
 ## Features
 
 - **Admin Panel**: Set up the Human Evaluation UI and manage the human evaluators.
@@ -70,13 +70,13 @@ For a streamlined experience, SLAM offers the option to leverage LLMs and SLMs f
 1. **Configure Language Models**
 
    If you prefer utilizing OpenAI's GPT-4, you'll need to set up an API key:
-   
+
    ```bash
    export OPENAI_API_KEY=<your_api_key>
    ```
 
    Alternatively, if you choose to employ Ollama's cutting-edge language models, ensure that you have Ollama installed and the server running:
-   
+
    ```bash
    curl https://ollama.ai/install.sh | sh
    ollama serve
@@ -85,13 +85,13 @@ For a streamlined experience, SLAM offers the option to leverage LLMs and SLMs f
 2. **Installing Dependencies & Launch the Query Engine**
 
     Query Engine Requires more complex dependancies than the normal app. (Use of Sepeate Python Environment is Recommended)
-    
+
     ```bash
     pip install -r requirements.dev.txt
     ```
 
     Once the language models are configured, initiate the Query Engine:
-    
+
     ```bash
     jac run src/query_engine.jac
     ```
@@ -99,7 +99,7 @@ For a streamlined experience, SLAM offers the option to leverage LLMs and SLMs f
 3. **Optional Environment Variables**
 
     For added flexibility, you can set the following environment variables:
-    
+
     ```bash
     export ACTION_SERVER_URL=http://localhost:8000/
     export OLLAMA_SERVER_URL=http://localhost:11434/
@@ -123,7 +123,7 @@ SLAM offers a convenient option to maintain a continuous backup of your results 
 1. **Set the Google Drive Folder ID**
 
    First, set the Google Drive folder ID as an environment variable:
-   
+
    ```bash
    export GDRIVE_FOLDER_ID=<your_folder_id>
    ```
@@ -131,7 +131,7 @@ SLAM offers a convenient option to maintain a continuous backup of your results 
 2. **Initiate a CRON Job**
 
    Next, initiate a CRON job to run the `scripts/backup.jac` script every 5 minutes. Ensure that you have an OAuth file (`settings.yaml` and `credentials.json`) in the folder from which you initiate the CRON job.
-   
+
    ```bash
    # Activate the virtual environment where JacLang is installed
    */5 * * * * jac run scripts/backup.jac

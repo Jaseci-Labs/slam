@@ -66,6 +66,23 @@ import:py shutil;
     }
 }
 
+can get_full_outputs {
+    full_outputs = [];
+    files = os.listdir("results");
+    
+    for _file in files {
+        if _file.endswith(".json") {
+            with open(os.path.join("results", _file), "r") as f {
+                output = json.load(f);
+            }
+            if output["question_index"] == st.session_state.current_hv_config["n_questions_per_worker"] {
+                full_outputs.append(_file);
+            }
+        }
+    }
+    return full_outputs;
+}
+
 :can:status_indicator {
     (uptime_col, opened_col, full_output_col) = st.columns(3);
     eval_start_time = st.session_state.current_hv_config["time_created"];
@@ -85,6 +102,7 @@ import:py shutil;
     }
     with full_output_col {
         with st.container(border=True) {
+            num_full_outputs = get_full_outputs();
             st.metric("Full Output", "Not Implemented");
         }
     }

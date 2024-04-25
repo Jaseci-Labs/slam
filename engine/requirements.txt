@@ -5,5 +5,3 @@ openai
 yaspin
 uvicorn[standard]
 fastapi
-# sentence_transformers
-# nltk

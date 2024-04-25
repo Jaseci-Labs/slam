@@ -16,7 +16,7 @@ Follow the steps given in the [README](../README.md) to install SLaM and its dep
 
 ## Steps
 ### Prepare the data
-The first step is to prepare the data for human evaluation. This involves collecting the outputs of the language model for a given task or multiple tasks. You can do this through the [Response Generator](response_generator.md) feature of SLaM. Follow the instructions in the [Response Generator](response_generator.md) tutorial to generate the responses for your specific task. or you can create your own responses and store them in a file according to the following JSON format. You will need multiple files for each task you want to evaluate. 
+The first step is to prepare the data for human evaluation. This involves collecting the outputs of the language model for a given task or multiple tasks. You can do this through the [Response Generator](response_generator.md) feature of SLaM. Follow the instructions in the [Response Generator](response_generator.md) tutorial to generate the responses for your specific task. or you can create your own responses and store them in a file according to the following JSON format. You will need multiple files for each task you want to evaluate.
 
 ```json
 {
