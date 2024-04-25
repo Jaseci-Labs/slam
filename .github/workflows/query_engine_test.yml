@@ -2,16 +2,16 @@ name: Query Engine Tests
 on:
     pull_request:
         paths:
-            - 'src/query_engine.impl.jac'
-            - 'src/query_engine.jac'
-            - 'requirements.dev.txt'
+            - 'engine/src/query_engine.impl.jac'
+            - 'engine/src/query_engine.jac'
+            - 'engine/requirements.txt'
     push:
         branches:
             - main
         paths:
-            - 'src/query_engine.impl.jac'
-            - 'src/query_engine.jac'
-            - 'requirements.dev.txt'
+          - 'engine/src/query_engine.impl.jac'
+          - 'engine/src/query_engine.jac'
+          - 'engine/requirements.txt'
 
 jobs:
   query_engine_test:
@@ -30,8 +30,9 @@ jobs:
 
     - name: Install dependencies
       run: |
+        cd engine
         python -m pip install --upgrade pip
-        pip install -r requirements.dev.txt
+        pip install -r requirements.txt
 
     - name: Run tests
       run: jac test src/query_engine.jac
