@@ -4,7 +4,7 @@ import:py json;
 import:py time;
 import:py from sklearn.metrics.pairwise, cosine_similarity;
 import:py numpy as np;
-import:jac from dashboard, heat_map;
+import:jac from ..dashboard.dashboard, heat_map;
 import:py from pathlib, Path;
 import:py from sentence_transformers, SentenceTransformer;
 import:py from nltk.tokenize, word_tokenize;

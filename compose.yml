@@ -9,7 +9,7 @@ services:
       - ACTION_SERVER_URL=http://engine:8000
       - OLLAMA_SERVER_URL=http://ollama:11434
     ports:
-      - 8501:850
+      - 8501:8501
   engine:
     build:
       context: ./engine

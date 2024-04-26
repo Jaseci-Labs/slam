@@ -25,7 +25,7 @@ can main {
         } else {
             (dashboard_tab, generator_tab, evaluation_tab, setup_tab, about_tab) = st.tabs(["Dashboard", "Response Generator", "Auto Evaluator", "Human Eval Setup", "About"]);
             with dashboard_tab {
-                dashboard();
+dashboard();
             }
             with generator_tab {
                 generator();
