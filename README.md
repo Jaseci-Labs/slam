@@ -22,7 +22,7 @@ SLaM Tool is a helper tool to evaluate the performance of Large Language Models 
 
 ### Docker Installation
 
-1. Build the Docker Image:
+1. Build the Docker Images:
    ```bash
    docker build -t jaseci/slam-tool:latest .
    ```
@@ -49,6 +49,7 @@ SLaM Tool is a helper tool to evaluate the performance of Large Language Models 
 
 3. Install the requirements:
    ```bash
+   cd app
    pip install -r requirements.txt
    ```
 
@@ -87,13 +88,13 @@ For a streamlined experience, SLAM offers the option to leverage LLMs and SLMs f
     Query Engine Requires more complex dependancies than the normal app. (Use of Sepeate Python Environment is Recommended)
 
     ```bash
-    pip install -r requirements.dev.txt
+    pip install -r engine/requirements.txt
     ```
 
     Once the language models are configured, initiate the Query Engine:
 
     ```bash
-    jac run src/query_engine.jac
+    jac run engine/src/query_engine.jac
     ```
 
 3. **Optional Environment Variables**

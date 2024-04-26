@@ -8,9 +8,6 @@ can local_css(file_name: str) -> None {
         st.markdown(f"<style>{css}</style>", unsafe_allow_html=True);
     }
 }
-# can remote_css(url: str) -> None {
-#     st.markdown(f"<link href='{url}' rel='stylesheet'>", unsafe_allow_html=True);
-# }
 
 can icon(icon_name: str) -> None {
     st.markdown(f"<i class='material-icons'>{icon_name}</i>", unsafe_allow_html=True);

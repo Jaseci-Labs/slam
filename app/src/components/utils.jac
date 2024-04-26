@@ -6,17 +6,19 @@ import:py time;
 import:py streamlit as st;
 import:py from datetime, datetime;
 
-glob ACTION_SERVER_URL = os.environ.get("ACTION_SERVER_URL", "http://localhost:8000/");
+glob ACTION_SERVER_URL: str=os.environ.get("ACTION_SERVER_URL", "http://localhost:8000");
 
-glob OLLAMA_SERVER_URL = os.environ.get("OLLAMA_SERVER_URL", "http://localhost:11434/");
+glob OLLAMA_SERVER_URL: str=os.environ.get("OLLAMA_SERVER_URL", "http://localhost:11434");
 
+'''Call the Query Engine.'''
 can call_action(action: str, **kwargs: dict) -> dict {
-    url = f"{ACTION_SERVER_URL}{action}";
+    url = f"{ACTION_SERVER_URL}/{action}";
     response = requests.post(url, json=kwargs);
     print(response);
     return response.json();
 }
 
+'''Check the Status of the Query Engine.'''
 can check_query_engine -> bool {
     
     try  {
@@ -27,6 +29,7 @@ can check_query_engine -> bool {
     }
 }
 
+'''Check the Status of the Ollama Server.'''
 can check_ollama_server -> bool {
     
     try  {
@@ -37,6 +40,25 @@ can check_ollama_server -> bool {
     }
 }
 
+'''Query Engine Status Indicator.'''
+can check_engine_status {
+    query_engine_status = check_query_engine();
+    ollama_server_status = check_ollama_server();
+    (query_engine_status_col, ollama_server_status_col) = st.columns(2);
+    if query_engine_status {
+        query_engine_status_col.success('Query Engine is Running');
+    } else {
+        query_engine_status_col.error('Query Engine is not Running');
+    }
+    if ollama_server_status {
+        ollama_server_status_col.success('Ollama Server is Running');
+    } else {
+        ollama_server_status_col.error('Ollama Server is not Running');
+    }
+    return query_engine_status;
+}
+
+'''Load the Model in the Query Engine.'''
 can load_engine(provider_name: str, model_name: str, temperature: float, prompt_template: str) -> bool {
     config = {"provider_name": provider_name, "model_name": model_name, "temperature": temperature, "prompt_template": prompt_template};
     
@@ -49,6 +71,7 @@ can load_engine(provider_name: str, model_name: str, temperature: float, prompt_
     }
 }
 
+'''Run the Inference on the Query Engine iteratively using the payload.'''
 can run_inference(model_name: str, num_samples: int, payload: dict) -> dict {
     outputs = [];
     full_prompt = None;
@@ -69,8 +92,9 @@ can run_inference(model_name: str, num_samples: int, payload: dict) -> dict {
     return {"outputs": outputs, "full_prompt": full_prompt, "avg_time": avg_time, "model_name": model_name};
 }
 
-glob llms = ["openai/gpt-4", "ollama/starling-lm:7b", "ollama/mistral:7b-instruct", "ollama/zephyr:7b-beta", "ollama/neural-chat:7b", "ollama/orca-mini:3b", "ollama/llama2:7b-chat", "ollama/stablelm-zephyr:3b", "ollama/falcon:7b-instruct", "ollama/orca2:7b", "ollama/openchat:7b-v3.5", "ollama/vicuna:7b"];
+glob llms: list[str]=["openai/gpt-4", "ollama/starling-lm:7b", "ollama/mistral:7b-instruct", "ollama/zephyr:7b-beta", "ollama/neural-chat:7b", "ollama/orca-mini:3b", "ollama/llama2:7b-chat", "ollama/stablelm-zephyr:3b", "ollama/falcon:7b-instruct", "ollama/orca2:7b", "ollama/openchat:7b-v3.5", "ollama/vicuna:7b"];
 
+'''Login Screen.'''
 can login {
     (logo_col, login_col) = st.columns(2);
     with logo_col {
@@ -99,6 +123,7 @@ can login {
     }
 }
 
+'''Mapping Prompt Names to Ids.'''
 can map_prompt_names_to_ids(prompt_data_dir: str, prompt_info_file: str) {
     with open(prompt_info_file, "r") as file {
         prompt_info = json.load(file);
@@ -121,23 +146,7 @@ can map_prompt_names_to_ids(prompt_data_dir: str, prompt_info_file: str) {
     return prompt_ids;
 }
 
-can check_engine_status {
-    query_engine_status = check_query_engine();
-    ollama_server_status = check_ollama_server();
-    (query_engine_status_col, ollama_server_status_col) = st.columns(2);
-    if query_engine_status {
-        query_engine_status_col.success('Query Engine is Running');
-    } else {
-        query_engine_status_col.error('Query Engine is not Running');
-    }
-    if ollama_server_status {
-        ollama_server_status_col.success('Ollama Server is Running');
-    } else {
-        ollama_server_status_col.error('Ollama Server is not Running');
-    }
-    return query_engine_status;
-}
-
+'''Generate Performance Matrices.'''
 can generate_performance_data(formatted_output: dict, all_models: list, prompt_id: str, criteria: list) {
     if (not criteria) {
         criteria = ["overall", "clarity", "intelligence", "likability", "trustworthiness"];
@@ -173,6 +182,7 @@ can generate_performance_data(formatted_output: dict, all_models: list, prompt_i
     return (model_performance, preference_matrix, criteria);
 }
 
+'''Formats Responses by the Prompts.'''
 can format_responses_by_prompt(workers_data_dir: str, distribution_file: str, response_file: str) {
     out_dataset = {};
     with open(distribution_file, "r") as file {
@@ -229,6 +239,7 @@ can format_responses_by_prompt(workers_data_dir: str, distribution_file: str, re
     return formatted_output;
 }
 
+'''Converts Runs to Data Files.'''
 can convert_run(run: str) {
     os.makedirs("data", exist_ok=True);
     responses_files = [f  for f in os.listdir(os.path.join(os.path.abspath("runs"), run)) if f.endswith(".json")];

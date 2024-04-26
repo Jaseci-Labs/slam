@@ -1,3 +1,4 @@
+'''Human Evaluation Setup Implementations'''
 import:py streamlit as st;
 import:py os;
 import:py json;
@@ -39,8 +40,7 @@ import:py pandas as pd;
     return (hv_method, criterias);
 }
 
-:can:sanity_check
-(n_models: int, n_usecases: int, n_workers: int, n_questions_per_worker: int) {
+:can:sanity_check (n_models: int, n_usecases: int, n_workers: int, n_questions_per_worker: int){
     n_model_pairs = n_models * (n_models - 1) / 2;
     min_n_responses_needed_per_model = int(math.ceil(math.sqrt(n_workers * n_questions_per_worker / n_usecases / float(n_model_pairs))));
     return (min_n_responses_needed_per_model, n_model_pairs);
@@ -120,9 +120,7 @@ import:py pandas as pd;
             }
         }
     }
-    with open(os.path.join(".human_eval_config", "unique_question_pairs.json"), "w") as f {
-        json.dump(question_pairs, f, indent=2);
-    }
+    json.dump(question_pairs, open(os.path.join(".human_eval_config", "unique_question_pairs.json"), "w"), indent=2);
     return question_pairs;
 }
 
@@ -158,9 +156,8 @@ import:py pandas as pd;
             }
         }
     }
-    with open(os.path.join(".human_eval_config", "distribution.json"), "w") as f {
-        json.dump(distribution, f, indent=2);
-    }
+    json.dump(distribution, open(os.path.join(".human_eval_config", "distribution.json"), "w"), indent=2);
+    json.dump(distribution, open(os.path.join(".human_eval_config", "distribution.bak.json"), "w"), indent=2);
 }
 
 :can:create_neccessary_file
