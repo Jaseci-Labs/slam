@@ -7,7 +7,6 @@ import:py streamlit as st;
 import:py from datetime, datetime;
 
 glob ACTION_SERVER_URL: str=os.environ.get("ACTION_SERVER_URL", "http://localhost:8000");
-
 glob OLLAMA_SERVER_URL: str=os.environ.get("OLLAMA_SERVER_URL", "http://localhost:11434");
 
 '''Call the Query Engine.'''
