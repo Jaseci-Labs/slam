@@ -1,8 +1,10 @@
-import:py streamlit as st;
-import:py os;
+'''LLM as an Evaluator Implementations.'''
 import:py json;
-import:py time;
+import:py os;
 import:py re;
+import:py streamlit as st;
+import:py time;
+
 import:jac from utils, llms, check_engine_status, load_engine, run_inference;
 
 :can:llm_as_evaluator {
@@ -39,11 +41,12 @@ import:jac from utils, llms, check_engine_status, load_engine, run_inference;
             st.session_state.responses = json.load(f);
         }
         os.makedirs("results", exist_ok=True);
+    } else {
+        st.error("No human eval config found. Please Initialize a Human Evaluation First using the Setup Tab.");
     }
 }
 
-:can:run_llm_as_evaluator
-(eval_model: str, all_questions: dict) {
+:can:run_llm_as_evaluator(eval_model: str, all_questions: dict) {
     with st.spinner(f"Running LLM as Evaluator with {eval_model}... Please Wait") {
         (provider_name, model_name) = eval_model.split('/');
         engine_loaded = False;
@@ -84,13 +87,12 @@ import:jac from utils, llms, check_engine_status, load_engine, run_inference;
     st.success(f"Evaluation completed successfully!");
 }
 
-:can:process_inference_result
-(inference_result: dict) -> dict {
+:can:process_inference_result(inference_result: dict) -> dict {
     try  {
         answers = eval(re.search(r"\[Output\](.*)", inference_result, re.DOTALL).group(1).strip());
         answers["feedback"] = re.search(r"\[Reasoning\](.*)\[Output\]", inference_result, re.DOTALL).group(1).strip();
     } except Exception as e  {
-        answers = {"error": str(e)};
+        answers = {"error": str(e), "result": inference_result};
     }
     return answers;
 }

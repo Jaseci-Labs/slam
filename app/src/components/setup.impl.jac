@@ -99,8 +99,7 @@ import:py pandas as pd;
     }
 }
 
-:can:get_question_pairs
-(models_responses_all: dict) {
+:can:get_question_pairs(models_responses_all: dict) {
     n_usecases = len(models_responses_all);
     models = list(list(models_responses_all.values())[0].keys());
     random.shuffle(models);
@@ -124,8 +123,7 @@ import:py pandas as pd;
     return question_pairs;
 }
 
-:can:get_distribution
-(question_pairs: list, n_workers: int, n_questions_per_worker: int) {
+:can:get_distribution(question_pairs: list, n_workers: int, n_questions_per_worker: int) {
     need_to_be_evenly_distributed = st.session_state.config["config"]["evenly_distributed"];
     if not need_to_be_evenly_distributed {
         selected_question_pairs = random.sample(question_pairs, n_workers * n_questions_per_worker);
@@ -160,8 +158,7 @@ import:py pandas as pd;
     json.dump(distribution, open(os.path.join(".human_eval_config", "distribution.bak.json"), "w"), indent=2);
 }
 
-:can:create_neccessary_file
-(data_sources: list, _prompt_infos: dict) {
+:can:create_neccessary_file(data_sources: list, _prompt_infos: dict) {
     with st.spinner("Creating Necessary Files...") {
         uid_responses = {};
         models_responses_all = {};
@@ -195,8 +192,7 @@ import:py pandas as pd;
     return models_responses_all;
 }
 
-:can:get_prompt_info
-(data_sources: list) {
+:can:get_prompt_info(data_sources: list) {
     st.subheader("Prompt Information");
     prompt_infos = {data_source: {}  for data_source in data_sources};
     with st.container(border=True) {

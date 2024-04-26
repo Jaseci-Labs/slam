@@ -1,10 +1,11 @@
-import:py os;
+'''Human Evaluation Implementations.'''
 import:py json;
+import:py os;
 import:py time;
 import:py streamlit as st;
-import:py from captcha.image, ImageCaptcha;
-import:py random;
 import:py string;
+import:py random;
+import:py from captcha.image, ImageCaptcha;
 
 :can:<>init {
     if os.path.exists(os.path.join(".human_eval_config", "config.json")) {

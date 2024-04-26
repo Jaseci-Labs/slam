@@ -3,7 +3,7 @@ import:py streamlit as st;
 import:py re;
 import:py uuid;
 import:py json;
-import:jac from utils, load_engine, run_inference, llms, check_query_engine, check_ollama_server, convert_run;
+import:jac from utils, load_engine, run_inference, llms, check_query_engine, check_ollama_server, convert_run, check_engine_status;
 
 :can:<>init {
     os.makedirs('runs', exist_ok=True);
@@ -11,23 +11,6 @@ import:jac from utils, load_engine, run_inference, llms, check_query_engine, che
         st.session_state["run_id"] = uuid.uuid4();
     }
     st.session_state.engine_status = check_engine_status();
-}
-
-:can:check_engine_status {
-    query_engine_status = check_query_engine();
-    ollama_server_status = check_ollama_server();
-    (query_engine_status_col, ollama_server_status_col) = st.columns(2);
-    if query_engine_status {
-        query_engine_status_col.success('Query Engine is Running');
-    } else {
-        query_engine_status_col.error('Query Engine is not Running');
-    }
-    if ollama_server_status {
-        ollama_server_status_col.success('Ollama Server is Running');
-    } else {
-        ollama_server_status_col.error('Ollama Server is not Running');
-    }
-    return query_engine_status;
 }
 
 :can:model_settings {
@@ -61,8 +44,7 @@ import:jac from utils, load_engine, run_inference, llms, check_query_engine, che
     return (prompt_template, arguments);
 }
 
-:can:generate_responses
-(selected_models: list, n_samples: int, temp: float, prompt_template: str, arguments: dict) -> None {
+:can:generate_responses(selected_models: list, n_samples: int, temp: float, prompt_template: str, arguments: dict) -> None {
     os.makedirs(os.path.join("runs", st.session_state["run_id"]), exist_ok=True);
     for model in selected_models {
         (provider_name, model_name) = model.split('/');

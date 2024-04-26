@@ -1,16 +1,22 @@
+'''Human Evaluation Component.'''
 import:py streamlit as st;
 import:py os;
 import:py json;
 import:py time;
 
+'''Initializes the human eval config.'''
 can <>init;
 
+'''Single Evaluation Component.'''
 can evaluation;
 
+'''Captcha Generation.'''
 can captcha_gen;
 
+'''Worker ID Component.'''
 can worker_id;
 
+'''Human Evaluation Window.'''
 can human_eval {
     if "hv_config" not in st.session_state {
         <>init();

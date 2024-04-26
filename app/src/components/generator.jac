@@ -1,15 +1,19 @@
+'''Evaluation Data Generator. This Window helps you to generate the necessary response for the given prompttemplate with given values for all the selected SLMs and propierity LLMs.'''
 import:py streamlit as st;
 
+'''Initializes the session state variables.'''
 can <>init;
 
+'''Model Settings Configuration.'''
 can model_settings;
 
+'''Prompt Settings Configuration.'''
 can prompt_settings;
 
-can check_engine_status;
-
+'''Generates the responses for the selected models.'''
 can generate_responses(selected_models: list, n_samples: int, temp: float, prompt_template: str, arguments: dict);
 
+'''Evaluation Data Generator Window.'''
 can generator {
     if "generator_init" not in st.session_state {
         <>init();
