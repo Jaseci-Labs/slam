@@ -66,25 +66,28 @@ import:py shutil;
     }
 }
 
-can get_full_outputs {
+can get_outputs -> tuple {
     full_outputs = [];
+    partial_outputs = [];
+
     files = os.listdir("results");
-    
     for _file in files {
         if _file.endswith(".json") {
             with open(os.path.join("results", _file), "r") as f {
                 output = json.load(f);
             }
-            if output["question_index"] == st.session_state.current_hv_config["n_questions_per_worker"] {
+            if output["question_index"] == st.session_state.current_hv_config["config"]["n_questions_per_worker"] {
                 full_outputs.append(_file);
+            } else {
+                partial_outputs.append(_file);
             }
         }
     }
-    return full_outputs;
+    return (full_outputs, partial_outputs);
 }
 
 :can:status_indicator {
-    (uptime_col, opened_col, full_output_col) = st.columns(3);
+    (uptime_col, opened_col, full_output_col, partial_output_col) = st.columns(4);
     eval_start_time = st.session_state.current_hv_config["time_created"];
     current_time = dt.datetime.now().strftime("%d/%m/%Y %H:%M:%S");
     time_diff = dt.datetime.strptime(current_time, "%d/%m/%Y %H:%M:%S") - dt.datetime.strptime(eval_start_time, "%d/%m/%Y %H:%M:%S");
@@ -100,10 +103,16 @@ can get_full_outputs {
             st.metric("Number of Opens", f"{st.session_state.current_worker_count}/{n_workers}");
         }
     }
+    (full_outputs, partial_outputs) = get_outputs();
     with full_output_col {
         with st.container(border=True) {
-            num_full_outputs = get_full_outputs();
-            st.metric("Full Output", "Not Implemented");
+            
+            st.metric("Number of Full Output", f"{len(full_outputs)}/{n_workers}");
+        }
+    }
+    with partial_output_col {
+        with st.container(border=True) {
+            st.metric("Number of Partial Output", f"{len(partial_outputs)}/{n_workers}");
         }
     }
 }

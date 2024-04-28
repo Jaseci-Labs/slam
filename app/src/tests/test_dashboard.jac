@@ -64,8 +64,7 @@ test test_upload_functionality   {
     dashboard_tab.button[0].click().run();
     dashboard_tab = get_item_by_label(app, "tab", "Dashboard");
     selectbox = (get_item_by_label(app, "selectbox", "Select a chart type:").set_value("Stacked Bar Chart").run());
-    
-    # print(dashboard_tab);
+
     assert len(selectbox.session_state.hv_results_files) > 0;
     shutil.rmtree(".human_eval_config");
     shutil.rmtree("results");

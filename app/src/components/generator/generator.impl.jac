@@ -34,7 +34,6 @@ import:jac from ..utils, load_engine, run_inference, llms, check_query_engine, c
     with prompt_values_col {
         st.caption('Input Prompt Values');
         arguments = {x: None  for x in re.findall(r'\{([A-Za-z0-9_]+)\}', prompt_template)};
-        print(arguments);
         if len(arguments) == 0 {
             st.info('No arguments found in the prompt template');
         }
