@@ -15,101 +15,125 @@ SLaM Tool is a helper tool to evaluate the performance of Large Language Models 
 
 ## Installation
 
+First Clone the Repository:
+
+```bash
+git clone https://github.com/Jaseci-Labs/slam.git && cd slam
+``` 
+
 ### Prerequisites
 
 - Python 3.12 or higher
 - Docker (Optional)
 
-### Docker Installation
+### Only the Human Evaluation Tool
 
-1. Build the Docker Images:
+#### Using Docker
+
+1. Build the Docker Image:
    ```bash
-   docker build -t jaseci/slam-tool:latest .
+   cd app
+   docker build -t slam/slam-app:latest .
    ```
 
 2. Run the container with environment variables:
    ```bash
-   docker run -p 8501:8501 -e SLAM_ADMIN_USERNAME=<user_name> -e SLAM_ADMIN_PASSWORD=<password> jaseci/slam-tool:latest
+   docker run -p 8501:8501 -e SLAM_ADMIN_USERNAME=<user_name> -e SLAM_ADMIN_PASSWORD=<password> slam/slam-app:latest
    ```
 
 3. Open your browser and go to `http://localhost:8501`
 
-### Local Installation
+#### Using Local Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Jaseci-Labs/slam.git && cd slam
-   ```
-
-2. Create a virtual environment (optional):
-   ```bash
-   conda create -n slam-tool python=3.12 -y
-   conda activate slam-tool
-   ```
-
-3. Install the requirements:
+1. Create a virtual environment (optional):
    ```bash
    cd app
+   conda create -n slam-app python=3.12 -y
+   conda activate slam-app
+   ```
+
+2. Install the requirements:
+   ```bash
    pip install -r requirements.txt
    ```
 
-4. Set environment variables:
+3. Set environment variables:
    ```bash
    export SLAM_ADMIN_USERNAME=<username>
    export SLAM_ADMIN_PASSWORD=<password>
    ```
 
-5. Run the application:
+4. Run the application:
    ```bash
    streamlit run app.py
    ```
+
+5. Open your browser and go to `http://localhost:8501`
+
+
+### With the Query Engine and Ollama
+Notice: Make Sure you are running in an environment with GPU
+
+#### Using Docker Compose (Recommended)
+
+1. Build the Docker Images:
+   ```bash
+   docker compose up -d --build
+   ```
+
+2. Open your browser and go to `http://localhost:8501`
+
+#### Using Local Installation
+
+Follow the Steps above to install the app and then follow the steps below to install the Query Engine and Ollama.
 
 ### For Response Generation & Automatic Evaluation (Optional)
 
 For a streamlined experience, SLAM offers the option to leverage LLMs and SLMs for response generation and automated evaluation.
 
-1. **Configure Language Models**
+Open a new terminal window and navigate to the root directory of the SLAM repository.
 
-   If you prefer utilizing OpenAI's GPT-4, you'll need to set up an API key:
+1. Create a seperate virtual environment (Recommended):
 
    ```bash
-   export OPENAI_API_KEY=<your_api_key>
+   cd engine
+   conda create -n slam-engine python=3.12 -y
+   conda activate slam-engine
    ```
 
-   Alternatively, if you choose to employ Ollama's cutting-edge language models, ensure that you have Ollama installed and the server running:
+2. Install the dependencies:
+
+   ```bash
+   pip install -r engine/requirements.txt
+   ```
+
+3. Run the Query Engine:
+
+   ```bash
+   jac run src/query_engine.jac
+   ```
+
+4. Run the Ollama Server:
 
    ```bash
    curl https://ollama.ai/install.sh | sh
    ollama serve
    ```
 
-2. **Installing Dependencies & Launch the Query Engine**
+5. If you plan to use OpenAI's GPT-4, set the API key:
 
-    Query Engine Requires more complex dependancies than the normal app. (Use of Sepeate Python Environment is Recommended)
-
-    ```bash
-    pip install -r engine/requirements.txt
-    ```
-
-    Once the language models are configured, initiate the Query Engine:
-
-    ```bash
-    jac run engine/src/query_engine.jac
-    ```
-
-3. **Optional Environment Variables**
-
-    For added flexibility, you can set the following environment variables:
-
-    ```bash
-    export ACTION_SERVER_URL=http://localhost:8000/
-    export OLLAMA_SERVER_URL=http://localhost:11434/
-    ```
+   ```bash
+   export OPENAI_API_KEY=<your_api_key>
+   ```
+   if you have a remote ollama server, set the server url:
+   ```bash
+   export OLLAMA_SERVER_URL=http://<remote_server_ip>:11434/
+   ```
 
 ## Tutorials
 
-- [How to use SLaM for Human Evaluation](docs/tutorials/human_eval.md)
 - [How to Generate Responses using SLaM](docs/tutorials/response_generator.md)
+- [How to use SLaM for Human Evaluation](docs/tutorials/human_eval.md)
 - [How to use SLaM for Automatic Evaluation](docs/tutorials/automatic_eval.md)
     - [LLM as an Evaluator](docs/tutorials/automatic_eval.md#llm-as-an-evaluator)
     - [Using Semantic Similarity to Evaluate Responses](docs/tutorials/automatic_eval.md#using-semantic-similarity-to-evaluate-responses)
@@ -157,14 +181,19 @@ To load your backups, follow these simple steps:
 4. **Refresh and View**
    - After the upload process is complete, click the "Refresh" button to see the updated diagrams and visualizations.
 
+
+## FAQ
+
+1. When Trying to run `ollama serve` I get an error `Error: listen tcp :11434: bind: address already in use`
+   - This error occurs when the port 11434 is already in use. To resolve this issue, you can either kill the process running on the port using `sudo systemctl stop ollama` and then run `ollama serve` again.
+
+2. When trying to run the Query Engine, I get an error `Error: No module named 'jac'`
+   - This error occurs when the `jaclang` package is not installed. To resolve this issue, first makesure you are in the `slam-engine` environment and and retry installing the requirements using `pip install -r engine/requirements.txt`.
+
+3. If you have any other questions, please feel free to reach out to us through the [Issues](https://github.com/Jaseci-Labs/slam/issues) section.
+
+
+
 ## Contributing
 
-We welcome contributions to enhance SLAM's capabilities. Please review the [CONTRIBUTING.md](CONTRIBUTING.md) file for our code of conduct and the process for submitting pull requests.
-
-To run the test suite, execute the following command:
-
-```bash
-sh scripts/run_tests.sh
-```
-
-We appreciate your interest in contributing to SLAM and look forward to your valuable contributions.
+We welcome contributions to enhance SLAM's capabilities. Please review the [CONTRIBUTING.md](CONTRIBUTING.md) file for our code of conduct and the process for submitting pull requests. We appreciate your interest in contributing to SLAM and look forward to your valuable contributions.
