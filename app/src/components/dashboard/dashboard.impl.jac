@@ -1,16 +1,17 @@
-import:py streamlit as st;
+import:py datetime as dt;
+import:py json;
+import:py numpy as np;
 import:py os;
 import:py pandas as pd;
-import:py numpy as np;
-# import:py altair as alt;
-import:py plotly.figure_factory as ff;
 import:py plotly.express as px;
-import:py json;
-import:py datetime as dt;
+import:py plotly.figure_factory as ff;
+import:py shutil;
+import:py streamlit as st;
+import:py zipfile;
+
 import:jac from ..utils, map_prompt_names_to_ids, generate_performance_data, format_responses_by_prompt;
 import:jac from plot_utils, generate_stacked_bar_chart, generate_heatmaps;
-import:py zipfile;
-import:py shutil;
+
 
 :can:<>init {
     if os.path.exists(os.path.join(".human_eval_config", "config.json")) {

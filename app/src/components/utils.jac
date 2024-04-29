@@ -92,35 +92,6 @@ can run_inference(model_name: str, num_samples: int, payload: dict) -> dict {
 
 glob llms: list[str]=["openai/gpt-4", "ollama/starling-lm:7b", "ollama/mistral:7b-instruct", "ollama/zephyr:7b-beta", "ollama/neural-chat:7b", "ollama/orca-mini:3b", "ollama/llama2:7b-chat", "ollama/stablelm-zephyr:3b", "ollama/falcon:7b-instruct", "ollama/orca2:7b", "ollama/openchat:7b-v3.5", "ollama/vicuna:7b"];
 
-'''Login Screen.'''
-can login {
-    (logo_col, login_col) = st.columns(2);
-    with logo_col {
-        st.header("Welcome to SLaM Tool!");
-        st.info("SLaM Tool allows you to run human evaluations and llm evaluations on various propietary and open-source language models.");
-        st.info("Please login to access the dashboard, evaluation and other features.");
-    }
-    with login_col {
-        with st.form(key='my_form') {
-            username = st.text_input('Username', key="username");
-            password = st.text_input('Password', <>type='password', key="password");
-            if st.form_submit_button('Login') {
-                try  {
-                    if username == os.environ.get("SLAM_ADMIN_USERNAME")
-                        and password == os.environ.get("SLAM_ADMIN_PASSWORD") {
-                        st.session_state.admin_privileges = True;
-                        st.rerun();
-                    } else {
-                        st.error("Invalid username or password");
-                    }
-                } except Exception as e  {
-                    st.error("Admin Account not configured. Please contact the administrator.");
-                }
-            }
-        }
-    }
-}
-
 '''Mapping Prompt Names to Ids.'''
 can map_prompt_names_to_ids(prompt_data_dir: str, prompt_info_file: str) {
     with open(prompt_info_file, "r") as file {
