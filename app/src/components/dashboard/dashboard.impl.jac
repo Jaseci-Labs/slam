@@ -77,10 +77,14 @@ can get_outputs -> tuple {
             with open(os.path.join("results", _file), "r") as f {
                 output = json.load(f);
             }
-            if output["question_index"] == st.session_state.current_hv_config["config"]["n_questions_per_worker"] {
+            try {
+                if output["question_index"] == st.session_state.current_hv_config["config"]["n_questions_per_worker"] {
                 full_outputs.append(_file);
-            } else {
-                partial_outputs.append(_file);
+                } else {
+                    partial_outputs.append(_file);
+                }
+            } except Exception {
+                pass;
             }
         }
     }

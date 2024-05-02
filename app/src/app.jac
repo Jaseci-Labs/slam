@@ -23,18 +23,18 @@ can main {
         if not st.session_state.admin_privileges {
             login();
         } else {
-            (dashboard_tab, generator_tab, evaluation_tab, setup_tab, about_tab) = st.tabs(["Dashboard", "Response Generator", "Auto Evaluator", "Human Eval Setup", "About"]);
+            (dashboard_tab, generator_tab, setup_tab, evaluation_tab, about_tab) = st.tabs(["Dashboard", "Response Generator", "Evaluation Setup", "Auto Evaluator", "About"]);
             with dashboard_tab {
-dashboard();
+                dashboard();
             }
             with generator_tab {
                 generator();
             }
-            with evaluation_tab {
-                auto_eval();
-            }
             with setup_tab {
                 setup();
+            }
+            with evaluation_tab {
+                auto_eval();
             }
             with about_tab {
                 about();

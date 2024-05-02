@@ -29,6 +29,6 @@ can initPage(page_title: str) -> None {
 can footer {
     dir_root = os.path.dirname(os.path.abspath(__file__));
     local_css(os.path.join(dir_root, "../assets/footer.css"));
-    footer = "<div class='footer'><p>Developed by <a href='https://www.jaseci.org/'' target='_blank'><img src='https://www.jaseci.org/wp-content/uploads/2022/02/jaseki-logo-inverted-rgb.svg' alt='Jaseci Logo' height='40'></a></p></div>";
+    footer = "<div class='footer' style='background-color: rgb(14, 17, 23);'><p style='color: white; margin: 5px;'>Developed by <a href='https://www.jaseci.org/'' target='_blank'><img src='https://www.jaseci.org/wp-content/uploads/2022/02/jaseki-logo-inverted-rgb.svg' alt='Jaseci Logo' height='40'></a></p></div>";
     st.markdown(footer, unsafe_allow_html=True);
 }

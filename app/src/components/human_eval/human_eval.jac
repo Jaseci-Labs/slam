@@ -89,6 +89,6 @@ can human_eval {
             }
         }
     } else {
-        st.error("No human eval config found.");
+        st.info("Go to Admin Panel and configure the Human Evaluation.");
     }
 }
