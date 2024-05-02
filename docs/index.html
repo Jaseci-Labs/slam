@@ -1,171 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SLaM: Small Language Model Evaluation Tool</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <style>
-    .card {
-      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-      transition: 0.3s;
-    }
-    .card:hover {
-      box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1 class="mt-5 mb-4 text-center">SLaM: Small Language Model Evaluation Tool</h1>
-    <p class="lead text-center"><a href="#" target="_blank">Paper</a> | <a href="#" target="_blank">GitHub Repo</a> by Chandra Irugalbandara, Ashish Mahendra, Roland Daynauth, Tharuka Kasthuri Arachchige, Krisztian Flautner, Lingjia Tang, Yiping Kang, Jason Mars (Jaseci Labs, University of Michigan)</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SLaM: Small Language Model Evaluation Tool</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+      .card {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        transition: 0.3s;
+      }
+      .card:hover {
+        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="mt-5 mb-4 text-center">
+        SLaM: Small Language Model Evaluation Tool
+      </h1>
+      <p class="lead text-center">
+        <a href="#" target="_blank">Paper</a> |
+        <a href="#" target="_blank">GitHub Repo</a> by Chandra Irugalbandara,
+        Ashish Mahendra, Roland Daynauth, Tharuka Kasthuri Arachchige, Krisztian
+        Flautner, Lingjia Tang, Yiping Kang, Jason Mars (Jaseci Labs, University
+        of Michigan)
+      </p>
 
-    <div class="card mt-5">
-      <div class="card-body">
-        <h2 class="card-title">Abstract</h2>
-        <p class="card-text">The SLaM is a robust tool designed to evaluate the performance of Large Language Models (LLMs) for specific use cases, leveraging both Human Evaluation and Automatic Evaluation. Users can deploy the application locally or via Docker to generate responses for a given prompt using various LLMs (Proprietary or Open-Source), and then assess these responses with the assistance of human evaluators or automated methods.</p>
-      </div>
-    </div>
-    
-    <div class="card mt-5">
-      <div class="card-body">
-        <h2 class="card-title">Problem Statement</h2>
-        <!-- Placeholder for the problem statement -->
-        <p>Placeholder for the problem statement.</p>
-      </div>
-    </div>
-
-    <div class="card mt-5">
-      <div class="card-body">
-        <h2 class="card-title">Introduction to the Project</h2>
-        <p>Placeholder for the transcript summary of Yiping's presentation at AGI Leap Summit.</p>
-        <div class="embed-responsive embed-responsive-16by9">
-          <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/VIDEO_ID" allowfullscreen></iframe>
-        </div>
-        <p class="mt-3"><strong>SLaM Presentation at AGI Leap Summit</strong> by Dr. Yiping Kang (Post-Doctorate at Univerisity of Michigan, Founding Member of Jaseci Labs</p>
-      </div>
-    </div>
-    
-
-    <div class="card mt-5">
-      <div class="card-body">
-        <h2 class="card-title">Results of the Paper</h2>
-        <h4>Cost Effectiveness of SLMs</h4>
-        <!-- Placeholder for cost effectiveness diagrams and information -->
-        <p>Placeholder for cost effectiveness diagrams and information.</p>
-        <img src="placeholder-image.jpg" class="img-fluid" alt="Cost Effectiveness Diagram">
-        <p class="mt-3"><strong>Cost Effectiveness Diagram</strong></p>
-        <h4>Quality of Output of SLMs</h4>
-        <!-- Placeholder for quality of output diagrams and information -->
-        <p>Placeholder for quality of output diagrams and information.</p>
-        <img src="placeholder-image.jpg" class="img-fluid" alt="Quality of Output Diagram">
-        <p class="mt-3"><strong>Quality of Output Diagram</strong></p>
-      </div>
-    </div>
-
-    
-
-    <div class="card mt-5">
-      <div class="card-body">
-        <h2 class="card-title">Short Demo of the Project</h2>
-        <!-- Placeholder for the short demo -->
-        <p>Placeholder for the short demo.</p>
-        <div class="embed-responsive embed-responsive-16by9">
-          <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/VIDEO_ID" allowfullscreen></iframe>
-        </div>
-        <p class="mt-3"><strong>Short Demo Video</strong></p>
-      </div>
-    </div>
-    
-    <div class="card mt-5">
+      <div class="card mt-5">
         <div class="card-body">
-            <h2 class="card-title">Features</h2>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card mt-3">
-                        <div class="card-body">
-                            <h4>Admin Panel</h4>
-                            <ol type="1">
-                                <li>Ability to customize the Human Evaluator interface</li>
-                                <li>Ability to modify Evaluation Configuration attributes for Human and Automatic Evaluation</li>
-                            </ol>
-                        </div>
-                    </div>
-                    <div class="card mt-3">
-                        <div class="card-body">
-                            <h4>Real-time Insights and Analytics</h4>
-                            <ol type="1">
-                                <li>Cost Analysis</li>
-                                <li>Performance Analysis using various metrics (ELO, Markov)</li>
-                                <li>Consensus Analysis</li>
-                                <li>Real-time Human Evaluation Progress</li>
-                                <li>And more...</li>
-                            </ol>
-                        </div>
-                    </div>
-                    <div class="card mt-3">
-                        <div class="card-body">
-                            <h4>Human Evaluation</h4>
-                            <ol type="1">
-                                <li>User-friendly UI for precise Human Evaluation</li>
-                                <li>Time Tracking</li>
-                                <li>Feedback Tracking</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card mt-3">
-                        <div class="card-body">
-                            <h4>Automatic Evaluation</h4>
-                            <ol type="1">
-                                <li>LLM-powered Evaluator to automate the Human Evaluation process</li>
-                                <li>Semantic Similarity module to assess model proximity to an anchor model</li>
-                            </ol>
-                        </div>
-                    </div>
-                    <div class="card mt-3">
-                        <div class="card-body">
-                            <h4>Multiple Model Support</h4>
-                            <ol type="1">
-                                <li>OpenAI, Cluade, Groq, etc.</li>
-                                <li>Ollama Models (Llama, COdellama, etc.)</li>
-                            </ol>
-                        </div>
-                    </div>
-                    <div class="card mt-3">
-                        <div class="card-body">
-                            <h4>Multiple Evaluation Methods</h4>
-                            <ol type="1">
-                                <li>A/B Testing</li>
-                                <li>A/B Testing with Criteria</li>
-                                <li>More to come</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          <h2 class="card-title">Abstract</h2>
+          <p class="card-text">
+            The SLaM is a robust tool designed to evaluate the performance of
+            Large Language Models (LLMs) for specific use cases, leveraging both
+            Human Evaluation and Automatic Evaluation. Users can deploy the
+            application locally or via Docker to generate responses for a given
+            prompt using various LLMs (Proprietary or Open-Source), and then
+            assess these responses with the assistance of human evaluators or
+            automated methods.
+          </p>
         </div>
-    </div>
-    <div class="card mt-5">
-      <div class="card-body">
-        <h2 class="card-title">Brief Explanation of the Solution</h2>
-        <!-- Placeholder for the brief explanation of the solution -->
-        <p>Placeholder for the brief explanation of the solution.</p>
-      </div>
-    </div>
-    
-    <div class="card mt-5">
-      <div class="card-body">
-        <h2 class="card-title">Relevant Links</h2>
-        <ul>
-          <li><a href="#" target="_blank">Paper</a></li>
-          <li><a href="#" target="_blank">GitHub Repo</a></li>
-        </ul>
       </div>
 
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
+      <div class="card mt-5">
+        <div class="card-body">
+          <h2 class="card-title">Problem Statement</h2>
+          <!-- Placeholder for the problem statement -->
+          <p>Placeholder for the problem statement.</p>
+        </div>
+      </div>
+
+      <div class="card mt-5">
+        <div class="card-body">
+          <h2 class="card-title">Introduction to the Project</h2>
+          <p>
+            Placeholder for the transcript summary of Yiping's presentation at
+            AGI Leap Summit.
+          </p>
+          <div class="embed-responsive embed-responsive-16by9">
+            <iframe
+              class="embed-responsive-item"
+              src="https://www.youtube.com/embed/VIDEO_ID"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <p class="mt-3">
+            <strong>SLaM Presentation at AGI Leap Summit</strong> by Dr. Yiping
+            Kang (Post-Doctorate at Univerisity of Michigan, Founding Member of
+            Jaseci Labs
+          </p>
+        </div>
+      </div>
+
+      <div class="card mt-5">
+        <div class="card-body">
+          <h2 class="card-title">Results of the Paper</h2>
+          <h4>Cost Effectiveness of SLMs</h4>
+          <!-- Placeholder for cost effectiveness diagrams and information -->
+          <p>Placeholder for cost effectiveness diagrams and information.</p>
+          <img
+            src="placeholder-image.jpg"
+            class="img-fluid"
+            alt="Cost Effectiveness Diagram"
+          />
+          <p class="mt-3"><strong>Cost Effectiveness Diagram</strong></p>
+          <h4>Quality of Output of SLMs</h4>
+          <!-- Placeholder for quality of output diagrams and information -->
+          <p>Placeholder for quality of output diagrams and information.</p>
+          <img
+            src="placeholder-image.jpg"
+            class="img-fluid"
+            alt="Quality of Output Diagram"
+          />
+          <p class="mt-3"><strong>Quality of Output Diagram</strong></p>
+        </div>
+      </div>
+
+      <div class="card mt-5">
+        <div class="card-body">
+          <h2 class="card-title">Short Demo of the Project</h2>
+          <!-- Placeholder for the short demo -->
+          <p>Placeholder for the short demo.</p>
+          <div class="embed-responsive embed-responsive-16by9">
+            <iframe
+              class="embed-responsive-item"
+              src="https://www.youtube.com/embed/VIDEO_ID"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <p class="mt-3"><strong>Short Demo Video</strong></p>
+        </div>
+      </div>
+
+      <div class="card mt-5">
+        <div class="card-body">
+          <h2 class="card-title">Features</h2>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="card mt-3">
+                <div class="card-body">
+                  <h4>Admin Panel</h4>
+                  <ol type="1">
+                    <li>Ability to customize the Human Evaluator interface</li>
+                    <li>
+                      Ability to modify Evaluation Configuration attributes for
+                      Human and Automatic Evaluation
+                    </li>
+                  </ol>
+                </div>
+              </div>
+              <div class="card mt-3">
+                <div class="card-body">
+                  <h4>Real-time Insights and Analytics</h4>
+                  <ol type="1">
+                    <li>Cost Analysis</li>
+                    <li>
+                      Performance Analysis using various metrics (ELO, Markov)
+                    </li>
+                    <li>Consensus Analysis</li>
+                    <li>Real-time Human Evaluation Progress</li>
+                    <li>And more...</li>
+                  </ol>
+                </div>
+              </div>
+              <div class="card mt-3">
+                <div class="card-body">
+                  <h4>Human Evaluation</h4>
+                  <ol type="1">
+                    <li>User-friendly UI for precise Human Evaluation</li>
+                    <li>Time Tracking</li>
+                    <li>Feedback Tracking</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card mt-3">
+                <div class="card-body">
+                  <h4>Automatic Evaluation</h4>
+                  <ol type="1">
+                    <li>
+                      LLM-powered Evaluator to automate the Human Evaluation
+                      process
+                    </li>
+                    <li>
+                      Semantic Similarity module to assess model proximity to an
+                      anchor model
+                    </li>
+                  </ol>
+                </div>
+              </div>
+              <div class="card mt-3">
+                <div class="card-body">
+                  <h4>Multiple Model Support</h4>
+                  <ol type="1">
+                    <li>OpenAI, Cluade, Groq, etc.</li>
+                    <li>Ollama Models (Llama, COdellama, etc.)</li>
+                  </ol>
+                </div>
+              </div>
+              <div class="card mt-3">
+                <div class="card-body">
+                  <h4>Multiple Evaluation Methods</h4>
+                  <ol type="1">
+                    <li>A/B Testing</li>
+                    <li>A/B Testing with Criteria</li>
+                    <li>More to come</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mt-5">
+        <div class="card-body">
+          <h2 class="card-title">Brief Explanation of the Solution</h2>
+          <!-- Placeholder for the brief explanation of the solution -->
+          <p>Placeholder for the brief explanation of the solution.</p>
+        </div>
+      </div>
+
+      <div class="card mt-5">
+        <div class="card-body">
+          <h2 class="card-title">Relevant Links</h2>
+          <ul>
+            <li><a href="#" target="_blank">Paper</a></li>
+            <li><a href="#" target="_blank">GitHub Repo</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <br />
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
 </html>

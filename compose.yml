@@ -1,0 +1,31 @@
+version: '3'
+services:
+  app:
+    build:
+      context: ./app
+    environment:
+      - SLAM_ADMIN_USERNAME=admin
+      - SLAM_ADMIN_PASSWORD=admin
+      - ACTION_SERVER_URL=http://engine:8000
+      - OLLAMA_SERVER_URL=http://ollama:11434
+    ports:
+      - 8501:8501
+  engine:
+    build:
+      context: ./engine
+    environment:
+      - OLLAMA_SERVER_URL=http://ollama:11434
+      - OPENAI_API_KEY=sk-1234567890
+    ports:
+      - 8000:8000
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - 11434:11434
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

@@ -11,7 +11,7 @@ repository:
     #homepage: https://example.github.io/
 
     # A comma-separated list of topics to set on the repository
-    #topics: project, template, 
+    #topics: project, template,
 
     # Either `true` to make the repository private, or `false` to make it public.
     #private: false

@@ -1,5 +1,6 @@
 These owners will be the default owners for everything in the repo. Unless a later match takes precedence, [@chandralegend](https://) will be requested for review when someone opens a pull request.
 
 ### Code Owners
-- [@chandralegend](https://)
-- [@ashish.mahendra](https://)
+- [@chandralegend](https://github.com/chandralegend)
+- [@ashish.mahendra](https://github.com/ashish.mahendra)
+- [@ypkang](https://github.com/ypkang)

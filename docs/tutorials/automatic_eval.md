@@ -41,7 +41,7 @@ To make the most out of the Similarity Scorer in the SLAM Tool, it's important t
 
 1. **Access**: Make sure you can log into the SLAM Tool. You might need a username and password for this, so check that you have them handy.
 
-2. **Data to Compare**: Gather the responses from the language models for the array of prompts you intend to compare. 
+2. **Data to Compare**: Gather the responses from the language models for the array of prompts you intend to compare.
 
 ## Step-by-Step Guide
 
@@ -70,7 +70,7 @@ Following the completion of the calculation process, the results are displayed i
 
 - **Heatmap of Total Wins**: This provides a cumulative view of the wins for each model across all comparisons, offering a measure of overall performance.
 
-- **Stacked Bar Plots**: In addition to heatmaps, the results may also include stacked bar plots that delineate the wins, ties, and losses for each model. These plots provide a clear and detailed view of how often each model's responses were judged to be the best, tied with another model's, or not the closest to the anchor model's responses. 
+- **Stacked Bar Plots**: In addition to heatmaps, the results may also include stacked bar plots that delineate the wins, ties, and losses for each model. These plots provide a clear and detailed view of how often each model's responses were judged to be the best, tied with another model's, or not the closest to the anchor model's responses.
 
 - **Further Analysis**
 If you want to investigate a specific prompt's performance, select it from the `Select Prompt` drop-down menu. This will refresh the heatmaps to display data pertinent to that prompt only.
