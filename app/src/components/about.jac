@@ -1,5 +1,7 @@
+'''About Page for SLAM'''
 import:py streamlit as st;
 
+'''About Tab'''
 can about {
     github_mk = '''[![GitHub Repo stars](https://img.shields.io/github/stars/Jaseci-Labs/slam?style=social)](https://github.com/Jaseci-Labs/slam)''';
     citation = '''```Chandra Irugalbandara and Ashish Mahendra and Roland Daynauth and Tharuka Kasthuri Arachchige and Jayanaka Dantanarayana and Krisztian Flautner and Lingjia Tang and Yiping Kang and Jason Mars. (2024). Scaling Down to Scale Up: A Cost-Benefit Analysis of Replacing OpenAI's LLM with Open Source SLMs in Production. Arxiv. https://arxiv.org/abs/2312.14972```''';
