@@ -24,7 +24,7 @@ can initPage(page_title: str) -> None {
     local_css(os.path.join(dir_root, "../assets/style.css"));
     
     with open(os.path.join(dir_root, "../assets/theme.html")) as f {
-        st.components.v1.html(f.read(), height=80);
+        st.html(f.read(), height=80);
     }
     st.header(page_title);
 }

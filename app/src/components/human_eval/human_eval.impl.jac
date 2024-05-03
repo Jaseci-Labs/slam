@@ -135,7 +135,7 @@ import:py from captcha.image, ImageCaptcha;
             with open(os.path.join("results", f"{st.session_state.worker_id}_{st.session_state.question_set_id}.json"), "w") as f {
                 json.dump({"worker_id": st.session_state.worker_id, "question_set_id": st.session_state.question_set_id, "evals": st.session_state.evals, "start_time": st.session_state.start_time, "end_time": time.time(), "question_index": st.session_state.question_index}, f, indent=2);
             }
-            st.components.v1.html("<script>window.parent.document.querySelector('section.main').scrollTo(-1, -1);</script>", height=0);
+            st.html("<script>window.parent.document.querySelector('section.main').scrollTo(-1, -1);</script>", height=0);
             time.sleep(0.5);
             st.rerun();
         } else {

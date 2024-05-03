@@ -84,7 +84,7 @@ can get_outputs -> tuple {
                     partial_outputs.append(_file);
                 }
             } except Exception {
-                pass;
+                continue;
             }
         }
     }
