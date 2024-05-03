@@ -46,6 +46,22 @@ import:py pandas as pd;
     return (min_n_responses_needed_per_model, n_model_pairs);
 }
 
+'''Add Data Sources to the Configurator'''
+can add_data_sources {
+    with st.form("upload_datasources", clear_on_submit=True) {
+        uploaded_json_files = st.file_uploader("Upload data sources", accept_multiple_files=True, <>type="json");
+        submitted = st.form_submit_button("Submit");
+        if submitted and uploaded_json_files {
+            os.makedirs("data", exist_ok=True);
+            for uploaded_json_file in uploaded_json_files {
+                json_file = json.load(uploaded_json_file);
+                json.dump(json_file, open(os.path.join("data", uploaded_json_file.name), "w"));
+            }
+            st.rerun();
+        }
+    }
+}
+
 :can:hv_configurator {
     st.subheader("Human Evaluation Configuration");
     (hv_config_1_col, hv_config_2_col, hv_config_3_col) = st.columns(3);
@@ -53,12 +69,13 @@ import:py pandas as pd;
         n_workers = st.number_input("Number of workers", min_value=10, step=1, value=st.session_state.config["config"]["n_workers"], help="Number of Evaluators going to participate");
         n_questions_per_worker = st.number_input("Number of questions per worker", min_value=2, max_value=100, step=1, value=st.session_state.config["config"]["n_questions_per_worker"], help="Number of questions shown to an Evaluator");
         show_captcha = st.checkbox("Show Captcha (Human Verification)", value=st.session_state.config["config"]["show_captcha"]);
+        ability_to_tie = st.selectbox("Ability to Choose Both", ["Allow", "Not Allowed"], index=["Allow", "Not Allowed"].index(st.session_state.config["config"]["ability_to_tie"]), help="Select whether the evaluator can choose both options as the same.");
+        evenly_distributed = st.checkbox("Usecases are Evenly distributed among the workers", value=st.session_state.config["config"]["evenly_distributed"], help="If checked, the usecases will be evenly distributed among the workers. for example, if there are 2 usecases and 10 workers, each worker will get 1 question from each usecase. If not checked, the questions will be randomly distributed.");
     }
     with hv_config_2_col {
         json_files = [f  for f in os.listdir("data") if f.endswith(".json")] if os.path.exists("data") else [];
         data_sources = st.multiselect("Data sources (Usecases)", json_files, default=st.session_state.config["config"]["data_sources"], help="Select the data sources for the evaluation. Each file should represent a usecase (sigle prompt) you want to evaluate.");
-        ability_to_tie = st.selectbox("Ability to Choose Both", ["Allow", "Not Allowed"], index=["Allow", "Not Allowed"].index(st.session_state.config["config"]["ability_to_tie"]), help="Select whether the evaluator can choose both options as the same.");
-        evenly_distributed = st.checkbox("Usecases are Evenly distributed among the workers", value=st.session_state.config["config"]["evenly_distributed"], help="If checked, the usecases will be evenly distributed among the workers. for example, if there are 2 usecases and 10 workers, each worker will get 1 question from each usecase. If not checked, the questions will be randomly distributed.");
+        add_data_sources();
     }
     with hv_config_3_col {
         st.caption("Following is to check if the configuration is valid.");
@@ -75,21 +92,6 @@ import:py pandas as pd;
         }
     }
     return (n_workers, ability_to_tie, data_sources, n_questions_per_worker, evenly_distributed, show_captcha);
-}
-
-:can:add_data_sources {
-    with st.form("upload_datasources", clear_on_submit=True) {
-        uploaded_json_files = st.file_uploader("Upload data sources", accept_multiple_files=True, <>type="json");
-        submitted = st.form_submit_button("Submit");
-        if submitted and uploaded_json_files {
-            os.makedirs("data", exist_ok=True);
-            for uploaded_json_file in uploaded_json_files {
-                json_file = json.load(uploaded_json_file);
-                json.dump(json_file, open(os.path.join("data", uploaded_json_file.name), "w"));
-            }
-            st.rerun();
-        }
-    }
 }
 
 :can:get_question_pairs(models_responses_all: dict) -> list {
@@ -195,8 +197,8 @@ import:py pandas as pd;
                 (tab_input, tab_preview) = st.tabs(["Prompt Information", "Preview"]);
                 with tab_input {
                     prompt_infos[data_source]["usecase_id"] = st.text_input("Usecase Identifier", key=f"{data_source}_usecase_id", value=str(uuid.uuid4()), help="Unique ID for the usecase.");
-                    prompt_infos[data_source]["prompt_disc"] = st.text_area("Prompt Description", key=f"{data_source}_prompt_disc", value=data.get("prompt_disc", ""), help="Display description of the prompt. Use markdown/html for Nice looks.");
-                    prompt_infos[data_source]["prompt_simple_disc"] = st.text_area("Simple Description", key=f"{data_source}_prompt_simple_disc", value="", help="Simple text description of the usecase. Note: This will be used in the Auto Evaluation.");
+                    prompt_infos[data_source]["prompt_disc"] = st.text_area("Human Evaluation Description (MarkDown)", key=f"{data_source}_prompt_disc", value=data.get("prompt_disc", ""), help="Display description of the prompt. Use markdown/html for Nice looks.");
+                    prompt_infos[data_source]["prompt_simple_disc"] = st.text_area("Auto Evaluation Description", key=f"{data_source}_prompt_simple_disc", value="", help="Simple text description of the usecase. Note: This will be used in the Auto Evaluation.");
                 }
                 with tab_preview {
                     st.caption("Preview of the prompt description. Note: Following is a representation of what evaluators will see.");

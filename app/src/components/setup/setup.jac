@@ -27,9 +27,6 @@ can hv_configurator;
 '''Retrieve Prompt Information from the datasources show in a Editable View'''
 can get_prompt_info(data_sources: list) -> dict;
 
-'''Add Data Sources to the Configurator'''
-can add_data_sources;
-
 '''Create Necessary Files for the Evaluation'''
 can create_neccessary_file(data_sources: list, _prompt_infos: dict);
 
@@ -43,7 +40,6 @@ can setup {
     }
     with st.container(border=True) {
         (n_workers, ability_to_tie, data_sources, n_questions_per_worker, evenly_distributed, show_captcha) = hv_configurator();
-        add_data_sources();
     }
     if data_sources {
         prompt_infos = get_prompt_info(data_sources);
