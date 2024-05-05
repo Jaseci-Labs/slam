@@ -10,3 +10,4 @@ matplotlib
 # Auto Evaluator
 sentence_transformers
 nltk
+tensorflow_hub

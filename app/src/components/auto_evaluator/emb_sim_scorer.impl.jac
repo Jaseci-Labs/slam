@@ -12,6 +12,9 @@ import:py from nltk.translate.bleu_score, sentence_bleu;
 import:py from nltk.translate.bleu_score, SmoothingFunction;
 import:py from torch, tensor;
 import:py from nltk, ngrams;
+import:py tensorflow as tf;
+import:py from collections, Counter;
+
 
 :can:generate_embeddings
 (anchor_responses_text: list, response_texts: list, embedder: str) {
@@ -33,11 +36,25 @@ import:py from nltk, ngrams;
     } elif embedder == "USE_QA" {
         import:py tensorflow_hub as hub;
         model = hub.load("https://tfhub.dev/google/universal-sentence-encoder-qa/3");
-        anchor_embeddings = model.signatures['question_encoder'](tf.constant([anchor_responses_text]))['outputs'];
+        if not isinstance(anchor_responses_text, list){anchor_responses_text = [anchor_responses_text];}
+        for i in range(len(anchor_responses_text)){
+            if not isinstance(anchor_responses_text[i], str){
+                anchor_responses_text[i] = str(anchor_responses_text[i]);
+            }
+        }
+
+        if not isinstance(response_texts, list){response_texts = [response_texts];}
+        for i in range(len(response_texts)){
+            if not isinstance(response_texts[i], str){
+                response_texts[i] = str(response_texts[i]);
+            }
+        }
+        anchor_embeddings = model.signatures['question_encoder'](input=tf.constant(anchor_responses_text))['outputs'];
         response_embeddings = model.signatures['response_encoder'](input=tf.constant(response_texts), context=tf.constant(response_texts))['outputs'];
     }
     return (anchor_embeddings, response_embeddings);
 }
+
 
 :can:calculate_similarity_score
 (anchor_embeddings: list, response_embeddings: list, scorer: str) {
@@ -126,15 +143,44 @@ import:py from nltk, ngrams;
 (sentence: str, model: SentenceTransformer) {
     return model.encode(sentence, convert_to_tensor=True);
 }
+:can:simple_bleu
+(reference: str, candidate: str, n_gram: int=4) {
+    reference_tokens = word_tokenize(reference);
+    candidate_tokens = word_tokenize(candidate);
+    reference_ngrams = [ngrams(reference_tokens, i) for i in range(1, n_gram+1)];
+    candidate_ngrams = [ngrams(candidate_tokens, i) for i in range(1, n_gram+1)];
+
+    weights = np.ones(n_gram) / n_gram;
+    p_ns = [];
+
+    n = min(len(reference_ngrams), len(candidate_ngrams)); 
+    i = 0;
+    while (i < n) {
+        ref_ng = list(reference_ngrams[i]);  # Convert generator to list if necessary
+        cand_ng = list(candidate_ngrams[i]);  # Convert generator to list if necessary
+        ref_count = Counter(ref_ng);
+        cand_count = Counter(cand_ng);
+
+        count = sum((cand_count & ref_count).values());
+        total = sum(cand_count.values());
+
+        p_n = count / total if total > 0 else 0;
+        p_ns.append(p_n);
+        i = i + 1;
+    }
+
+    weights = np.array(weights);
+    p_ns = np.array(p_ns);
+    p_ns = np.log(p_ns, out=np.zeros_like(p_ns), where=(p_ns != 0));
+    bleu = np.exp(np.sum(p_ns * weights));
+    return bleu;
+}
 
 :can:compute_bleu_score
 (reference: str, candidate: str) {
-    reference_tokens = word_tokenize(reference);
-    candidate_tokens = word_tokenize(candidate);
-    smoothie = SmoothingFunction().method4;
-    bleu_score = sentence_bleu(reference_tokens, candidate_tokens, smoothing_function=smoothie);
-    return bleu_score;
+    return simple_bleu(reference, candidate);
 }
+
 
 :can:semantic_bleu_score
 (anchor_responses_text: list, response_texts: list, model: SentenceTransformer, ngram_size: int=4, scaling_factor: float=1, bleu_weight: float=0.5) {
