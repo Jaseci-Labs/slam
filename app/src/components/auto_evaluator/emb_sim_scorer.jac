@@ -47,8 +47,12 @@ can emb_sim_scorer {
             scorer_selection = st.selectbox("Select Scorer", options=['cos_sim', 'sem_bleu'], key='scorer', index=['cos_sim', 'sem_bleu'].index(st.session_state.get('scorer', 'cos_sim')));
         }
         if st.button('Calculate Embedding Scores') {
-            st.session_state['button_clicked'] = True;
-            process_user_selections();
+             with st.spinner('Calculating embedding scores... Please wait.'){
+                process_user_selections();
+                st.session_state['button_clicked'] = True;
+             }
+            
+            st.success('Finished calculating embedding scores!');
         }
         if button_clicked {
             st.session_state['button_clicked'] = False;
