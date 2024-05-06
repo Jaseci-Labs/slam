@@ -16,7 +16,7 @@ test login   {
     admin_tab.text_input("username").input("username");
     admin_tab.text_input("password").input("wrong_password");
     get_item_by_label(admin_tab, "button", "Login").set_value(True).run();
-    assert app.get("error")[1].value == "Invalid username or password";
+    assert app.get("error")[0].value == "Invalid username or password";
     assert not app.session_state.admin_privileges;
     admin_tab.text_input("username").input("username");
     admin_tab.text_input("password").input("password");

@@ -15,34 +15,33 @@ test app_running   {
 test setup_without_config   {
     app.session_state.admin_privileges = True;
     app.run();
-    setup_tab = get_item_by_label(app, "tab", "Human Eval Setup");
-    assert setup_tab.label == "Human Eval Setup";
+    setup_tab = get_item_by_label(app, "tab", "Evaluation Setup");
+    assert setup_tab.label == "Evaluation Setup";
     assert not app.exception;
 }
 
 test setup_humnan_eval_ab_testing   {
     shutil.unpack_archive(os.path.join(os.path.dirname(__file__), "fixtures", "data.zip"), ".");
     app.run();
-    setup_tab = get_item_by_label(app, "tab", "Human Eval Setup");
-    get_item_by_label(setup_tab, "selectbox", "Select the human evaluation method").select("A/B Testing").run();
-    get_item_by_label(setup_tab, "number_input", "Number of workers").set_value(10);
-    get_item_by_label(setup_tab, "number_input", "Number of questions per worker").set_value(2);
-    get_item_by_label(setup_tab, "checkbox", "Show Captcha").set_value(False);
-    get_item_by_label(setup_tab, "checkbox", "Usecases are Evenly distributed among the workers").set_value(True).run();
-    assert setup_tab.warning[0].value == "Please upload at least one data source. or select one from the list if available.";
+    setup_tab = get_item_by_label(app, "tab", "Evaluation Setup");
+    get_item_by_label(setup_tab, "selectbox", "Select the Evaluation method").select("A/B Testing").run();
+    get_item_by_label(setup_tab, "number_input", "Number of Evaluators").set_value(10);
+    get_item_by_label(setup_tab, "number_input", "Number of questions per evaluator").set_value(2);
+    get_item_by_label(setup_tab, "checkbox", "Show Captcha (Human Verification)").set_value(False);
+    get_item_by_label(setup_tab, "checkbox", "Usecases are Evenly distributed among the evaluators").set_value(True).run();
+    assert setup_tab.warning[-1].value == "Please upload at least one data source. or select one from the list if available.";
 
     datasource_selector = get_item_by_label(setup_tab, "multiselect", "Data sources (Usecases)");
     assert len(datasource_selector.options) == 1;
     datasource_selector.set_value(['city_name_responses.json']).run();
 
-    setup_tab = get_item_by_label(app, "tab", "Human Eval Setup");
-    assert not setup_tab.warning;
+    setup_tab = get_item_by_label(app, "tab", "Evaluation Setup");
     assert setup_tab.text_input("city_name_responses.json_usecase_id");
     assert setup_tab.text_area("city_name_responses.json_prompt_disc");
     assert setup_tab.text_area("city_name_responses.json_prompt_simple_disc");
     setup_tab.text_area("city_name_responses.json_prompt_disc").set_value("This is a new prompt description");
     setup_tab.text_area("city_name_responses.json_prompt_simple_disc").set_value("This is a new simple prompt description");
-    get_item_by_label(setup_tab, "button", "Save").set_value(True).run();
+    get_item_by_label(setup_tab, "button", "Create Evaluation Configuration").set_value(True).run();
     assert not app.exception;
     
     assert os.path.exists(".human_eval_config");
@@ -64,7 +63,7 @@ test setup_with_existing_config   {
     app = AppTest.from_file("app.py").run(timeout=20);
     app.session_state.admin_privileges = True;
     app.run();
-    setup_tab = get_item_by_label(app, "tab", "Human Eval Setup");
+    setup_tab = get_item_by_label(app, "tab", "Evaluation Setup");
     assert not setup_tab.exception;
     assert not setup_tab.error;
     shutil.rmtree(".human_eval_config");

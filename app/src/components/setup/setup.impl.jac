@@ -66,11 +66,11 @@ can add_data_sources {
     st.subheader("Human Evaluation Configuration");
     (hv_config_1_col, hv_config_2_col, hv_config_3_col) = st.columns(3);
     with hv_config_1_col {
-        n_workers = st.number_input("Number of workers", min_value=10, step=1, value=st.session_state.config["config"]["n_workers"], help="Number of Evaluators going to participate");
-        n_questions_per_worker = st.number_input("Number of questions per worker", min_value=2, max_value=100, step=1, value=st.session_state.config["config"]["n_questions_per_worker"], help="Number of questions shown to an Evaluator");
+        n_workers = st.number_input("Number of Evaluators", min_value=10, step=1, value=st.session_state.config["config"]["n_workers"], help="Number of Evaluators going to participate");
+        n_questions_per_worker = st.number_input("Number of questions per evaluator", min_value=2, max_value=100, step=1, value=st.session_state.config["config"]["n_questions_per_worker"], help="Number of questions shown to an Evaluator");
         show_captcha = st.checkbox("Show Captcha (Human Verification)", value=st.session_state.config["config"]["show_captcha"]);
         ability_to_tie = st.selectbox("Ability to Choose Both", ["Allow", "Not Allowed"], index=["Allow", "Not Allowed"].index(st.session_state.config["config"]["ability_to_tie"]), help="Select whether the evaluator can choose both options as the same.");
-        evenly_distributed = st.checkbox("Usecases are Evenly distributed among the workers", value=st.session_state.config["config"]["evenly_distributed"], help="If checked, the usecases will be evenly distributed among the workers. for example, if there are 2 usecases and 10 workers, each worker will get 1 question from each usecase. If not checked, the questions will be randomly distributed.");
+        evenly_distributed = st.checkbox("Usecases are Evenly distributed among the evaluators", value=st.session_state.config["config"]["evenly_distributed"], help="If checked, the usecases will be evenly distributed among the workers. for example, if there are 2 usecases and 10 workers, each worker will get 1 question from each usecase. If not checked, the questions will be randomly distributed.");
     }
     with hv_config_2_col {
         json_files = [f  for f in os.listdir("data") if f.endswith(".json")] if os.path.exists("data") else [];

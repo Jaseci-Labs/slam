@@ -1,19 +1,19 @@
-import:py from streamlit.testing.v1, AppTest;
-import:py os;
 import:py json;
+import:py os;
 import:py shutil;
-import:jac from utils, get_item_by_label;
+import:py from streamlit.testing.v1, AppTest;
 
-glob app = AppTest.from_file("app.py").run(timeout=20);
+import:jac from helpers, get_item_by_label;
+
 
 test app_running   {
-    :g: app ;
-    
+    :g: app;
+    app = AppTest.from_file("app.py").run(timeout=20);
     assert not app.exception;
 }
 
-test human_eval_without_config   {
-    assert app.error[0].value == "No human eval config found.";
+test human_eval_without_config {
+    assert app.info[0].value == "Go to Admin Panel and configure the Human Evaluation.";
 }
 
 test human_eval_with_config   {
