@@ -37,22 +37,21 @@ can emb_sim_scorer {
         }
         
         (col1, col2, col3) = st.columns(3);
-        with col1 {
-            anchor_model_selection = st.selectbox("Select Anchor Model", options=model_list, key='anchor_model', index=model_list.index(st.session_state.get('anchor_model', model_list[0])));
-        }
-        with col2 {
-            embedder_selection = st.selectbox("Select Type of Embedder", options=['USE', 'USE_QA', 'SBERT'], key='embedder', index=['USE', 'USE_QA', 'SBERT', 'OPEN_AI_Embedder'].index(st.session_state.get('embedder', 'SBERT')));
-        }
-        with col3 {
-            scorer_selection = st.selectbox("Select Scorer", options=['cos_sim', 'sem_bleu'], key='scorer', index=['cos_sim', 'sem_bleu'].index(st.session_state.get('scorer', 'cos_sim')));
-        }
+        anchor_model_selection = col1.selectbox("Select Anchor Model", options=model_list, key='anchor_model', index=model_list.index(st.session_state.get('anchor_model', model_list[0])));
+        embedder_selection = col2.selectbox("Select Type of Embedder", options=['USE', 'USE_QA', 'SBERT'], key='embedder', index=['USE', 'USE_QA', 'SBERT', 'OPEN_AI_Embedder'].index(st.session_state.get('embedder', 'SBERT')));
+        scorer_selection = col3.selectbox("Select Scorer", options=['cos_sim', 'sem_bleu'], key='scorer', index=['cos_sim', 'sem_bleu'].index(st.session_state.get('scorer', 'cos_sim')));
+
         if st.button('Calculate Embedding Scores') {
-             with st.spinner('Calculating embedding scores... Please wait.'){
-                process_user_selections();
-                st.session_state['button_clicked'] = True;
-             }
-            
-            st.success('Finished calculating embedding scores!');
+            try {
+                with st.spinner('Calculating embedding scores... Please wait.'){
+                    process_user_selections();
+                    st.session_state['button_clicked'] = True;
+                }
+                st.success('Finished calculating embedding scores!');
+            } except Exception as e{
+                print(e);
+                st.error('Error calculating embedding scores. Please try again.');
+            } 
         }
         if button_clicked {
             st.session_state['button_clicked'] = False;

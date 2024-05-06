@@ -16,8 +16,7 @@ import:py tensorflow as tf;
 import:py from collections, Counter;
 
 
-:can:generate_embeddings
-(anchor_responses_text: list, response_texts: list, embedder: str) {
+:can:generate_embeddings(anchor_responses_text: list, response_texts: list, embedder: str) {
     anchor_embeddings = [];
     response_embeddings = [];
     if embedder == "SBERT" {
@@ -56,8 +55,7 @@ import:py from collections, Counter;
 }
 
 
-:can:calculate_similarity_score
-(anchor_embeddings: list, response_embeddings: list, scorer: str) {
+:can:calculate_similarity_score(anchor_embeddings: list, response_embeddings: list, scorer: str) {
     anchor_embeddings = np.array(anchor_embeddings);
     response_embeddings = np.array(response_embeddings);
     scores = [];
@@ -74,13 +72,11 @@ import:py from collections, Counter;
     }
 }
 
-:can:display_results
-(basedir: str, heatmap_placeholder: st, selected_prompt: str=None) {
+:can:display_results(basedir: str, heatmap_placeholder: st, selected_prompt: str=None) {
     heat_map(basedir, "A/B Testing", heatmap_placeholder, selected_prompt);
 }
 
-:can:process_user_selections
-(selected_prompt: str=None) {
+:can:process_user_selections (selected_prompt: str=None) {
     with open(st.session_state.distribution_file, "r") as fp {
         distribution = json.load(fp);
     }
@@ -123,8 +119,7 @@ import:py from collections, Counter;
     }
 }
 
-:can:calculate_embedding_score
-(responses: list, anchor_reponses_id: dict, responses_dict: dict) -> None {
+:can:calculate_embedding_score(responses: list, anchor_reponses_id: dict, responses_dict: dict) -> None {
     anchor_reponses_text = [responses_dict[resp_id]  for resp_id in anchor_reponses_id];
     response_texts = [responses_dict[resp_id]  for resp_id in responses.values()];
     if not st.session_state['scorer'] == "sem_bleu" {
@@ -139,12 +134,10 @@ import:py from collections, Counter;
     return best_response_idx;
 }
 
-:can:embed_sentence
-(sentence: str, model: SentenceTransformer) {
+:can:embed_sentence(sentence: str, model: SentenceTransformer) {
     return model.encode(sentence, convert_to_tensor=True);
 }
-:can:simple_bleu
-(reference: str, candidate: str, n_gram: int=4) {
+:can:simple_bleu(reference: str, candidate: str, n_gram: int=4) {
     reference_tokens = word_tokenize(reference);
     candidate_tokens = word_tokenize(candidate);
     reference_ngrams = [ngrams(reference_tokens, i) for i in range(1, n_gram+1)];
@@ -176,14 +169,12 @@ import:py from collections, Counter;
     return bleu;
 }
 
-:can:compute_bleu_score
-(reference: str, candidate: str) {
+:can:compute_bleu_score(reference: str, candidate: str) {
     return simple_bleu(reference, candidate);
 }
 
 
-:can:semantic_bleu_score
-(anchor_responses_text: list, response_texts: list, model: SentenceTransformer, ngram_size: int=4, scaling_factor: float=1, bleu_weight: float=0.5) {
+:can:semantic_bleu_score(anchor_responses_text: list, response_texts: list, model: SentenceTransformer, ngram_size: int=4, scaling_factor: float=1, bleu_weight: float=0.5) {
     scores = [];
     for candidate in response_texts {
         anchor_score = [];
