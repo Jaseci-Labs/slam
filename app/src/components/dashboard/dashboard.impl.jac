@@ -26,7 +26,7 @@ import:jac from plot_utils, generate_stacked_bar_chart, generate_heatmaps;
         st.session_state.workers_data_dir = os.path.abspath("results");
         st.session_state.distribution_file = os.path.abspath(os.path.join(".human_eval_config", "distribution.json"));
         st.session_state.response_file = os.path.abspath(os.path.join(".human_eval_config", "responses.json"));
-        st.session_state.prompt_data_dir = os.path.abspath("data");
+        st.session_state.prompt_data_dir = os.path.abspath("data"); #TODO: Uses to get the run name, Fix is to include that in the prompt info file
         st.session_state.prompt_info_file = os.path.abspath(os.path.join(".human_eval_config", "prompt_info.json"));
         st.session_state.models_responses = os.path.abspath(os.path.join(".human_eval_config", "models_responses.json"));
         with open(st.session_state.models_responses, "r") as f {

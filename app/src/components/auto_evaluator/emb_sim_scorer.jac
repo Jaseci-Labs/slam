@@ -11,10 +11,6 @@ can compute_bleu_score(reference: list, candidate: list);
 can semantic_bleu_score(anchor_responses_text: list, response_texts: list, model: SentenceTransformer, ngram_size: int=4, scaling_factor: float=1, bleu_weight: float=0.5);
 can simple_bleu(reference: str, candidate: str, n_gram: int=4);
 
-glob ANCHOR_MODEL_KEY = 'anchor_model';
-glob EMBEDDER_KEY = 'embedder';
-glob SCORER_KEY = 'scorer';
-
 can emb_sim_scorer {
     if 'anchor_model' not in st.session_state {
         st.session_state['anchor_model'] = 'gpt-4';
@@ -28,8 +24,8 @@ can emb_sim_scorer {
     if st.session_state.get("current_hv_config", None) {
         button_clicked = st.session_state.get('button_clicked', False);
         model_list = st.session_state.active_list_of_models;
-        if st.session_state[ANCHOR_MODEL_KEY] not in model_list {
-            st.session_state[ANCHOR_MODEL_KEY] = model_list[0];
+        if st.session_state['anchor_model'] not in model_list {
+            st.session_state['anchor_model'] = model_list[0];
         }
 
         if st.session_state['anchor_model'] not in model_list {
