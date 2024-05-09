@@ -59,6 +59,9 @@ import:jac from ..utils, llms, check_engine_status, load_engine, run_inference;
         }
         if engine_loaded {
             for (question_set_id, question_set) in all_questions.items() {
+                if os.path.exists(os.path.join("results", f"llm_as_evaluator_{question_set_id}.json")){
+                    continue;
+                }
                 evals = [];
                 for question in question_set {
                     prompt_id = question[0];

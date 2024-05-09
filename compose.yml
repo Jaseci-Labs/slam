@@ -12,6 +12,8 @@ services:
       - 8501:8501
     volumes:
       - ./results:/app/results
+    networks:
+      - slam-network
   engine:
     build:
       context: ./engine
@@ -20,10 +22,14 @@ services:
       - OPENAI_API_KEY=sk-1234567890
     ports:
       - 8000:8000
+    networks:
+      - slam-network
   ollama:
     image: ollama/ollama:latest
     ports:
       - 11434:11434
+    networks:
+      - slam-network
     deploy:
       resources:
         reservations:
@@ -31,3 +37,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+
+networks:
+  slam-network:
+    driver: bridge
