@@ -10,7 +10,6 @@ settings.yaml
 .backup
 .new_backup
 notebooks/
-*.zip
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
