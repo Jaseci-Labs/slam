@@ -3,7 +3,7 @@ import:py os;
 import:py time;
 import:py requests;
 import:py subprocess;
-import:jac from utils, get_item_by_label;
+import:jac from helpers, get_item_by_label;
 
 test app_running   {
     :g: app ;

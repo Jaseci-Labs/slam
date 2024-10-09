@@ -9,6 +9,8 @@ credentials.json
 settings.yaml
 .backup
 .new_backup
+backup_data/
+back_.human_eval_config
 notebooks/
 *.zip
 

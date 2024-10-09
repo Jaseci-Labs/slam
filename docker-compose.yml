@@ -1,0 +1,10 @@
+version: '1'
+services:
+  my-service:
+    image: jaseci/slam-tool:latest
+    volumes:
+      - type: bind
+        source: /home/ubuntu/slam2/slam/results
+        target: /app/results
+    ports:
+      - "8501:8501"
