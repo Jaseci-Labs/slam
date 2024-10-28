@@ -5,7 +5,8 @@ import:py re;
 import:py streamlit as st;
 import:py time;
 
-import:jac from ..utils, llms, check_engine_status, load_engine, run_inference;
+import from ..utils {llms, check_engine_status, load_engine, run_inference}
+
 
 :can:llm_as_evaluator {
     st.title("LLM as an Evaluator");

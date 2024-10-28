@@ -1,6 +1,6 @@
 '''Theme Utils for Streamlit'''
 import:py os;
-import:py from PIL, Image;
+import from PIL {Image}
 import:py streamlit as st;
 
 '''Load custom CSS for Streamlit app'''

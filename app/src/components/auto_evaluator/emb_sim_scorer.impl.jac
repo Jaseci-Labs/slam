@@ -2,18 +2,18 @@ import:py streamlit as st;
 import:py os;
 import:py json;
 import:py time;
-import:py from sklearn.metrics.pairwise, cosine_similarity;
+import from sklearn.metrics.pairwise {cosine_similarity}
 import:py numpy as np;
-import:jac from ..dashboard.dashboard, heat_map;
-import:py from pathlib, Path;
-import:py from sentence_transformers, SentenceTransformer;
-import:py from nltk.tokenize, word_tokenize;
-import:py from nltk.translate.bleu_score, sentence_bleu;
-import:py from nltk.translate.bleu_score, SmoothingFunction;
-import:py from torch, tensor;
-import:py from nltk, ngrams;
+import from ..dashboard.dashboard {heat_map}
+import from pathlib {Path}
+import from sentence_transformers {SentenceTransformer}
+import from nltk.tokenize {word_tokenize}
+import from nltk.translate.bleu_score {sentence_bleu}
+import from nltk.translate.bleu_score {SmoothingFunction}
+import from torch {tensor}
+import from nltk {ngrams}
 import:py tensorflow as tf;
-import:py from collections, Counter;
+import from collections {Counter}
 
 
 :can:generate_embeddings(anchor_responses_text: list, response_texts: list, embedder: str) {

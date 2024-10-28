@@ -8,9 +8,9 @@ import:py plotly.figure_factory as ff;
 import:py shutil;
 import:py streamlit as st;
 import:py zipfile;
+import from ..utils {map_prompt_names_to_ids, generate_performance_data, format_responses_by_prompt}
+import from .plot_utils {generate_stacked_bar_chart, generate_heatmaps}
 
-import:jac from ..utils, map_prompt_names_to_ids, generate_performance_data, format_responses_by_prompt;
-import:jac from plot_utils, generate_stacked_bar_chart, generate_heatmaps;
 
 
 :can:<>init {

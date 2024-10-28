@@ -1,7 +1,6 @@
-import:py from streamlit.testing.v1, AppTest;
+import from streamlit.testing.v1 {AppTest}
 import:py os;
-
-import:jac from helpers, get_item_by_label;
+import from helpers {get_item_by_label}
 
 test app_running   {
     :g: app;

@@ -1,5 +1,5 @@
 import:py streamlit as st;
-import:py from sentence_transformers, SentenceTransformer;
+import from sentence_transformers {SentenceTransformer}
 
 can generate_embeddings(anchor_responses_text: str, response_texts: list, embedder: str);
 can calculate_similarity_score(anchor_embeddings: list, response_embeddings: list, scorer: str);

@@ -1,5 +1,5 @@
 '''Evaluation Setup'''
-import:py from datetime, datetime;
+import from datetime {datetime}
 import:py json;
 import:py os;
 import:py shutil;

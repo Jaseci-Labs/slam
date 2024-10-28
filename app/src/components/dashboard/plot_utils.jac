@@ -2,7 +2,7 @@ import:py streamlit as st;
 import:py os;
 import:py pandas as pd;
 import:py numpy as np;
-import:py from plotly.subplots, make_subplots;
+import from plotly.subplots {make_subplots}
 import:py plotly.graph_objects as go;
 import:py json;
 

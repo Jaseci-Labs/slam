@@ -1,9 +1,9 @@
 import:py json;
 import:py os;
 import:py shutil;
-import:py from streamlit.testing.v1, AppTest;
+import from streamlit.testing.v1 {AppTest}
 
-import:jac from helpers, get_item_by_label;
+import from helpers {get_item_by_label}
 
 
 test app_running   {

@@ -5,7 +5,8 @@ import:py time;
 import:py streamlit as st;
 import:py string;
 import:py random;
-import:py from captcha.image, ImageCaptcha;
+import from captcha.image {ImageCaptcha}
+
 
 :can:<>init {
     if os.path.exists(os.path.join(".human_eval_config", "config.json")) {

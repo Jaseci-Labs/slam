@@ -1,14 +1,13 @@
 '''SLaM Tool.'''
 import:py streamlit as st;
-
-import:jac from components.about, about;
-import:jac from components.auto_evaluator.auto_eval, auto_eval;
-import:jac from components.dashboard.dashboard, dashboard;
-import:jac from components.generator.generator, generator;
-import:jac from components.human_eval.human_eval, human_eval;
-import:jac from components.login, login;
-import:jac from components.setup.setup, setup;
-import:jac from components.theme, footer;
+import from components.about {about}
+import from components.auto_eval {auto_eval}
+import from components.dashboard.dashboard {dashboard}
+import from components.generator.generator {generator}
+import from components.human_eval.human_eval {human_eval}
+import from components.login {login}
+import from components.setup.setup {setup}
+import from components.theme {footer}
 
 '''Main function for the SLaM Tool.'''
 can main {

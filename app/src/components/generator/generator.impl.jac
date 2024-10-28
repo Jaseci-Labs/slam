@@ -3,8 +3,8 @@ import:py streamlit as st;
 import:py re;
 import:py uuid;
 import:py json;
+import from ..utils {load_engine, run_inference, llms, check_query_engine, check_ollama_server, convert_run, check_engine_status}
 
-import:jac from ..utils, load_engine, run_inference, llms, check_query_engine, check_ollama_server, convert_run, check_engine_status;
 
 :can:<>init {
     os.makedirs('runs', exist_ok=True);
