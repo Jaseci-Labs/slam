@@ -1,7 +1,7 @@
 '''SLaM Tool.'''
 import:py streamlit as st;
 import from components.about {about}
-import from components.auto_eval {auto_eval}
+import from components.auto_evaluator.auto_eval {auto_eval}
 import from components.dashboard.dashboard {dashboard}
 import from components.generator.generator {generator}
 import from components.human_eval.human_eval {human_eval}
