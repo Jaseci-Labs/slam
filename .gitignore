@@ -10,6 +10,11 @@ settings.yaml
 .backup
 .new_backup
 notebooks/
+answered_all/
+back_.human_eval_config/
+Conversation_data/
+backup_data/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -19,6 +24,7 @@ __pycache__/
 # Jac compilation cache
 __jac_gen__/
 .jaseci_logs/
+.jac_mypy_cache/
 
 # C extensions
 *.so
